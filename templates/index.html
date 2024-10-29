@@ -28,7 +28,7 @@
     </div>
     <div class="content">
         <p>
-            This Website helps you find the best free hangout spots near clean water and benches.
+            This Website helps you find the best free hangout spots near clean water, benches and toilets.
         </p>
         <p>
             The map will show you places where you can find:
@@ -40,8 +40,38 @@
             <li>Toilets</li>
         </ul>
     </div>
+    <div id="demo">
+        <p>
+            <!-- call getLocation() function on click-->
+            <button onclick="getLocation()">Try me, bitch</button>
+
+            <script>
+            const x = document.getElementById("demo");
+            let userLocation = {}; // for storing location
+
+            <!-- get user position -->
+            function getLocation() {
+              if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(savePosition);
+              } else {
+                x.innerHTML = "Geolocation is not supported by this browser.";
+              }
+            }
+            <!-- save user position into variables userLocation.latitude and userLocation.longitude-->
+            function savePosition(position) {
+              userLocation.latitude = position.coords.latitude;
+              userLocation.longitude = position.coords.longitude;
+              showPosition();
+            }
+
+            <!-- display user position (not in use, call showPosition(); in function savePosition(position))-->
+            function showPosition() {
+              x.innerHTML = "Cash Me Outside at lat/lon: " + userLocation.latitude + "/" + userLocation.longitude;
+            }
+            </script>
+        </p>
+    </div>
     <div id="map"></div>
-    <img src="temp_image.jpg" alt="autumn" width="200"/> <!-- picture doesn't work as it's not in dir -->
     <div class="button-section">
         <button id="redBtn" onclick="clickBtn('red')">Red</button>
         <button id="greenBtn" onclick="clickBtn('green')">Green</button>
