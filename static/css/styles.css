@@ -1,0 +1,25 @@
+#map {
+  height: 300px;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #0d704a;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.button-section {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+body {
+    font-family: Verdana, sans-serif;
+}
