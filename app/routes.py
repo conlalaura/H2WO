@@ -17,9 +17,14 @@ def root():
     return "Welcome to H2WO!"
 
 
+@main.route("/chart/")  # http://127.0.0.1:5000/chart/
+def chart():
+    return render_template("chart.html")
+
+
 @main.route("/osm_data")  # http://127.0.0.1:5000/osm_data
 def get_all_relevant_amenities():
-    cursor = collection.find()  # read all amenities
+    cursor = collection.find()  # read amenities
     res = []  # store result in res
     for current_item in cursor:  # iterate over the cursor
         keys = current_item.keys()  # get all keys
