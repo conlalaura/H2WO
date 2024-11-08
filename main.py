@@ -6,8 +6,13 @@ def create_app():
 
     with app.app_context():
         # Register blueprints
-        from .routes import main  # import routes
+        from routes import main  # import routes
 
         app.register_blueprint(main)
 
     return app
+
+
+if __name__ == "__main__":
+    app = create_app()
+    app.run(debug=True)
