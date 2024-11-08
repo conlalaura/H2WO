@@ -14,7 +14,8 @@ collection = db["osm_h2wo"]  # select collection
 
 @main.route("/")  # http://127.0.0.1:5000/
 def root():
-    return "Welcome to H2WO!"
+    # return "Welcome to H2WO!"
+    return render_template("page.html")
 
 
 @main.route("/chart/")  # http://127.0.0.1:5000/chart/
@@ -22,7 +23,7 @@ def chart():
     return render_template("chart.html")
 
 
-@main.route("/osm_data")  # http://127.0.0.1:5000/osm_data
+@main.route("/api/osm_data")  # http://127.0.0.1:5000/api/osm_data
 def get_all_relevant_amenities():
     cursor = collection.find()  # read amenities
     res = []  # store result in res
