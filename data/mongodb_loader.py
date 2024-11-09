@@ -6,29 +6,34 @@ db = client["osm"]  # select db
 collection_name = "osm"
 
 """
-this section creates a collection with all OpenSteetMap data
+Create (or load) collection with all OpenSteetMap data
 """
 # check if the collection already exists
-if collection_name not in db.list_collection_names():
-    collection = db[collection_name]
+if collection_name in db.list_collection_names():
+    print(f"Collection '{collection_name}' has already been created.")
+else:
+    print(
+        f"Collection '{collection_name}' hasn't been created yet, will do that now for you :)."
+    )
 
-    # read the json data only if the collection doesn't exist
+collection = db[collection_name]  # load collection, will be created if not present
+
+# load documents into collection if collection empty
+if collection.count_documents({}) == 0:
     with open("osm-output.json", "r") as f:
         data = json.load(f)
         nodes = data["nodes"]
-
     # bulk insert
     result = collection.insert_many(nodes)
-    print(f"Inserted {len(result.inserted_ids)} documents into {collection_name}.")
+    print(f"Inserted {len(result.inserted_ids)} documents into '{collection_name}'.")
 else:
-    print(f"The collection '{collection_name}' already exists. No data inserted.")
+    print(
+        f"The collection '{collection_name}' already contains {collection.count_documents({})} documents. No data inserted."
+    )
 
 """
-this section selects only project-relevant data from the OpenSteetMap 
+Select only project-relevant data from the OpenSteetMap 
 """
-# load collection
-collection = db[collection_name]
-
 # relevant amenities for h2wo project
 amenities = [
     # always keep tags  lat, lon, name, amenity and id
@@ -165,18 +170,29 @@ for amenity in amenities:
         )
 
 """
-this section saves the project-relevant data into a new mongoDB collection 
+Create (or load) new mongoDB collection with project-relevant data
 """
 filtered_collection_name = "osm_h2wo"
 
 # check if the collection already exists
-if filtered_collection_name not in db.list_collection_names():
-    collection = db[filtered_collection_name]
-    result = collection.insert_many(filtered_amenities)
+if filtered_collection_name in db.list_collection_names():
+    print(f"Collection '{filtered_collection_name}' has already been created.")
+else:
     print(
-        f"Inserted {len(result.inserted_ids)} documents into {filtered_collection_name}."
+        f"Collection '{filtered_collection_name}' hasn't been created yet, will do that now for you :)."
+    )
+
+collection_filtered = db[
+    filtered_collection_name
+]  # load new collection, will be created if not present
+
+# load documents into collection if collection empty
+if collection_filtered.count_documents({}) == 0:
+    result = collection_filtered.insert_many(filtered_amenities)
+    print(
+        f"Inserted {len(result.inserted_ids)} documents into '{filtered_collection_name}'."
     )
 else:
     print(
-        f"The collection '{filtered_collection_name}' already exists. No data inserted."
+        f"The collection '{filtered_collection_name}' already contains {collection_filtered.count_documents({})} documents. No data inserted."
     )
