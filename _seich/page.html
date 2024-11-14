@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content="Some cool meta description."/>
+    <meta name="keywords" content="keyword1, keyword2, keyword3"/>
+
+        <!-- Custom Styles and JS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css')}}"
+    />
+    <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+            integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+            crossorigin=""
+    />
+    <!-- import leaflet library (display interactive maps)-->
+    <script
+            src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""
+    ></script>
+    <title>PM3 H2WO</title> <!-- Text showed in browsers tab bar -->
+</head>
+<body>
+<main>
+    <div class="header">
+        <h1>H2WO - Where to find your next water.</h1>
+    </div>
+    <div class="content">
+        <p>
+            This Website helps you find the best free hangout spots near clean water, benches and toilets.
+        </p>
+        <p>
+            The map will show you places where you can find:
+        </p>
+        <ul>
+            <li>Drinking Water</li>
+            <li>Fountains</li>
+            <li>Benches</li>
+            <li>Toilets</li>
+        </ul>
+    </div>
+    <div id="demo">
+        <p>
+            <!-- call getLocation() function on click-->
+            <button onclick="getLocation()">Try me, bitch</button>
+
+            <script>
+            const x = document.getElementById("demo");
+            let userLocation = {}; // for storing location
+
+            <!-- get user position -->
+            function getLocation() {
+              if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(savePosition);
+              } else {
+                x.innerHTML = "Geolocation is not supported by this browser.";
+              }
+            }
+            <!-- save user position into variables userLocation.latitude and userLocation.longitude-->
+            function savePosition(position) {
+              userLocation.latitude = position.coords.latitude;
+              userLocation.longitude = position.coords.longitude;
+              showPosition();
+            }
+
+            <!-- display user position (not in use, call showPosition(); in function savePosition(position))-->
+            function showPosition() {
+              x.innerHTML = "Cash Me Outside at lat/lon: " + userLocation.latitude + "/" + userLocation.longitude;
+            }
+            </script>
+        </p>
+    </div>
+    <!--            -->
+    <!-- Map Section-->
+    <!--            -->
+
+    <div id="map"></div>
+    <!--                             -->
+    <!-- Button Section (not in use) -->
+    <!--                             -->
+    <div class="button-section">
+        <button id="redBtn" onclick="clickBtn('red')">Red</button>
+        <button id="greenBtn" onclick="clickBtn('green')">Green</button>
+        <button id="blueBtn" onclick="clickBtn('blue')">Blue</button>
+    </div>
+    <div class="credits">
+        <p>This Website is part of the semester project "H2WO" at ZHAW School of
+            Engineering.</p>
+        <a
+                href="https://github.com/conlalaura/H2WO"
+        >Visit Our GitHub Repository!</a>
+    </div>
+
+</main>
+</body>
+<script src="script.js"></script>
+</html>
