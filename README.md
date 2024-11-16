@@ -37,3 +37,12 @@ From the project root directory run:
 ```
 python -m black .
 ```
+
+
+### Execute all tests automatically
+
+**Pytest:**
+
+```
+python -m pytest tests
+```
