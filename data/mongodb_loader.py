@@ -1,34 +1,38 @@
 import pymongo
 import json
 
+from werkzeug.security import generate_password_hash
+
+import models
+
 client = pymongo.MongoClient(host="localhost", port=27017)
 db = client["osm"]  # select db
-collection_name = "osm"
+osm_collection = "osm_all_amenities"
 
 """
-Create (or load) collection with all OpenSteetMap data
+Create or load collection with all OpenSteetMap data
 """
 # check if the collection already exists
-if collection_name in db.list_collection_names():
-    print(f"Collection '{collection_name}' has already been created.")
+if osm_collection in db.list_collection_names():
+    print(f"Collection '{osm_collection}' has already been created.")
 else:
     print(
-        f"Collection '{collection_name}' hasn't been created yet, will do that now for you :)."
+        f"Collection '{osm_collection}' hasn't been created yet, will do that now for you :)."
     )
 
-collection = db[collection_name]  # load collection, will be created if not present
+collection = db[osm_collection]  # load collection, will be created if not present
 
 # load documents into collection if collection empty
 if collection.count_documents({}) == 0:
-    with open("osm-output.json", "r") as f:
+    with open("data/osm-output.json", "r") as f:
         data = json.load(f)
         nodes = data["nodes"]
     # bulk insert
     result = collection.insert_many(nodes)
-    print(f"Inserted {len(result.inserted_ids)} documents into '{collection_name}'.")
+    print(f"Inserted {len(result.inserted_ids)} documents into '{osm_collection}'.")
 else:
     print(
-        f"The collection '{collection_name}' already contains {collection.count_documents({})} documents. No data inserted."
+        f"The collection '{osm_collection}' already contains {collection.count_documents({})} documents. No data inserted."
     )
 
 """
@@ -170,7 +174,7 @@ for amenity in amenities:
         )
 
 """
-Create (or load) new mongoDB collection with project-relevant data
+Create or load new mongoDB collection with project-relevant data
 """
 filtered_collection_name = "osm_h2wo"
 
@@ -182,17 +186,79 @@ else:
         f"Collection '{filtered_collection_name}' hasn't been created yet, will do that now for you :)."
     )
 
-collection_filtered = db[
+h2wo_collection = db[
     filtered_collection_name
 ]  # load new collection, will be created if not present
 
 # load documents into collection if collection empty
-if collection_filtered.count_documents({}) == 0:
-    result = collection_filtered.insert_many(filtered_amenities)
+if h2wo_collection.count_documents({}) == 0:
+    result = h2wo_collection.insert_many(filtered_amenities)
     print(
         f"Inserted {len(result.inserted_ids)} documents into '{filtered_collection_name}'."
     )
 else:
     print(
-        f"The collection '{filtered_collection_name}' already contains {collection_filtered.count_documents({})} documents. No data inserted."
+        f"The collection '{filtered_collection_name}' already contains {h2wo_collection.count_documents({})} documents. No data inserted."
+    )
+
+"""
+Create or load new mongoDB collection with users
+"""
+user_collection_name = "users"
+
+# check if the collection already exists
+if user_collection_name in db.list_collection_names():
+    print(f"Collection '{user_collection_name}' has already been created.")
+else:
+    print(
+        f"Collection '{user_collection_name}' hasn't been created yet, will do that now for you :)."
+    )
+
+users_collection = db[
+    user_collection_name
+]  # load new collection, will be created if not present
+
+"""
+Create a demo user
+"""
+# document for demo user
+demo_user = {
+    "username": "Demo-User",
+    "password_hash": generate_password_hash("password"),
+    "email": "demo@user.com",
+    "favourites": [],
+}
+
+# create demo user if not present yet
+if models.email_used(users_collection, demo_user["email"]):
+    favourites = users_collection.find_one(
+        {"email": "demo@user.com"}, {"favourites": 1, "_id": 0}
+    )["favourites"]
+    print(
+        f"Demo User is already in the collection and has {len(favourites)} favourite places saved. :)"
+    )
+else:
+    sample_size = 50
+    models.insert_new_user(users_collection, demo_user)
+    # select a few water-related documents to add to favourites. Use aggregation to match and sample
+    query = {
+        "amenity": {"$in": ["fountain", "water_point", "drinking_water", "water_tap"]}
+    }
+
+    pipeline = [
+        {"$match": query},
+        {"$sample": {"size": sample_size}},  # randomly sample 50 documents
+        {"$project": {"_id": 1}},  # only use "_id" field
+    ]
+
+    random_documents = list(h2wo_collection.aggregate(pipeline))
+    random_ids = [doc["_id"] for doc in random_documents]
+
+    # add id's of random documents top the demo-users favourite
+    users_collection.update_one(
+        {"email": "demo@user.com"},  # find user by email
+        {"$addToSet": {"favourites": {"$each": random_ids}}},  # add multiple ids,
+    )
+    print(
+        f"Demo-User has been created and {sample_size} favourite places have been added!"
     )
