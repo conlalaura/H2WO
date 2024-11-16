@@ -28,6 +28,7 @@ python data/mongodb_loader.py
 
 This script loads the osm-output.json file into MongoDB, filters the relevant amenities and keys, and stores the results in a new, more compact collection for efficient caching.
 
+Further, it creates a demo user and adds 50 random amenities to their favourites list.
 ## Development
 
 ### Run Code Formatter
