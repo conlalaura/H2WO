@@ -2,15 +2,15 @@ from flask import Flask
 
 
 def create_app():
-    app = Flask(__name__)
+    flask_app = Flask(__name__)
 
-    with app.app_context():
+    with flask_app.app_context():
         # Register blueprints
         from routes import main  # import routes
 
-        app.register_blueprint(main)
+        flask_app.register_blueprint(main)
 
-    return app
+    return flask_app
 
 
 if __name__ == "__main__":

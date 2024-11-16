@@ -1,7 +1,5 @@
 from flask import Blueprint, render_template, jsonify
 from pymongo import MongoClient
-import subprocess
-import os
 
 # flask
 main = Blueprint("main", __name__)
@@ -14,12 +12,12 @@ collection = db["osm_h2wo"]  # select collection
 
 @main.route("/")  # http://127.0.0.1:5000/
 def root():
-    # return "Welcome to H2WO!"
+    """Render the main page."""
     return render_template("page.html")
 
 
-@main.route("/chart/")  # http://127.0.0.1:5000/chart/
-def chart():
+@main.route("/statistics/")  # http://127.0.0.1:5000/chart/
+def statistics():
     return render_template("chart.html")
 
 
