@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>/map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="static/css/styles.css">
+</head>
+<body>
+
+<div class="c_page">
+    <!-- Sidebar -->
+    <div class="c_sidebar">
+        <h2>Filter</h2>
+        
+        <!-- Filter Section: Fountains -->
+        <div class="c_amenity">
+            <div class="c_amenity_header">
+                <input type="checkbox" id="fountains">
+                <span class="c_amenity_text">Fountains</span>
+            </div>
+            <div class="c_amenity_tags">
+                <button class="tag">drinkable water</button>
+                <button class="tag">in operation</button>
+                <button class="tag">illuminated</button>
+                <button class="tag">historic</button>
+                <button class="tag">fits waterbottle</button>
+            </div>
+        </div>
+
+        <!-- Filter Section: Restrooms -->
+        <div class="c_amenity">
+            <div class="c_amenity_header">
+                <input type="checkbox" id="restrooms">
+                <span class="c_amenity_text">Restrooms</span>
+            </div>
+            <div class="c_amenity_tags">
+                <button class="tag">accessible by wheelchair</button>
+                <button class="tag">offers changing-table</button>
+                <button class="tag">free of charge</button>
+            </div>
+        </div>
+
+        <!-- Filter Section: Benches -->
+        <div class="c_amenity">
+            <div class="c_amenity_header">
+                <input type="checkbox" id="benches">
+                <span class="c_amenity_text">Benches</span>
+            </div>
+            <div class="c_amenity_tags">
+                <button class="tag">fits 2 people</button>
+                <button class="tag">fits 3 people</button>
+                <button class="tag">fits 4 people</button>
+                <button class="tag">covered</button>
+                <button class="tag">backrest</button>
+                <button class="tag">bench arrangement</button>
+            </div>
+        </div>
+
+        <!-- Filter Section: Bins -->
+        <div class="c_amenity">
+            <div class="c_amenity_header">
+                <input type="checkbox" id="bins">
+                <span class="c_amenity_text">Bins</span>
+            </div>
+            <div class="c_amenity_tags">
+                <button class="tag">general waste</button>
+                <button class="tag">plastics</button>
+                <button class="tag">aluminium</button>
+                <button class="tag">paper</button>
+                <button class="tag">glass</button>
+            </div>
+        </div>
+
+        <!-- Radius Section -->
+        <div class="c_amenity">
+            <label><input type="checkbox" id="radius"> Radius</label>
+            <input type="range" id="radius-slider" min="10" max="2000" value="500">
+            <p id="radius-value">500 m</p>
+        </div>
+    </div>
+
+    <!-- Map -->
+    <div id="map"></div>
+</div>
+
+<script src="static/js/map.js"></script>
+</body>
+</html>
