@@ -16,53 +16,49 @@ def get_water_amenities(col: Collection, coordinates_only=False) -> list[dict]:
     }
     # coordinate check
     if coordinates_only:
-        keys = {"lat": 1, "lon": 1, "id": 1, "_id": 0}
+        keys = {"lat": 1, "lon": 1, "_id": 1}
     else:
-        keys = {"_id": 0}
+        keys = None  # keeps all keys
     # filter database
     result = col.find(query, keys)
     # return as list
     return list(result)
 
 
-def get_toilets(col: Collection, coordinates_only=False) -> list[dict]:
+def get_amenities(
+    col: Collection, amenity_name: str, coordinates_only=False
+) -> list[dict]:
     """
-    Get information for all toilets
-
     :param col: mongodb collection of project relevant amenities
+    :param amenity_name: can be
+        - water (fountain, water_point, drinking_water, water_tap)
+        - toilets
+        - bench
+        - shelter
+        - waste_basket
     :param coordinates_only: choose if only id and coordinates should be returned
-
-    :return:  list of dicts, containing information about toilets
+    :return:
     """
-    # water related amenities
-    query = {"amenity": "toilets"}
+    # Validate the amenity_name
+    allowed_amenities = ["water", "toilets", "bench", "shelter", "waste_basket"]
+    if amenity_name not in allowed_amenities:
+        raise ValueError(
+            f"Invalid amenity_name: {amenity_name}. Allowed values are: {allowed_amenities}"
+        )
+    # multiple amenities fore water
+    if amenity_name == "water":
+        query = {
+            "amenity": {
+                "$in": ["fountain", "water_point", "drinking_water", "water_tap"]
+            }
+        }
+    else:
+        query = {"amenity": amenity_name}
     # coordinate check
     if coordinates_only:
-        keys = {"lat": 1, "lon": 1, "id": 1, "_id": 0}
+        keys = {"lat": 1, "lon": 1, "_id": 1}
     else:
-        keys = {"_id": 0}
-    # filter database
-    result = col.find(query, keys)
-    # return as list
-    return list(result)
-
-
-def get_accommodations(col: Collection, coordinates_only=False) -> list[dict]:
-    """
-    Get information for all accommodating amenities: bench, waste_basket, shelter
-
-    :param col: mongodb collection of project relevant amenities
-    :param coordinates_only: choose if only id and coordinates should be returned
-
-    :return:  list of dicts, containing information about accommodating amenities
-    """
-    # water related amenities
-    query = {"amenity": {"$in": ["bench", "waste_basket", "shelter"]}}
-    # coordinate check
-    if coordinates_only:
-        keys = {"lat": 1, "lon": 1, "id": 1, "_id": 0}
-    else:
-        keys = {"_id": 0}
+        keys = None  # keeps all keys
     # filter database
     result = col.find(query, keys)
     # return as list
