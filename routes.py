@@ -91,6 +91,12 @@ def login():
     )  # TODO: this is just a basic template. it does not look nice :(
 
 
-@main.route("/statistics/")  # http://127.0.0.1:5000/chart/
+@main.route("/chart")  # http://127.0.0.1:5000/statistics/
 def chart():
     return render_template("chart.html")
+
+
+@main.route("/map")
+def h2wo_map():
+    """render map page with amenities"""
+    return render_template("map.html")
