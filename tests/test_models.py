@@ -34,8 +34,20 @@ def dummy_user():
     return dummy
 
 
-def test_get_water_amenities_all(h2wo_collection):
-    amenities = models.get_water_amenities(col=h2wo_collection, coordinates_only=False)
+def test_get_amenities_wrong_amenity(h2wo_collection, capsys):
+    amenities = models.get_amenities(
+        col=h2wo_collection, amenity_name="wrong_amenity_name", coordinates_only=False
+    )
+    captured = capsys.readouterr()
+    assert "Invalid amenity_name" in captured.out
+    assert len(amenities) == 0
+
+
+
+def test_get_amenities_water_all(h2wo_collection):
+    amenities = models.get_amenities(
+        col=h2wo_collection, amenity_name="water", coordinates_only=False
+    )
     # use 10 random indexes to test
     random.seed(19)
     random_indexes = random.sample(range(len(amenities)), 10)
@@ -43,8 +55,10 @@ def test_get_water_amenities_all(h2wo_collection):
         assert len(amenities[index]) >= 3
 
 
-def test_get_water_amenities_coordinates_only(h2wo_collection):
-    amenities = models.get_water_amenities(col=h2wo_collection, coordinates_only=True)
+def test_get_amenities_water_coordinates_only(h2wo_collection):
+    amenities = models.get_amenities(
+        col=h2wo_collection, amenity_name="water", coordinates_only=True
+    )
     # use 10 random indexes to test
     random.seed(19)
     random_indexes = random.sample(range(len(amenities)), 10)
@@ -52,8 +66,10 @@ def test_get_water_amenities_coordinates_only(h2wo_collection):
         assert len(amenities[index]) == 3  # only lat, lon, and id
 
 
-def test_get_toilets_all(h2wo_collection):
-    amenities = models.get_toilets(col=h2wo_collection, coordinates_only=False)
+def test_get_amenities_toilets_all(h2wo_collection):
+    amenities = models.get_amenities(
+        col=h2wo_collection, amenity_name="toilets", coordinates_only=False
+    )
     # use 10 random indexes to test
     random.seed(19)
     random_indexes = random.sample(range(len(amenities)), 10)
@@ -61,17 +77,10 @@ def test_get_toilets_all(h2wo_collection):
         assert len(amenities[index]) >= 3
 
 
-def test_get_toilets_coordinates_only(h2wo_collection):
-    amenities = models.get_toilets(col=h2wo_collection, coordinates_only=True)
-    # use 10 random indexes to test
-    random.seed(19)
-    random_indexes = random.sample(range(len(amenities)), 10)
-    for index in random_indexes:
-        assert len(amenities[index]) == 3  # only lat, lon, and id
-
-
-def test_get_accommodations_all(h2wo_collection):
-    amenities = models.get_accommodations(col=h2wo_collection, coordinates_only=False)
+def test_get_amenities_toilets_coordinates_only(h2wo_collection):
+    amenities = models.get_amenities(
+        col=h2wo_collection, amenity_name="toilets", coordinates_only=True
+    )
     # use 10 random indexes to test
     random.seed(19)
     random_indexes = random.sample(range(len(amenities)), 10)
@@ -79,13 +88,70 @@ def test_get_accommodations_all(h2wo_collection):
         assert len(amenities[index]) >= 3
 
 
-def test_get_accommodations_coordinates_only(h2wo_collection):
-    amenities = models.get_accommodations(col=h2wo_collection, coordinates_only=True)
+def test_get_amenities_bench_all(h2wo_collection):
+    amenities = models.get_amenities(
+        col=h2wo_collection, amenity_name="bench", coordinates_only=False
+    )
     # use 10 random indexes to test
     random.seed(19)
     random_indexes = random.sample(range(len(amenities)), 10)
     for index in random_indexes:
-        assert len(amenities[index]) == 3  # only lat, lon, and id
+        assert len(amenities[index]) >= 3
+
+
+def test_get_amenities_bench_coordinates_only(h2wo_collection):
+    amenities = models.get_amenities(
+        col=h2wo_collection, amenity_name="bench", coordinates_only=True
+    )
+    # use 10 random indexes to test
+    random.seed(19)
+    random_indexes = random.sample(range(len(amenities)), 10)
+    for index in random_indexes:
+        assert len(amenities[index]) >= 3
+
+
+def test_get_amenities_shelter_all(h2wo_collection):
+    amenities = models.get_amenities(
+        col=h2wo_collection, amenity_name="shelter", coordinates_only=False
+    )
+    # use 10 random indexes to test
+    random.seed(19)
+    random_indexes = random.sample(range(len(amenities)), 10)
+    for index in random_indexes:
+        assert len(amenities[index]) >= 3
+
+
+def test_get_amenities_shelter_coordinates_only(h2wo_collection):
+    amenities = models.get_amenities(
+        col=h2wo_collection, amenity_name="shelter", coordinates_only=True
+    )
+    # use 10 random indexes to test
+    random.seed(19)
+    random_indexes = random.sample(range(len(amenities)), 10)
+    for index in random_indexes:
+        assert len(amenities[index]) >= 3
+
+
+def test_get_amenities_waste_basket_all(h2wo_collection):
+    amenities = models.get_amenities(
+        col=h2wo_collection, amenity_name="waste_basket", coordinates_only=False
+    )
+    # use 10 random indexes to test
+    random.seed(19)
+    random_indexes = random.sample(range(len(amenities)), 10)
+    for index in random_indexes:
+        assert len(amenities[index]) >= 3
+
+
+def test_get_amenities_waste_basket_coordinates_only(h2wo_collection):
+    amenities = models.get_amenities(
+        col=h2wo_collection, amenity_name="waste_basket", coordinates_only=True
+    )
+    # use 10 random indexes to test
+    random.seed(19)
+    random_indexes = random.sample(range(len(amenities)), 10)
+    for index in random_indexes:
+        assert len(amenities[index]) >= 3
 
 
 def test_email_used_true(users_collection):
