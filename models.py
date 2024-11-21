@@ -42,9 +42,8 @@ def get_amenities(
     # Validate the amenity_name
     allowed_amenities = ["water", "toilets", "bench", "shelter", "waste_basket"]
     if amenity_name not in allowed_amenities:
-        raise ValueError(
-            f"Invalid amenity_name: {amenity_name}. Allowed values are: {allowed_amenities}"
-        )
+        print(f"Invalid amenity_name: {amenity_name}. Allowed values are: {allowed_amenities}")
+        return []
     # multiple amenities fore water
     if amenity_name == "water":
         query = {
