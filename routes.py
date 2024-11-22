@@ -20,7 +20,7 @@ def root():
     return render_template("page.html")
 
 
-@main.route("/api/osm_data")  # http://127.0.0.1:5000/api/osm_data
+@main.route("/api/osm_data")  # api for all project relevant data
 def get_all_relevant_amenities():
     """Upload json of all project relevant amenities"""
     cursor = osm_collection.find()  # read amenities
@@ -33,6 +33,36 @@ def get_all_relevant_amenities():
                 node_dict[key] = current_item[key]
         res.append(node_dict)  # append dict to res
     return {"amenities": res}  # return as dictionary
+
+
+@main.route("/api/water_data")  # api for water related amenities
+def get_water_data():
+    amenities = models.get_amenities(col=osm_collection, amenity_name="water")
+    return jsonify(amenities)
+
+
+@main.route("/api/toilet_data")  # api for toilets
+def get_toilet_data():
+    amenities = models.get_amenities(col=osm_collection, amenity_name="toilets")
+    return jsonify(amenities)
+
+
+@main.route("/api/bench_data")  # api for benches
+def get_bench_data():
+    amenities = models.get_amenities(col=osm_collection, amenity_name="bench")
+    return jsonify(amenities)
+
+
+@main.route("/api/shelter_data")  # api for shelter
+def get_shelter_data():
+    amenities = models.get_amenities(col=osm_collection, amenity_name="shelter")
+    return jsonify(amenities)
+
+
+@main.route("/api/waste_basket_data")  # api for waste baskets
+def get_waste_basket_data():
+    amenities = models.get_amenities(col=osm_collection, amenity_name="waste_basket")
+    return jsonify(amenities)
 
 
 @main.route("/registration", methods=["GET", "POST"])
@@ -100,9 +130,3 @@ def chart():
 def h2wo_map():
     """render map page with amenities"""
     return render_template("map.html")
-
-
-@main.route("/api/data_water")  
-def get_water():    
-    water = models.get_amenities(osm_collection, "water")    
-    return jsonify(water)
