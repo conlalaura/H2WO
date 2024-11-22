@@ -1,30 +1,5 @@
 from pymongo.collection import Collection
 
-
-def get_water_amenities(col: Collection, coordinates_only=False) -> list[dict]:
-    """
-    Get information for all water related amenities: fountain, water_point, drinking_water, water_tap
-
-    :param col: mongodb collection of project relevant amenities
-    :param coordinates_only: choose if only id and coordinates should be returned
-
-    :return:  list of dicts, containing information about water related amenities
-    """
-    # water related amenities
-    query = {
-        "amenity": {"$in": ["fountain", "water_point", "drinking_water", "water_tap"]}
-    }
-    # coordinate check
-    if coordinates_only:
-        keys = {"lat": 1, "lon": 1, "_id": 1}
-    else:
-        keys = None  # keeps all keys
-    # filter database
-    result = col.find(query, keys)
-    # return as list
-    return list(result)
-
-
 def get_amenities(
     col: Collection, amenity_name: str, coordinates_only=False
 ) -> list[dict]:
