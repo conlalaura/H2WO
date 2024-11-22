@@ -1,5 +1,6 @@
 from pymongo.collection import Collection
 
+
 def get_amenities(
     col: Collection, amenity_name: str, coordinates_only=False
 ) -> list[dict]:
@@ -12,14 +13,16 @@ def get_amenities(
         - shelter
         - waste_basket
     :param coordinates_only: choose if only id and coordinates should be returned
-    :return:
+    :return: list of amenities
     """
     # Validate the amenity_name
     allowed_amenities = ["water", "toilets", "bench", "shelter", "waste_basket"]
     if amenity_name not in allowed_amenities:
-        print(f"Invalid amenity_name: {amenity_name}. Allowed values are: {allowed_amenities}")
+        print(
+            f"Invalid amenity_name: {amenity_name}. Allowed values are: {allowed_amenities}"
+        )
         return []
-    # multiple amenities fore water
+    # multiple amenities for water
     if amenity_name == "water":
         query = {
             "amenity": {
@@ -30,9 +33,9 @@ def get_amenities(
         query = {"amenity": amenity_name}
     # coordinate check
     if coordinates_only:
-        keys = {"lat": 1, "lon": 1, "_id": 1}
+        keys = {"lat": 1, "lon": 1, "id": 1, "_id": 0}
     else:
-        keys = None  # keeps all keys
+        keys = {"_id": 0}  # keeps all keys except _id
     # filter database
     result = col.find(query, keys)
     # return as list
