@@ -1,5 +1,5 @@
-// Initialize Map and set View to 0,0
-const map = L.map('map').setView([0, 0], 13);
+// Initialize Map and set View to Technikum
+const map = L.map('map').setView([47.497234386445896, 8.729370936243816], 13);
 
 // Load Map Image
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
