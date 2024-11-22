@@ -100,3 +100,9 @@ def chart():
 def h2wo_map():
     """render map page with amenities"""
     return render_template("map.html")
+
+
+@main.route("/api/data_water")  
+def get_water():    
+    water = models.get_amenities(osm_collection, "water")    
+    return jsonify(water)
