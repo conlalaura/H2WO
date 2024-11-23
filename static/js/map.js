@@ -4,13 +4,56 @@ $(document).ready(function () {
     mapService.loadAmenityData('/api/water_data', 'water');
     mapService.loadAmenityData('/api/toilet_data', 'restroom');
     mapService.loadAmenityData('/api/waste_basket_data', 'bins');
-    // Add more amenity loading functions as needed
-    window.mapServiceInstance = mapService;
-});
-
     // mapService.loadAmenityData('/api/shelter_data', 'shelter');
-    // mapService.loadAmenityData('/api/waste_basket_data', 'bins');
-    // mapService.loadAmenityData('/api/bench_data', 'bench');
+    mapService.loadAmenityData('/api/bench_data', 'bench');
+
+    // Set the initial state of checkboxes (you can modify these as needed)
+    $('#fountains').prop('checked', true);  // Enable fountains by default
+    $('#restrooms').prop('checked', true); // Disable restrooms by default
+    $('#benches').prop('checked', true);    // Enable benches by default
+    $('#bins').prop('checked', true);      // Disable bins by default
+
+    // Apply the initial visibility based on checkbox states
+    $('#fountains').trigger('change');
+    $('#restrooms').trigger('change');
+    $('#benches').trigger('change');
+    $('#bins').trigger('change');
+
+    // Add event listeners for filter checkboxes
+    $('#fountains').on('change', function() {
+        mapService.toggleAmenityVisibility('water', this.checked);
+    });
+    $('#restrooms').on('change', function() {
+        mapService.toggleAmenityVisibility('restroom', this.checked);
+    });
+    $('#benches').on('change', function() {
+        mapService.toggleAmenityVisibility('bench', this.checked);
+    });
+    $('#bins').on('change', function() {
+        mapService.toggleAmenityVisibility('bins', this.checked);
+    });
+
+    // Add event listener for recenter button
+    $('#recenter').on('click', function() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    // Directly set the map's view to the user's current position
+                    mapService.map.setView([position.coords.latitude, position.coords.longitude], 13);
+                },
+                function(error) {
+                    console.error('Geolocation error:', error);
+                }
+            );
+        } else {
+            console.error('Geolocation is not supported by this browser.');
+        }
+    });
+
+    window.mapServiceInstance = mapService;
+});    
+
+
 class MapService {
     constructor() {
         this.map = null;
@@ -53,6 +96,18 @@ class MapService {
 
     handleGeolocationError(err) {
         console.error(err);
+    }
+
+    // New method to center map to user's current location
+    centerToUserLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                this.handleGeolocationSuccess.bind(this),
+                this.handleGeolocationError.bind(this)
+            );
+        } else {
+            console.error("Geolocation is not supported by this browser.");
+        }
     }
 
     loadAmenityData(apiUrl, amenityType) {
@@ -114,12 +169,8 @@ class MapService {
     }
 
     getClusterRadiusBasedOnZoom(zoomLevel) {
-        console.log(zoomLevel, console.log(zoomLevel*10))
-
-        // Adjust the cluster radius based on zoom level
-        // You can tweak the formula as needed for your use case
+        // Adjust the cluster radius based on zoom level (Formula tbd)
         return 100
-        //return Math.max(50, Math.min(zoomLevel * 10, 100)); // Adjust cluster radius based on zoom
     }
     
     
@@ -140,6 +191,17 @@ class MapService {
             iconAnchor: [12, 41],
             popupAnchor: [1, -34],
         });
+    }
+    // New method to toggle the visibility of amenities based on checkbox state
+    toggleAmenityVisibility(amenityType, isVisible) {
+        const clusterGroup = this.markerClusterGroup[amenityType];
+        if (clusterGroup) {
+            if (isVisible) {
+                this.map.addLayer(clusterGroup);
+            } else {
+                this.map.removeLayer(clusterGroup);
+            }
+        }
     }
 }
 
