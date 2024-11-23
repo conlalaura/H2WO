@@ -43,7 +43,6 @@ def test_get_amenities_wrong_amenity(h2wo_collection, capsys):
     assert len(amenities) == 0
 
 
-
 def test_get_amenities_water_all(h2wo_collection):
     amenities = models.get_amenities(
         col=h2wo_collection, amenity_name="water", coordinates_only=False
