@@ -1,209 +1,167 @@
-// Document ready function: This runs as soon as the HTML document is fully loaded and ready.
 $(document).ready(function () {
-    // Create an instance of MapService, which handles all map-related functionalities.
     const mapService = new MapService();
-    // Initialize the map on the page.
     mapService.initMap();
-    // Load data for stations and reservations.
-    mapService.loadWaterData();
-    mapService.loadRestroomData();
-    mapService.loadBenchData();
-    mapService.loadBinData();
-    mapService.loadShelterData();
-
-
-    // Make the mapService instance globally accessible, particularly for the reserveSpot function.
+    mapService.loadAmenityData('/api/water_data', 'water');
+    mapService.loadAmenityData('/api/toilet_data', 'restroom');
+    mapService.loadAmenityData('/api/waste_basket_data', 'bins');
+    // Add more amenity loading functions as needed
     window.mapServiceInstance = mapService;
 });
 
-
+    // mapService.loadAmenityData('/api/shelter_data', 'shelter');
+    // mapService.loadAmenityData('/api/waste_basket_data', 'bins');
+    // mapService.loadAmenityData('/api/bench_data', 'bench');
 class MapService {
     constructor() {
-        this.map = null;  // Instance of the Leaflet map.
-        this.markers = {}; // Object to store marker instances, keyed by station IDs.
-        this.routingControl = null; // Newest Routing-Control
-        this.amenitiesData = {};
+        this.map = null;
+        this.markers = {}; // Object to store marker instances, keyed by amenity IDs.
+        this.amenitiesData = {}; // Store loaded amenities data by type.
+        this.markerClusterGroup = {}; // Separate cluster groups for each amenity type.
     }
-    // Initialize the map with default settings.
+
     initMap() {
         this.createMap();
         this.setupGeolocation();
+        // this.map.on('zoom', () => console.log('Current zoom level:', this.map.getZoom()));
+        this.map.on('zoom', () => this.updateClusterRadius());  // Added this line
     }
 
-    // Create the map and set initial view.
     createMap() {
         this.map = L.map('map').setView([0, 0], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {}).addTo(this.map);
     }
 
-    // set Location
     setupGeolocation() {
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(this.handleGeolocationSuccess.bind(this), this.handleGeolocationError.bind(this));
+            navigator.geolocation.getCurrentPosition(
+                this.handleGeolocationSuccess.bind(this),
+                this.handleGeolocationError.bind(this)
+            );
         } else {
             console.error("Geolocation is not supported by this browser.");
         }
     }
 
-    // Successful geolocation.
     handleGeolocationSuccess(position) {
         this.map.setView([position.coords.latitude, position.coords.longitude], 13);
         this.addUserLocationMarker(position.coords.latitude, position.coords.longitude);
     }
 
-    // Add a marker for the user's location.
     addUserLocationMarker(lat, lon) {
-        L.marker([lat, lon], { icon: redIcon }).addTo(this.map)
-            .bindPopup("You're here").openPopup();
+        L.marker([lat, lon], { icon: redIcon }).addTo(this.map).bindPopup("You're here").openPopup();
     }
 
-    // Handle geolocation errors.
     handleGeolocationError(err) {
         console.error(err);
     }
 
-    //  Data Loading  //////////////////////////////////////////////////////////////////////////////
-    //  Load data for water amenities
-    loadWaterData() {
-        this.loadAmenityData('/api/water_data', 'water');
-    }
-
-    // Load data for restroom amenities
-    loadRestroomData() {
-        this.loadAmenityData('/api/toilet_data', 'restroom');
-    }
-
-    // Load data for benches
-    loadBenchData() {
-        this.loadAmenityData('/api/bench_data', 'bench');
-    }
-
-    // Load data for shelters
-    loadShelterData() {
-        this.loadAmenityData('/api/shelter_data', 'shelter');
-    }
-
-    // Load data for bins
-    loadBinData() {
-        this.loadAmenityData('/api/waste_basket_data', 'bin');
-    }
-
-    // Generic method to load amenity data
     loadAmenityData(apiUrl, amenityType) {
         fetch(apiUrl)
             .then(response => response.json())
             .then(data => {
-                console.log(`${amenityType} Data:`, data);
-                this.amenitiesData[amenityType] = data; // Store data for this amenity type
-                this.updateVisibleAmenities(); // Update markers on the map
-                this.setupMapEventListeners(); // Add listeners for map interactions
+                this.amenitiesData[amenityType] = data;
+                this.addAmenitiesToMap(amenityType, data);
             })
             .catch(error => console.error(`Error loading ${amenityType} data:`, error));
     }
 
+    addAmenitiesToMap(amenityType, amenities) {
+        const clusterGroup = this.getAmenityClusterGroup(amenityType);
 
-    // /////////////////////////////////////////////////////////////////
-    // Display all the stations on the map with their respective reservation status.
-    displayAmenities(amenities) {
-        // Iterate through each station and add a marker to the map.
-        amenities.forEach(amenity => this.addAmenityMarker(amenity));
+        amenities.forEach(amenity => {
+            const marker = this.createAmenityMarker(amenity, amenityType);
+            clusterGroup.addLayer(marker);
+            this.markers[amenity.id] = marker;
+        });
+
+        this.map.addLayer(clusterGroup);
     }
 
-    // Update visible amenities for all types based on the current map bounds
-    updateVisibleAmenities() {
-        // Get current map bounds
-        const bounds = this.map.getBounds();
-
-        // Clear existing markers
-        Object.values(this.markers).forEach(marker => this.map.removeLayer(marker));
-        this.markers = {}; // Reset markers object
-
-        // Iterate through all amenity types and display visible ones
-        Object.values(this.amenitiesData).forEach(amenities => {
-            if (amenities) {
-                const visibleAmenities = amenities.filter(amenity => {
-                    const lat = parseFloat(amenity.lat);
-                    const lon = parseFloat(amenity.lon);
-                    return bounds.contains([lat, lon]);
-                });
-
-                // Add markers for visible amenities
-                visibleAmenities.forEach(amenity => this.addAmenityMarker(amenity));
-            }
+    getAmenityClusterGroup(amenityType) {
+        if (!this.markerClusterGroup[amenityType]) {
+            const clusterOptions = {
+                maxClusterRadius: this.getClusterRadiusBasedOnZoom(), // Changed this line
+               // maxClusterRadius: 50,
+                iconCreateFunction: cluster => {
+                    const childCount = cluster.getChildCount();
+    
+                    return L.divIcon({
+                        html: `
+                            <div class="custom-cluster cluster-${amenityType}">
+                                <div class="icon">
+                                    <img src="static/img/cluster_${amenityType}.svg" alt="${amenityType}">
+                                </div>
+                                <div class="count">${childCount}</div>
+                            </div>
+                        `,
+                        className: "", // No additional Leaflet classes
+                        iconSize: [30, 30] // Adjust as needed
+                    });
+                }
+            };
+    
+            this.markerClusterGroup[amenityType] = L.markerClusterGroup(clusterOptions);
+        }
+        return this.markerClusterGroup[amenityType];
+    }
+    
+    updateClusterRadius() {
+        const zoomLevel = this.map.getZoom();
+        Object.keys(this.markerClusterGroup).forEach(amenityType => {
+            const clusterGroup = this.markerClusterGroup[amenityType];
+            clusterGroup.options.maxClusterRadius = this.getClusterRadiusBasedOnZoom(zoomLevel);
         });
     }
 
-    addAmenityMarker(amenity) {
-        console.log('Amenity Location:', amenity.lat, amenity.lon);
+    getClusterRadiusBasedOnZoom(zoomLevel) {
+        console.log(zoomLevel, console.log(zoomLevel*10))
 
-        // Determine the icon based on the amenity type
-        const amenityType = amenity.amenity || 'default'; // Default if type is missing
-        const customIcon = this.createCustomIcon(amenityType);
-
-        // Create the marker
-        const marker = L.marker([parseFloat(amenity.lat), parseFloat(amenity.lon)], { icon: customIcon }).addTo(this.map);
-
-        // Bind popup content
-        const popupContent = this.buildPopupContent(amenity);
-        marker.bindPopup(popupContent);
-
-        // Cache the marker
-        this.markers[amenity.id] = marker;
+        // Adjust the cluster radius based on zoom level
+        // You can tweak the formula as needed for your use case
+        return 100
+        //return Math.max(50, Math.min(zoomLevel * 10, 100)); // Adjust cluster radius based on zoom
     }
+    
+    
 
+    createAmenityMarker(amenity, amenityType) {
+        const icon = this.createCustomIcon(amenityType);
+        const marker = L.marker([parseFloat(amenity.lat), parseFloat(amenity.lon)], { icon });
+        const popupContent = `<h3>${amenity.amenity || 'Amenity'}</h3>`;
+        marker.bindPopup(popupContent);
+        return marker;
+    }
 
     createCustomIcon(amenityType) {
-        const iconUrl = iconMapping[amenityType] || 'static/img/locate.svg'; // Default icon if type not found
+        const iconUrl = iconMapping[amenityType] || 'static/img/locate.svg';
         return L.icon({
-            iconUrl: iconUrl,
-            iconSize: [25, 41],  // Adjust size as needed
-            iconAnchor: [12, 41], // Anchor point
-            popupAnchor: [1, -34], // Popup position relative to the icon
-            shadowSize: [41, 41]  // Shadow size
+            iconUrl,
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
         });
-    }
-
-    buildPopupContent(amenity) {
-        let popupContent = `<h3>${amenity.amenity}</h3><ul>`;
-        popupContent += '</ul>';
-        return popupContent;
-    }
-
-    debounce(func, delay) {
-        let timer;
-        return function (...args) {
-            clearTimeout(timer);
-            timer = setTimeout(() => func.apply(this, args), delay);
-        };
-    }
-
-    setupMapEventListeners() {
-        const debouncedUpdate = this.debounce(this.updateVisibleAmenities.bind(this), 200);
-        this.map.on('moveend', debouncedUpdate);
-        this.map.on('zoomend', debouncedUpdate);
     }
 }
 
 const redIcon = L.icon({
-    iconUrl: 'static/img/locate.svg', // Provide the path to your icon image
-    iconSize: [25, 41],  // Size of the icon
-    iconAnchor: [12, 41], // Point of the icon which will correspond to marker's location
-    popupAnchor: [1, -34], // Point from which the popup should open relative to the iconAnchor
-    shadowSize: [41, 41]  // Size of the shadow
+    iconUrl: 'static/img/locate.svg',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
 });
 
 const iconMapping = {
-    // Water
-    fountain: 'static/img/pin_fountain.svg',
-    drinking_water: 'static/img/pin_fountain.svg',
-    water_tap: 'static/img/pin_fountain.svg',
-    water_point: 'static/img/pin_fountain.svg',
-    // Restroom
-    toilets: 'static/img/pin_restroom.svg',
-    // Bench
+    water: 'static/img/pin_fountain.svg',
+    restroom: 'static/img/pin_restroom.svg',
     bench: 'static/img/pin_bench.svg',
-    // Shelter
     shelter: 'static/img/pin_shelter.svg',
-    // Waste baskets
-    waste_basket: 'static/img/pin_bin.svg'
+    bins: 'static/img/pin_bin.svg',
+};
+
+const clusterColors = {
+    water: '#6995BB',
+    restroom: '#419074',
+    bench: '#7D5F5D',
+    shelter: '#C45C24',
+    bins: '#3A3A3A',
 };
