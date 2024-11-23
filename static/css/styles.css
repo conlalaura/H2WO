@@ -569,6 +569,8 @@ margin-right: auto;
 
 /* Sidebar Title (Filter)       */
 .c_sidebar h2 {
+  font-family: "Satoshi";
+  font-weight: 800;
   font-size: 24px;
   margin-bottom: 20px;
 }
@@ -597,7 +599,8 @@ margin-right: auto;
 
 /* Styling for the amenity title */
 .c_amenity_text {
-  font-weight: normal;
+  font-family: "Satoshi";
+  font-weight: 500;
 }
 
 /* Container for the tags, allowing them to wrap if necessary */
@@ -615,6 +618,8 @@ margin-right: auto;
   cursor: pointer;
   background: #D9D9D9;
   color: #BFBFBF;               /* Inactive color for tags */
+  font-family: "DMSans";
+  font-weight: 300;
 }
 
 /* Active tag styling */
@@ -623,27 +628,29 @@ margin-right: auto;
   color: white;
 }
 
-.c_radius {
-  border-style: solid;
-  border-color: var(--border-color);
-  border-width: 1px;
-  display: flex;
-  justify-content: space-between;  /* Space out the label and the dropdown icon */
-  align-items: center;  /* Vertically align the items */
-  margin-bottom: 20px;
+.recenter-btn {
+  font-family: "DMSans";
+  font-weight: 700;
+  font-size: 20px;
+  align-items: center;
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  padding: 10px;
+  background-color: #419074;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.recenter-btn:hover {
+  background-color: #357c5b;
 }
 
 
-/* Radius slider */
-#radius-slider {
-  width: 100%;
-  margin: 10px 0;
-}
 
-#radius-value {
-  font-size: 14px;
-  text-align: left;
-}
 
 /* Map styling */
 #map {
