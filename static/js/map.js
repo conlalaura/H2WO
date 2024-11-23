@@ -39,7 +39,7 @@ $(document).ready(function () {
             navigator.geolocation.getCurrentPosition(
                 function(position) {
                     // Directly set the map's view to the user's current position
-                    mapService.map.setView([position.coords.latitude, position.coords.longitude], 13);
+                    mapService.map.setView([position.coords.latitude, position.coords.longitude], 17);
                 },
                 function(error) {
                     console.error('Geolocation error:', error);
@@ -60,6 +60,8 @@ class MapService {
         this.markers = {}; // Object to store marker instances, keyed by amenity IDs.
         this.amenitiesData = {}; // Store loaded amenities data by type.
         this.markerClusterGroup = {}; // Separate cluster groups for each amenity type.
+        this.loadingCount = 0; // Track the number of pending data loads
+        this.markerCounts = {}; // Track the number of markers added per amenity type
     }
 
     initMap() {
@@ -67,6 +69,8 @@ class MapService {
         this.setupGeolocation();
         // this.map.on('zoom', () => console.log('Current zoom level:', this.map.getZoom()));
         this.map.on('zoom', () => this.updateClusterRadius());  // Added this line
+        $('#map').hide();
+        $('#loader').show();
     }
 
     createMap() {
@@ -111,6 +115,9 @@ class MapService {
     }
 
     loadAmenityData(apiUrl, amenityType) {
+        this.loadingCount++;
+        this.markerCounts[amenityType] = 0; // Initialize the count of markers for this amenity type
+        
         fetch(apiUrl)
             .then(response => response.json())
             .then(data => {
@@ -120,6 +127,8 @@ class MapService {
             .catch(error => console.error(`Error loading ${amenityType} data:`, error));
     }
 
+
+
     addAmenitiesToMap(amenityType, amenities) {
         const clusterGroup = this.getAmenityClusterGroup(amenityType);
 
@@ -127,9 +136,24 @@ class MapService {
             const marker = this.createAmenityMarker(amenity, amenityType);
             clusterGroup.addLayer(marker);
             this.markers[amenity.id] = marker;
+            this.markerCounts[amenityType]++; // Increment the marker count for this amenity type
         });
 
         this.map.addLayer(clusterGroup);
+
+        // Check if all points for this amenity type have been added
+        this.checkIfAllMarkersAdded();
+    }
+
+    checkIfAllMarkersAdded() {
+        // Check if all amenity types have their markers fully added
+        const allMarkersAdded = Object.values(this.markerCounts).every(count => count > 0);
+        
+        if (allMarkersAdded) {
+            // All data processed, hide the loader and show the map
+            $('#loader').hide(); // Hide the loading animation
+            $('#map').show();  // Show the map
+        }
     }
 
     getAmenityClusterGroup(amenityType) {
@@ -209,7 +233,7 @@ const redIcon = L.icon({
     iconUrl: 'static/img/locate.svg',
     iconSize: [25, 41],
     iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
+    popupAnchor: [-47, -35],
 });
 
 const iconMapping = {
