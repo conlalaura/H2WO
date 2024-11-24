@@ -4,19 +4,21 @@ $(document).ready(function () {
     mapService.loadAmenityData('/api/water_data', 'water');
     mapService.loadAmenityData('/api/toilet_data', 'restroom');
     mapService.loadAmenityData('/api/waste_basket_data', 'bins');
-    // mapService.loadAmenityData('/api/shelter_data', 'shelter');
+    // mapService.loadAmenityData('/api/shelter_data', 'shelter');  #TODO: @Alex tell my whyyyy nicht aktiv
     mapService.loadAmenityData('/api/bench_data', 'bench');
 
-    // Set the initial state of checkboxes (you can modify these as needed)
-    $('#fountains').prop('checked', true);  // Enable fountains by default
-    $('#restrooms').prop('checked', true); // Disable restrooms by default
-    $('#benches').prop('checked', true);    // Enable benches by default
-    $('#bins').prop('checked', true);      // Disable bins by default
+    // Set the initial state of checkboxes (set some to false when needed for performance)
+    $('#fountains').prop('checked', true);
+    $('#restrooms').prop('checked', true);
+    $('#benches').prop('checked', true);
+//    $('#shelter').prop('checked', true);
+    $('#bins').prop('checked', true);
 
     // Apply the initial visibility based on checkbox states
     $('#fountains').trigger('change');
     $('#restrooms').trigger('change');
     $('#benches').trigger('change');
+//    $('#shelter').trigger('change');
     $('#bins').trigger('change');
 
     // Add event listeners for filter checkboxes
@@ -33,14 +35,14 @@ $(document).ready(function () {
         mapService.toggleAmenityVisibility('bins', this.checked);
     });
 
-    // Add event listener for recenter button
+    // Add event listener for re-center button
     $('#recenter').on('click', function() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 function(position) {
                     // Directly set the map's view to the user's current position
                     mapService.map.setView([position.coords.latitude, position.coords.longitude], 17);
-                },
+                }, // error handling
                 function(error) {
                     console.error('Geolocation error:', error);
                 }
@@ -74,7 +76,8 @@ class MapService {
     }
 
     createMap() {
-        this.map = L.map('map').setView([0, 0], 13);
+    // set initial location Winterthur (if user doesn't share location)
+        this.map = L.map('map').setView([47.497234386445896, 8.729370936243816], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {}).addTo(this.map);
     }
 
@@ -102,7 +105,7 @@ class MapService {
         console.error(err);
     }
 
-    // New method to center map to user's current location
+//    method to center map to user's current location
     centerToUserLocation() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -131,7 +134,6 @@ class MapService {
 
     addAmenitiesToMap(amenityType, amenities) {
         const clusterGroup = this.getAmenityClusterGroup(amenityType);
-
         amenities.forEach(amenity => {
             const marker = this.createAmenityMarker(amenity, amenityType);
             clusterGroup.addLayer(marker);
@@ -200,9 +202,18 @@ class MapService {
     
 
     createAmenityMarker(amenity, amenityType) {
+        const formatText = (text) => text.replace(/_/g, ' ');
+        const formattedAmenityType = formatText(amenityType);
         const icon = this.createCustomIcon(amenityType);
         const marker = L.marker([parseFloat(amenity.lat), parseFloat(amenity.lon)], { icon });
-        const popupContent = `<h3>${amenity.amenity || 'Amenity'}</h3>`;
+        let popupContent = `<h3>${formattedAmenityType}</h3>`;
+        Object.entries(amenity).forEach(([key, value]) => {
+            if (!['lat', 'lon', 'amenity', 'id'].includes(key)) { // Skip lat, lon, amenity, and id keys
+                const formattedKey = formatText(key);
+                const formattedValue = formatText(value.toString());
+                popupContent += `<p>${formattedKey}: ${formattedValue}</p>`;
+            }
+    });
         marker.bindPopup(popupContent);
         return marker;
     }
@@ -216,7 +227,7 @@ class MapService {
             popupAnchor: [1, -34],
         });
     }
-    // New method to toggle the visibility of amenities based on checkbox state
+    // Method to toggle the visibility of amenities based on checkbox state
     toggleAmenityVisibility(amenityType, isVisible) {
         const clusterGroup = this.markerClusterGroup[amenityType];
         if (clusterGroup) {
