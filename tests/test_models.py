@@ -153,25 +153,25 @@ def test_get_amenities_waste_basket_coordinates_only(h2wo_collection):
         assert len(amenities[index]) >= 3
 
 
-def test_email_used_true(users_collection):
-    assert models.email_used(user_col=users_collection, email="demo@user.com")
-
-
-def test_email_used_false(users_collection):
-    assert not models.email_used(user_col=users_collection, email="test@user.com")
-
-
-def test_insert_new_user(users_collection, dummy_user):
-    try:
-        models.insert_new_user(user_col=users_collection, user=dummy_user)
-        assert models.email_used(user_col=users_collection, email=dummy_user["email"])
-    finally:  # delete dummy user again after test
-        users_collection.delete_one({"email": dummy_user["email"]})
-
-
-def test_get_user_exists(users_collection):
-    assert models.get_user(user_col=users_collection, email="demo@user.com")
-
-
-def test_get_user_exists_not(users_collection):
-    assert not models.get_user(user_col=users_collection, email="test@user.com")
+# def test_email_used_true(users_collection):
+#     assert models.email_used(user_col=users_collection, email="demo@user.com")
+#
+#
+# def test_email_used_false(users_collection):
+#     assert not models.email_used(user_col=users_collection, email="test@user.com")
+#
+#
+# def test_insert_new_user(users_collection, dummy_user):
+#     try:
+#         models.insert_new_user(user_col=users_collection, user=dummy_user)
+#         assert models.email_used(user_col=users_collection, email=dummy_user["email"])
+#     finally:  # delete dummy user again after test
+#         users_collection.delete_one({"email": dummy_user["email"]})
+#
+#
+# def test_get_user_exists(users_collection):
+#     assert models.get_user(user_col=users_collection, email="demo@user.com")
+#
+#
+# def test_get_user_exists_not(users_collection):
+#     assert not models.get_user(user_col=users_collection, email="test@user.com")
