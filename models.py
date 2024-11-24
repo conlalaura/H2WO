@@ -2,10 +2,10 @@ from pymongo.collection import Collection
 
 
 def get_amenities(
-    col: Collection, amenity_name: str, coordinates_only=False
+        amenity_col: Collection, amenity_name: str, coordinates_only=False
 ) -> list[dict]:
     """
-    :param col: mongodb collection of project relevant amenities
+    :param amenity_col: mongodb collection of project relevant amenities
     :param amenity_name: can be
         - water (fountain, water_point, drinking_water, water_tap)
         - toilets
@@ -37,41 +37,30 @@ def get_amenities(
     else:
         keys = {"_id": 0}  # keeps all keys except _id
     # filter database
-    result = col.find(query, keys)
+    result = amenity_col.find(query, keys)
     # return as list
     return list(result)
 
 
-def email_used(user_col: Collection, email: str) -> bool:
+def insert_review(amenity_col: Collection, amenity_id: str, doc: dict) -> None:
     """
-    Checks if the provided email has already been registered as user
-
-    :param user_col: mongodb collection of registered users
-    :param email: email to be used for registration
-
-    :return: bool
-    """
-    return user_col.find_one({"email": email})
-
-
-def insert_new_user(user_col: Collection, user: dict) -> None:
-    """
-    Adds a new user to the users collection
-
-    :param user_col: mongodb collection of registered users
-    :param user: dictionary with user information (username, email, hashed password, empty favourites list)
+    Inserts a new review (doc) into the review collections
+    :param amenity_col: mongodb collection of project relevant amenities
+    :param amenity_id: update reviews for this amenity id
+    :param doc: review as document
     :return: None
     """
-    if not email_used(user_col, user["email"]):
-        user_col.insert_one(user)
+    filter_query = {"id": amenity_id}
+    update_query = {"$push": {"reviews": doc}}
+    amenity_col.update_one(filter_query, update_query)
 
 
-def get_user(user_col: Collection, email: str) -> dict:
+def get_reviews(amenity_col: Collection, amenity_id: str) -> list[dict]:
     """
-    Gets the user information from the provided database and email
-
-    :param user_col: mongodb collection of registered users
-    :param email: email of the user
-    :return: dictionary with user information (username, email, hashed password, empty favourites list)
+    Gets all reviews associated with the passed amenity_id
+    :param amenity_col: mongodb collection of project relevant amenities
+    :param amenity_id: get reviews for this amenity id
+    :return: list of reviews for this amenity
     """
-    return user_col.find_one({"email": email}) if email_used(user_col, email) else None
+    result = amenity_col.find_one({"id": amenity_id})
+    return result.get('reviews', [])
