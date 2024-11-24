@@ -47,64 +47,10 @@ def get_amenities():  # example: 127.0.0.1:5000/api?type=water
             res.append(node_dict)  # append dict to res
         return {"amenities": res}  # return as dictionary
     else:
-        amenities = models.get_amenities(col=h2wo_collection, amenity_name=amenity_type)
+        amenities = models.get_amenities(
+            amenity_col=h2wo_collection, amenity_name=amenity_type
+        )
         return jsonify(amenities)
-
-
-@main.route("/registration", methods=["GET", "POST"])
-def registration():
-    """User registration"""
-    if request.method == "POST":
-        # Get data from website input
-        username = request.form.get("username")
-        email = request.form.get("email")
-        password = request.form.get("password")
-
-        # Required registration information
-        if not email or not password:
-            return jsonify({"error": "Email and password are required"}), 400
-
-        # Check if user already exists
-        if models.email_used(h2wo_users, email):
-            flash("Email already registered! Please login!")
-            return redirect(url_for("main.login"))
-        else:
-            # Create document for new user
-            user = {
-                "username": username,
-                "password_hash": generate_password_hash(password),
-                "email": email,
-                "favourites": [],
-            }
-            models.insert_new_user(h2wo_users, user)
-            flash(f"Welcome to H2WO {username}! You can now log in!")
-            return redirect(url_for("main.login"))
-
-    return render_template(
-        "registration.html"
-    )  # TODO: this is just a basic template. it does not look nice :(
-
-
-@main.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        # Get data from website input
-        email = request.form.get("email")
-        password = request.form.get("password")
-
-        # Required login information
-        if not email or not password:
-            return jsonify({"error": "Email and password are required"}), 400
-
-        # Verify user credentials
-        user = models.get_user(h2wo_users, email)
-        if user and user["password"] == password:
-            return jsonify({"message": "Login successful"}), 200
-        else:
-            return jsonify({"error": "Invalid email or password"}), 401
-    return render_template(
-        "login.html"
-    )  # TODO: this is just a basic template. it does not look nice :(
 
 
 @main.route("/chart")  # http://127.0.0.1:5000/statistics/
