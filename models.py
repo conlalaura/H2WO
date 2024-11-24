@@ -2,7 +2,7 @@ from pymongo.collection import Collection
 
 
 def get_amenities(
-        amenity_col: Collection, amenity_name: str, coordinates_only=False
+    amenity_col: Collection, amenity_name: str, coordinates_only=False
 ) -> list[dict]:
     """
     :param amenity_col: mongodb collection of project relevant amenities
@@ -63,4 +63,4 @@ def get_reviews(amenity_col: Collection, amenity_id: str) -> list[dict]:
     :return: list of reviews for this amenity
     """
     result = amenity_col.find_one({"id": amenity_id})
-    return result.get('reviews', [])
+    return result.get("reviews", [])

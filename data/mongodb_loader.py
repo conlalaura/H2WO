@@ -13,14 +13,15 @@ osm_collection_name = "osm_all_amenities"
 
 
 def check_or_create_collection(
-        collection_name: str, database: pymongo.database.Database
+    collection_name: str, database: pymongo.database.Database
 ) -> Collection:
     # check if the collection already exists
     if collection_name in database.list_collection_names():
         print(f"Collection '{collection_name}' has already been created.")
     else:
         print(
-            f"Collection '{collection_name}' hasn't been created yet, will do that now for you" + " \U0001F917"
+            f"Collection '{collection_name}' hasn't been created yet, will do that now for you"
+            + " \U0001F917"
         )
     return db[collection_name]  # load collection, will be created if not present
 
@@ -244,20 +245,17 @@ if __name__ == "__main__":
 
     for amenity in random_amenities:
         filter_query = {"id": amenity["id"]}
-        update_query = {"$set": {"reviews": [{
-            "username": amenity["id"],
-            "rating": random.randint(1, 5),
-            "review": "This is a dummy-review for the project demonstration.",
-        }]}}
+        update_query = {
+            "$set": {
+                "reviews": [
+                    {
+                        "username": amenity["id"],
+                        "rating": random.randint(1, 5),
+                        "review": "This is a dummy-review for the project demonstration.",
+                    }
+                ]
+            }
+        }
 
         h2wo_collection.update_one(filter_query, update_query)
     print("Randomly added 500 dummy-reviews to amenities in the Winterthur-Area!")
-
-    # """
-    # Create or load new mongoDB collection with review
-    # """
-    # review_collection_name = "reviews"
-    # review_collection = check_or_create_collection(
-    #     collection_name=review_collection_name, database=db
-    # )
-    # insert_if_empty(col=review_collection, documents=review_amenities)

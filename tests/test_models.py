@@ -150,13 +150,16 @@ def test_get_amenities_waste_basket_coordinates_only(h2wo_collection):
     for index in random_indexes:
         assert len(amenities[index]) >= 3
 
+
 def test_insert_and_get_review(dummy_collection, dummy_review):
     amenity_id = "TestId"
     n = 3
     try:
         dummy_collection.insert_one({"id": amenity_id})
         for i in range(n):
-            models.insert_review(amenity_col=dummy_collection, amenity_id=amenity_id, doc=dummy_review)
+            models.insert_review(
+                amenity_col=dummy_collection, amenity_id=amenity_id, doc=dummy_review
+            )
         result = models.get_reviews(amenity_col=dummy_collection, amenity_id=amenity_id)
         assert len(result) == n
     finally:
