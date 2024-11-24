@@ -1,7 +1,6 @@
 from pymongo.collection import Collection
-from werkzeug.security import generate_password_hash
 import pymongo
-import models
+import random
 import json
 import sys
 import os
@@ -14,14 +13,14 @@ osm_collection_name = "osm_all_amenities"
 
 
 def check_or_create_collection(
-    collection_name: str, database: pymongo.database.Database
+        collection_name: str, database: pymongo.database.Database
 ) -> Collection:
     # check if the collection already exists
     if collection_name in database.list_collection_names():
         print(f"Collection '{collection_name}' has already been created.")
     else:
         print(
-            f"Collection '{collection_name}' hasn't been created yet, will do that now for you :)."
+            f"Collection '{collection_name}' hasn't been created yet, will do that now for you" + " \U0001F917"
         )
     return db[collection_name]  # load collection, will be created if not present
 
@@ -199,6 +198,13 @@ if __name__ == "__main__":
                 results  # append individual dicts/jsons to filtered_amenities
             )
 
+    """ 
+    Convert lat/lon values to float
+    """
+    for i in range(len(filtered_amenities)):
+        filtered_amenities[i]["lat"] = float(filtered_amenities[i]["lat"])
+        filtered_amenities[i]["lon"] = float(filtered_amenities[i]["lon"])
+
     """
     Create or load new mongoDB collection with project-relevant data
     """
@@ -210,58 +216,48 @@ if __name__ == "__main__":
     insert_if_empty(col=h2wo_collection, documents=filtered_amenities)
 
     """
-    Create or load new mongoDB collection with review
+    Select 500 amenities in Winterthur for random reviews (used for demo)
     """
-    review_collection_name = "reviews"
+    print("Will add now 500 dummy-reviews to random amenities in the Winterthur-Area.")
+    print("Updating documents takes more time so please bare with me" + " \U0001F917")
+    lower_left = (47.449, 8.655)  # approx. lat/lon Nürensdorf
+    upper_right = (47.549, 8.811)  # approx. lat/lon Wiesendangen
 
-    """
-    Create or load new mongoDB collection with users
-    """
-    # user_collection_name = "users"
-    # users_collection = check_or_create_collection(
-    #     collection_name=user_collection_name, database=db
+    # Filter for documents with valid lat and lon values
+    query = {
+        "lat": {
+            "$gte": lower_left[0],
+            "$lte": upper_right[0],
+        },  # valid lat for Winterthur area
+        "lon": {
+            "$gte": lower_left[1],
+            "$lte": upper_right[1],
+        },  # valid lon for Winterthur area
+    }
+
+    pipeline = [
+        {"$match": query},
+        {"$sample": {"size": 500}},  # Randomly select 500 documents
+    ]
+
+    random_amenities = list(h2wo_collection.aggregate(pipeline))
+
+    for amenity in random_amenities:
+        filter_query = {"id": amenity["id"]}
+        update_query = {"$set": {"reviews": [{
+            "username": amenity["id"],
+            "rating": random.randint(1, 5),
+            "review": "This is a dummy-review for the project demonstration.",
+        }]}}
+
+        h2wo_collection.update_one(filter_query, update_query)
+    print("Randomly added 500 dummy-reviews to amenities in the Winterthur-Area!")
+
+    # """
+    # Create or load new mongoDB collection with review
+    # """
+    # review_collection_name = "reviews"
+    # review_collection = check_or_create_collection(
+    #     collection_name=review_collection_name, database=db
     # )
-    """
-    Create a demo user
-    """
-    # # document for demo user
-    # demo_user = {
-    #     "username": "Demo-User",
-    #     "password_hash": generate_password_hash("password"),
-    #     "email": "demo@user.com",
-    #     "favourites": [],
-    # }
-    # #
-    # # create demo user if not present yet
-    # if models.email_used(users_collection, demo_user["email"]):
-    #     favourites = users_collection.find_one(
-    #         {"email": "demo@user.com"}, {"favourites": 1, "_id": 0}
-    #     )["favourites"]
-    #     print(
-    #         f"Demo User is already in the collection and has {len(favourites)} favourite places saved. :)"
-    #     )
-    # else:
-    #     sample_size = 50
-    #     models.insert_new_user(users_collection, demo_user)
-    #     # select a few water-related documents to add to favourites. Use aggregation to match and sample
-    #     query = {
-    #         "amenity": {"$in": ["fountain", "water_point", "drinking_water", "water_tap"]}
-    #     }
-    #
-    #     pipeline = [
-    #         {"$match": query},
-    #         {"$sample": {"size": sample_size}},  # randomly sample 50 documents
-    #         {"$project": {"_id": 1}},  # only use "_id" field
-    #     ]
-    #
-    #     random_documents = list(h2wo_collection.aggregate(pipeline))
-    #     random_ids = [doc["_id"] for doc in random_documents]
-    #
-    #     # add id's of random documents top the demo-users favourite
-    #     users_collection.update_one(
-    #         {"email": "demo@user.com"},  # find user by email
-    #         {"$addToSet": {"favourites": {"$each": random_ids}}},  # add multiple ids,
-    #     )
-    #     print(
-    #         f"Demo-User has been created and {sample_size} favourite places have been added!"
-    #     )
+    # insert_if_empty(col=review_collection, documents=review_amenities)
