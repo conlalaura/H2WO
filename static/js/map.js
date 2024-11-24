@@ -1,11 +1,11 @@
 $(document).ready(function () {
     const mapService = new MapService();
     mapService.initMap();
-    mapService.loadAmenityData('/api/water_data', 'water');
-    mapService.loadAmenityData('/api/toilet_data', 'restroom');
-    mapService.loadAmenityData('/api/waste_basket_data', 'bins');
-    // mapService.loadAmenityData('/api/shelter_data', 'shelter');  #TODO: @Alex tell my whyyyy nicht aktiv
-    mapService.loadAmenityData('/api/bench_data', 'bench');
+    mapService.loadAmenityData('/api?type=water', 'water');
+    mapService.loadAmenityData('/api?type=toilets', 'restroom');
+    mapService.loadAmenityData('/api?type=waste_basket', 'bins');
+    // mapService.loadAmenityData('/api?type=shelter', 'shelter');  #TODO: @Alex tell my whyyyy nicht aktiv
+    mapService.loadAmenityData('/api?type=bench', 'bench');
 
     // Set the initial state of checkboxes (set some to false when needed for performance)
     $('#fountains').prop('checked', true);
