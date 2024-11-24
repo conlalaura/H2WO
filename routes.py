@@ -35,7 +35,9 @@ def get_all_relevant_amenities():
     return {"amenities": res}  # return as dictionary
 
 
-@main.route("/api/water_data")  # api for water related amenities
+@main.route(
+    "/api/water_data"
+)  # api for water related amenities  #TODO change to one API with variable amenity: water, toilet etc.
 def get_water_data():
     amenities = models.get_amenities(col=osm_collection, amenity_name="water")
     return jsonify(amenities)
