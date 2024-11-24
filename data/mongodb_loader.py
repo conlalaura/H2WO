@@ -94,9 +94,13 @@ if __name__ == "__main__":
             keys = {"name": 1, "amenity": 1, "lat": 1, "lon": 1, "id": 1}
             query = {"amenity": amenity}
             results = osm_collection.find(query, keys)
-            filtered_amenities += (
-                results  # append individual dicts/jsons to filtered_amenities
-            )
+            for result in results:
+                result["drinking_water"] = (
+                    "yes"  # Add the drinking_water tag, by definition always yes for this amenity
+                )
+                filtered_amenities.append(
+                    result
+                )  # append individual dicts/jsons to filtered_amenities
 
         elif amenity == "drinking_water":
             # keys to keep
@@ -112,9 +116,13 @@ if __name__ == "__main__":
             }
             query = {"amenity": amenity}
             results = osm_collection.find(query, keys)
-            filtered_amenities += (
-                results  # append individual dicts/jsons to filtered_amenities
-            )
+            for result in results:
+                result["drinking_water"] = (
+                    "yes"  # Add the drinking_water tag, by definition always yes for this amenity
+                )
+                filtered_amenities.append(
+                    result
+                )  # append individual dicts/jsons to filtered_amenities
 
         elif amenity == "toilets":
             # keys to keep
