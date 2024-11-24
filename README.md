@@ -13,14 +13,14 @@ pip install -r requirements.txt
 ```
 
 ### Load Database in MongoDB
-This project requires the osm-output.json file to be imported into MongoDB under the database name osm and the collection name osm. If this has not been done yet, follow the steps below:
+This project requires the osm-output.json file to be imported into MongoDB under the database name osm and the collection name osm_all_amenities. If this has not been done yet, follow the steps below:
 
 1. Install MongoDB:
-   - Follow the installation [instructions](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-windows/).
+   - Follow the [installation instructions](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-windows/).
 2. Ensure the JSON file is in the correct location:
     - Copy the osm-output.json file into the data folder. Note that this file is ignored by .gitignore due to its size.
 3. Run the import script:
-    - Use the following script to import the data into MongoDB:
+    - Use the following script to load the data into MongoDB:
 
 ```
 python data/mongodb_loader.py
