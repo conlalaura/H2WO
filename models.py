@@ -1,4 +1,6 @@
 from pymongo.collection import Collection
+from dataclasses import asdict
+from lib.Review import Review
 
 
 def get_amenities(
@@ -42,16 +44,16 @@ def get_amenities(
     return list(result)
 
 
-def insert_review(amenity_col: Collection, amenity_id: str, doc: dict) -> None:
+def insert_review(amenity_col: Collection, amenity_id: str, review: Review) -> None:
     """
     Inserts a new review (doc) into the review collections
     :param amenity_col: mongodb collection of project relevant amenities
     :param amenity_id: update reviews for this amenity id
-    :param doc: review as document
+    :param review: review as a Review (dataclass) including username, rating and review
     :return: None
     """
     filter_query = {"id": amenity_id}
-    update_query = {"$push": {"reviews": doc}}
+    update_query = {"$push": {"reviews": asdict(review)}}
     amenity_col.update_one(filter_query, update_query)
 
 
