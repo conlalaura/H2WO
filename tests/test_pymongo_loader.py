@@ -149,8 +149,9 @@ def test_convert_to_float_error():
 def test_insert_dummy_reviews(test_collection_h2wo, capsys):
     res1 = test_collection_h2wo.find_one({"dummy_reviews_flag": {"$exists": True}})
     assert not res1
-    mongodb_loader.insert_dummy_reviews(col=test_collection_h2wo, n=1)
+    n = 1
+    mongodb_loader.insert_dummy_reviews(col=test_collection_h2wo, n=n)
     res2 = test_collection_h2wo.find_one({"dummy_reviews_flag": {"$exists": True}})
     captured = capsys.readouterr()
     assert res2
-    assert "Will add now 500 dummy-reviews" in captured.out
+    assert f"Will add now {n} dummy-reviews" in captured.out
