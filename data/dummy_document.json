@@ -1,0 +1,84 @@
+[
+    {
+        "_id": "ObjectId('64abc12345bb12345678de01')",
+        "amenity": "fountain",
+        "drinking_water": "no",
+        "name": "Jet d'eau",
+        "id": "60018172",
+        "lat": 46.2073807,
+        "lon": 6.1558891
+    },
+    {
+        "_id": "ObjectId('64abc12345bb12345678de02')",
+        "amenity": "water_point",
+        "name": "Village Water Point",
+        "id": "60018173",
+        "lat": 46.98765,
+        "lon": 8.12345
+    },
+    {
+        "_id": "ObjectId('64abc12345bb12345678de03')",
+        "amenity": "drinking_water",
+        "wheelchair": "yes",
+        "bottle": "yes",
+        "seasonal": "summer",
+        "name": "Park Drinking Fountain",
+        "id": "60018174",
+        "lat": 48.12345,
+        "lon": 9.54321
+    },
+    {
+        "_id": "ObjectId('64abc12345bb12345678de04')",
+        "amenity": "toilets",
+        "fee": "0.50 EUR",
+        "wheelchair": "yes",
+        "changing_table": "yes",
+        "male": "yes",
+        "female": "yes",
+        "unisex": "no",
+        "name": "Public Restrooms",
+        "id": "60018175",
+        "lat": 47.54321,
+        "lon": 8.12345
+    },
+    {
+        "_id": "ObjectId('64abc12345bb12345678de05')",
+        "amenity": "bench",
+        "seats": 3,
+        "covered": "no",
+        "name": "Park Bench",
+        "id": "60018176",
+        "lat": 47.76543,
+        "lon": 8.65432
+    },
+    {
+        "_id": "ObjectId('64abc12345bb12345678de06')",
+        "amenity": "water_tap",
+        "name": "Garden Water Tap",
+        "id": "60018177",
+        "lat": 46.54321,
+        "lon": 8.98765
+    },
+    {
+        "_id": "ObjectId('64abc12345bb12345678de07')",
+        "amenity": "waste_basket",
+        "waste": "general",
+        "name": "Street Waste Basket",
+        "id": "60018178",
+        "lat": 47.32145,
+        "lon": 8.76543
+    },
+    {
+        "_id": "ObjectId('64abc12345bb12345678de08')",
+        "amenity": "shelter",
+        "bench": "yes",
+        "bin": "yes",
+        "picnic_table": "no",
+        "table": "yes",
+        "drinking_water": "no",
+        "name": "Park Shelter",
+        "id": "60018179",
+        "lat": 48.65432,
+        "lon": 9.87654
+    }
+]
