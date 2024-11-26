@@ -5,7 +5,7 @@ from dataclasses import dataclass
 class Review:
     username: str
     rating: int
-    review: str
+    comment: str
 
     def __post_init__(self):
         if not (1 <= self.rating <= 5):
