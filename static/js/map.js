@@ -206,17 +206,75 @@ class MapService {
         const formattedAmenityType = formatText(amenityType);
         const icon = this.createCustomIcon(amenityType);
         const marker = L.marker([parseFloat(amenity.lat), parseFloat(amenity.lon)], { icon });
-        let popupContent = `<h3>${formattedAmenityType}</h3>`;
+
+        // Left section: formatted keys and values
+        let leftContent = `
+            <div>
+                <h3 style="margin: 0; font-size: 1.8em;">${formattedAmenityType}</h3>
+        `;
+
         Object.entries(amenity).forEach(([key, value]) => {
-            if (!['lat', 'lon', 'amenity', 'id'].includes(key)) { // Skip lat, lon, amenity, and id keys
+            if (!['lat', 'lon', 'amenity', 'id', 'reviews'].includes(key)) { // Skip unwanted keys
                 const formattedKey = formatText(key);
                 const formattedValue = formatText(value.toString());
-                popupContent += `<p>${formattedKey}: ${formattedValue}</p>`;
+                leftContent += `<p style="margin: 0.2rem 0;">${formattedKey}: ${formattedValue}</p>`;
             }
-    });
+        });
+        leftContent += `</div>`;
+
+        // Right section: review content
+        let rightContent = `<div class="reviews-section" style="flex: 1;">`;
+
+        const reviews = amenity.reviews || []; // Assuming reviews are stored under the 'reviews' key
+        if (reviews.length > 0) {
+            // Calculate mean rating
+            const meanRating = (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1);
+            const roundedRating = Math.round(meanRating);
+
+            // Add mean rating and title on the same line, aligned properly
+            rightContent += `
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <h3 style="margin: 0; font-size: 1.2em; align-self: center;">reviews</h3>
+                    <strong style="margin-left: auto; font-size: 1.8em; align-self: center; color: black;">${meanRating}</strong>
+                </div>`;
+
+            // Add stars with golden color, right-aligned
+            rightContent += `
+                <div style="color: gold; font-size: 1.2em; margin: 0.5rem 0; text-align: right;">
+                    ${'★'.repeat(roundedRating)}${'☆'.repeat(5 - roundedRating)}
+                </div>`;
+
+            // Add individual reviews
+            reviews.forEach((review) => {
+                const username = review.username || 'Anonymous';
+                const rating = review.rating || 0;
+                const comment = review.comment || '';
+                rightContent += `<p style="margin: 0.2rem 0;"><strong>${username} (${rating}):</strong> ${comment}</p>`;
+            });
+        } else {
+            rightContent += `<p>No reviews yet</p>`;
+        }
+
+        // Add write review button
+        rightContent += `
+        <button onclick="redirectToReview(${amenity.id})" class="write-review-btn">
+            write a review!
+        </button>`;
+        rightContent += `</div>`;
+
+        // Combine left and right sections into a two-column layout, aligned at the top
+        const popupContent = `
+            <div style="display: flex; gap: 1rem; align-items: flex-start; justify-content: space-between;">
+                <div style="flex: 1;">${leftContent}</div>
+                <div style="flex: 1; padding-left: 1rem; border-left: 2px solid #ccc;">${rightContent}</div>
+            </div>
+        `;
+
         marker.bindPopup(popupContent);
         return marker;
     }
+
+
 
     createCustomIcon(amenityType) {
         const iconUrl = iconMapping[amenityType] || 'static/img/locate.svg';
@@ -238,6 +296,11 @@ class MapService {
             }
         }
     }
+}
+
+// redirect to review page
+function redirectToReview(amenityId) {
+window.location.href = `/review/${amenityId}`;
 }
 
 const redIcon = L.icon({
