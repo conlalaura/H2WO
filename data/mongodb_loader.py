@@ -92,7 +92,7 @@ def convert_to_float(input_string: str) -> float:
 
 def insert_dummy_reviews(
     col: Collection,
-    n=500,
+    n=1000,
     bounding_box_lower_left=(47.449, 8.655),
     bounding_box_upper_right=(47.549, 8.811),
 ) -> None:
@@ -138,7 +138,7 @@ def insert_dummy_reviews(
         review = Review(
             username="Dummy",
             rating=random.randint(1, 5),
-            review="This is a dummy-review for the project demonstration.",
+            comment="This is a dummy-review for the project demonstration.",
         )
 
         for am in random_amenities:
