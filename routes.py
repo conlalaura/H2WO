@@ -3,6 +3,7 @@ from pymongo import MongoClient
 from werkzeug.security import generate_password_hash
 
 import models
+from lib.Review import Review
 
 # flask
 main = Blueprint("main", __name__)
@@ -11,7 +12,6 @@ main = Blueprint("main", __name__)
 client = MongoClient(host="localhost", port=27017)
 db = client["osm"]  # db
 h2wo_collection = db["osm_h2wo"]  # project collection
-h2wo_users = db["users"]  # users
 # valid amenities for API
 valid_amenities = ["all", "water", "toilets", "bench", "shelter", "waste_basket"]
 
@@ -62,3 +62,23 @@ def chart():
 def h2wo_map():
     """render map page with amenities"""
     return render_template("map.html")
+
+
+@main.route("/review/<int:amenity_id>", methods=["GET", "POST"])
+def review(amenity_id):
+    if request.method == "POST":
+        review_username = request.form["Username"]
+        review_rating = int(request.form["rating"])
+        review_comment = request.form["comment"]
+        # create review
+        input_review = Review(username=review_username, rating=review_rating, comment=review_comment)
+        # load into mongodb
+        models.insert_review(amenity_col=h2wo_collection, amenity_id=amenity_id, review=input_review)
+        # redirect to thank you page
+        return redirect(url_for('thank_you'))
+    return render_template("review.html")
+
+
+@main.route("/thank_you")
+def thank_you():
+    return render_template("thank_you.html")
