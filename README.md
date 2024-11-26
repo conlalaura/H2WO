@@ -43,3 +43,7 @@ python -m black .
 ```
 python -m pytest tests
 ```
+## Run Webservice
+```
+python main.py
+```
