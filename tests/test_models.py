@@ -43,7 +43,7 @@ def test_review():
     review = Review(
         username="Test-User",
         rating=5,
-        review="This is a test-review for the testing.",
+        comment="This is a test-review for the testing.",
     )
     return review
 
