@@ -71,11 +71,15 @@ def review(amenity_id):
         review_rating = int(request.form["rating"])
         review_comment = request.form["comment"]
         # create review
-        input_review = Review(username=review_username, rating=review_rating, comment=review_comment)
+        input_review = Review(
+            username=review_username, rating=review_rating, comment=review_comment
+        )
         # load into mongodb
-        models.insert_review(amenity_col=h2wo_collection, amenity_id=amenity_id, review=input_review)
+        models.insert_review(
+            amenity_col=h2wo_collection, amenity_id=amenity_id, review=input_review
+        )
         # redirect to thank you page
-        return redirect(url_for('thank_you'))
+        return redirect(url_for("thank_you"))
     return render_template("review.html")
 
 
