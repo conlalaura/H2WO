@@ -19,7 +19,7 @@ valid_amenities = ["all", "water", "toilets", "bench", "shelter", "waste_basket"
 @main.route("/")  # http://127.0.0.1:5000/
 def root():
     """Render main page."""
-    return render_template("page.html")
+    return render_template("home.html")
 
 
 @main.route("/api", methods=["GET"])
