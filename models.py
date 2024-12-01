@@ -4,10 +4,10 @@ from lib.Review import Review
 
 
 def get_amenities(
-    amenity_col: Collection, amenity_name: str, coordinates_only=False
+    osm_col: Collection, amenity_name: str, coordinates_only=False
 ) -> list[dict]:
     """
-    :param amenity_col: mongodb collection of project relevant amenities
+    :param osm_col: mongodb collection of project relevant amenities
     :param amenity_name: can be
         - water (fountain, water_point, drinking_water, water_tap)
         - toilets
@@ -39,8 +39,24 @@ def get_amenities(
     else:
         keys = {"_id": 0}  # keeps all keys except _id
     # filter database
-    result = amenity_col.find(query, keys)
+    result = osm_col.find(query, keys)
     # return as list
+    return list(result)
+
+
+def get_chart_data(osm_col: Collection) -> list[dict]:
+    """
+    Collects data for the amenity statistics
+    :param osm_col: mongodb collection of project relevant amenities
+    :return: list of dicts with counts for every amenity
+    """
+    pipeline = [
+        {"$group": {"_id": "$amenity", "count": {"$count": {}}}},
+        {"$sort": {"count": -1}},  # Optional: Sort by count in descending order
+    ]
+
+    result = osm_col.aggregate(pipeline)
+
     return list(result)
 
 
