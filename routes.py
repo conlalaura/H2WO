@@ -1,6 +1,5 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, jsonify
 from pymongo import MongoClient
-from werkzeug.security import generate_password_hash
 
 import models
 from lib.Review import Review
@@ -47,12 +46,18 @@ def get_amenities(amenity_type):  # example: 127.0.0.1:5000/api?type=water
         return {"amenities": res}  # return as dictionary
     else:
         amenities = models.get_amenities(
-            amenity_col=h2wo_collection, amenity_name=amenity_type
+            osm_col=h2wo_collection, amenity_name=amenity_type
         )
         return jsonify(amenities)
 
 
-@main.route("/chart")  # http://127.0.0.1:5000/statistics/
+@main.route("/chart_data")
+def chart_data():
+    count_data = models.get_chart_data(osm_col=h2wo_collection)
+    return jsonify(count_data)
+
+
+@main.route("/chart")
 def chart():
     return render_template("chart.html")
 
