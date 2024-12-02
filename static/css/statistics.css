@@ -1,0 +1,35 @@
+/* General body layout */
+body {
+    margin: 0;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+}
+
+
+/* Flex container for paragraph and chart */
+.container {
+    margin: 0px 50px;
+    max-width: 2500px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 20px; /* Add space between the paragraph and chart */
+}
+
+/* Left content (paragraph) styling */
+.content {
+    flex: 1; /* Allows the content to take up available space */
+    max-width: 400px; /* Limit paragraph width */
+}
+
+/* Chart container styling */
+.chart-container {
+    flex: 2; /* Allows the chart container to be wider than the paragraph */
+    max-width: 800px; /* Limit chart width */
+}
+
+canvas {
+    width: 100%; /* Make the chart responsive */
+    height: auto;
+}
