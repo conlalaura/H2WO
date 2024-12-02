@@ -44,15 +44,51 @@ def get_amenities(
     return list(result)
 
 
-def get_chart_data(osm_col: Collection) -> list[dict]:
+def get_homepage_data(osm_col: Collection) -> list[dict]:
     """
     Collects data for the amenity statistics
     :param osm_col: mongodb collection of project relevant amenities
     :return: list of dicts with counts for every amenity
     """
     pipeline = [
+        # match docs that have an amenity key
+        {
+            "$match": {
+                "amenity": {
+                    "$in": [
+                        "water_point",
+                        "drinking_water",
+                        "water_tap",
+                        "fountain",
+                        "toilets",
+                    ]
+                }
+            }
+        },
+        # collect water-related amenities to "watersources"
+        {
+            "$set": {
+                "amenity": {
+                    "$cond": {
+                        "if": {
+                            "$in": [
+                                "$amenity",
+                                [
+                                    "water_point",
+                                    "drinking_water",
+                                    "water_tap",
+                                    "fountain",
+                                ],
+                            ]
+                        },
+                        "then": "watersources",
+                        "else": "$amenity",
+                    }
+                }
+            }
+        },
+        # Group by the mapped amenity categories
         {"$group": {"_id": "$amenity", "count": {"$count": {}}}},
-        {"$sort": {"count": -1}},  # Optional: Sort by count in descending order
     ]
 
     result = osm_col.aggregate(pipeline)
