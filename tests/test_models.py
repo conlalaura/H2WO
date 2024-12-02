@@ -159,4 +159,9 @@ def test_insert_and_get_review(test_collection_generic, test_review):
     assert len(result) == n
 
 
-# TODO: test get_chart_data
+def test_get_homepage_data(test_collection_h2wo):
+    count_data = models.get_homepage_data(osm_col=test_collection_h2wo)
+    data_dict = {item["_id"]: item["count"] for item in count_data}
+    assert len(count_data) == 2
+    assert "watersources" in data_dict.keys()
+    assert "toilets" in data_dict.keys()
