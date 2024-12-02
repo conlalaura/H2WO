@@ -55,9 +55,15 @@ def get_amenities(amenity_type):  # example: 127.0.0.1:5000/api?type=water
         return jsonify(amenities)
 
 
-@main.route("/chart")
-def chart():
-    return render_template("chart.html")
+@main.route("/api/toilet_statistics_data")
+def toilet_statistics_data():
+    amenities = models.get_toilet_statistics_data(amenity_col=h2wo_collection)
+    return jsonify(amenities)
+
+
+@main.route("/toilet_statistics_chart")
+def toilet_statistics_chart():
+    return render_template("toilet_statistics.html")
 
 
 @main.route("/map")
