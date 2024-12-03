@@ -1,27 +1,29 @@
 $(document).ready(function () {
     const mapService = new MapService();
+    const reviewPopup = document.getElementById("review-popup");
     mapService.initMap();
     mapService.loadAmenityData('/api?type=water', 'water');
     mapService.loadAmenityData('/api?type=toilets', 'restroom');
-    mapService.loadAmenityData('/api?type=waste_basket', 'bins');
-    // mapService.loadAmenityData('/api?type=shelter', 'shelter');  #TODO: @Alex tell my whyyyy nicht aktiv
-    mapService.loadAmenityData('/api?type=bench', 'bench');
+//  mapService.loadAmenityData('/api?type=waste_basket', 'bins');
+//  mapService.loadAmenityData('/api?type=shelter', 'shelter');  #TODO: @Alex tell my whyyyy nicht aktiv
+//  mapService.loadAmenityData('/api?type=bench', 'bench');
 
     // Set the initial state of checkboxes (set some to false when needed for performance)
     $('#fountains').prop('checked', true);
     $('#restrooms').prop('checked', true);
-    $('#benches').prop('checked', true);
-//    $('#shelter').prop('checked', true);
-    $('#bins').prop('checked', true);
+//  $('#benches').prop('checked', true);
+//  $('#shelter').prop('checked', true);
+//  $('#bins').prop('checked', true);
 
     // Apply the initial visibility based on checkbox states
     $('#fountains').trigger('change');
     $('#restrooms').trigger('change');
-    $('#benches').trigger('change');
-//    $('#shelter').trigger('change');
-    $('#bins').trigger('change');
+//  $('#benches').trigger('change');
+//  $('#shelter').trigger('change');
+//  $('#bins').trigger('change');
 
-    // Add event listeners for filter checkboxes
+// Event Listeners
+    // filter checkboxes
     $('#fountains').on('change', function() {
         mapService.toggleAmenityVisibility('water', this.checked);
     });
@@ -31,11 +33,20 @@ $(document).ready(function () {
     $('#benches').on('change', function() {
         mapService.toggleAmenityVisibility('bench', this.checked);
     });
+    $('#shelter').on('change', function() {
+        mapService.toggleAmenityVisibility('shelter', this.checked);
+    });
     $('#bins').on('change', function() {
         mapService.toggleAmenityVisibility('bins', this.checked);
     });
 
-    // Add event listener for re-center button
+    $('.sidebar-amenity-options .option').on('click', function () {
+        const button = $(this);
+        const option = button.data('option');
+        button.toggleClass('active');
+    });
+
+    // recenter buttom
     $('#recenter').on('click', function() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -52,35 +63,136 @@ $(document).ready(function () {
         }
     });
 
+    // popup close functionality
+    $('#popup-close').on('click', function () {
+        $('#review-popup').fadeOut();
+        $('#map').css('filter', 'none');
+        $('.sidebar').css('filter', 'none');
+    });
+
+    // Review submission
+    document.getElementById('submit-review').addEventListener('click', () => {
+        const rating = document.getElementById('rating-value').value; // Get the rating value
+        const comment = document.getElementById('comment').value; // Get the comment text
+        const amenityId = document.getElementById('review-popup').getAttribute('data-amenity-id'); // Get the amenity ID from the popup
+        const username = "Anonymous"; // Replace with logic to get the username if applicable
+    
+        // Ensure data is valid before submission
+        if (!rating || !comment || !amenityId) {
+            alert('Please provide a rating, a comment, and ensure an amenity is selected.');
+            return;
+        }
+    
+        // Create FormData object
+        const formData = new FormData();
+        formData.append('Username', username);
+        formData.append('rating', rating);
+        formData.append('comment', comment);
+    
+        // POST review data to the backend
+        fetch(`/review/${amenityId}`, {
+            method: 'POST',
+            body: formData, // Use FormData
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.text(); // The server might not return JSON
+            })
+            .then(data => {
+                alert('Review submitted successfully!');
+                // Optionally reload reviews for the amenity
+                loadReviews(amenityId);
+            })
+            .catch(error => {
+                console.error('Error submitting review:', error);
+                alert('An error occurred. Please try again.');
+            });
+    });
+    
+    
+
+
+
+
+    document.addEventListener("click", (event) => {
+        const reviewPopup = document.getElementById("review-popup");
+        const amenityPopup = document.querySelector(".leaflet-popup");
+    
+        // Handle review popup close
+        if (!reviewPopup.classList.contains("hidden")) {
+            if (!reviewPopup.contains(event.target) && !event.target.closest(".write-review-btn")) {
+                reviewPopup.classList.add("hidden");
+                reviewPopup.style.display = "none";
+            }
+        }
+    
+        // Handle amenity popup close
+        if (amenityPopup) {
+            if (!amenityPopup.contains(event.target) && !event.target.closest(".leaflet-marker-icon")) {
+                document.querySelector(".leaflet-popup-close-button")?.click();
+            }
+        }
+    });
+
+    document.querySelectorAll(".rating-star").forEach((star) => {
+        star.addEventListener("click", function () {
+            const value = this.getAttribute("data-value");
+            document.getElementById("rating-value").value = value;
+    
+            document.querySelectorAll(".rating-star").forEach((s) => {
+                if (s.getAttribute("data-value") <= value) {
+                    s.src = "static/img/rating-star-selected.svg";
+                } else {
+                    s.src = "static/img/rating-star-unselected.svg";
+                }
+            });
+        });
+    });
+    
+    
+    
+    
+    
+    
+    // Prevent outside click listener from being triggered when clicking inside the review popup
+    document.getElementById("review-popup").addEventListener("click", (event) => {
+        event.stopPropagation(); // Prevent triggering the document click listener
+    });
+    
+    
+
+
     window.mapServiceInstance = mapService;
 });    
 
-
+// Class definition for map-related operations
 class MapService {
     constructor() {
         this.map = null;
-        this.markers = {}; // Object to store marker instances, keyed by amenity IDs.
-        this.amenitiesData = {}; // Store loaded amenities data by type.
-        this.markerClusterGroup = {}; // Separate cluster groups for each amenity type.
-        this.loadingCount = 0; // Track the number of pending data loads
-        this.markerCounts = {}; // Track the number of markers added per amenity type
+        this.markers = {}; 
+        this.amenitiesData = {}; 
+        this.markerClusterGroup = {};
+        this.loadingCount = 0;
+        this.markerCounts = {};
     }
-
+    // Initialize the map and setup initial features
     initMap() {
         this.createMap();
         this.setupGeolocation();
-        // this.map.on('zoom', () => console.log('Current zoom level:', this.map.getZoom()));
         this.map.on('zoom', () => this.updateClusterRadius());  // Added this line
         $('#map').hide();
         $('#loader').show();
     }
 
+    // Create the map instance
     createMap() {
-    // set initial location Winterthur (if user doesn't share location)
-        this.map = L.map('map').setView([47.497234386445896, 8.729370936243816], 13);
+        this.map = L.map('map').setView([47.497234386445896, 8.729370936243816], 13); //  initial location Winterthur (if user doesn't share location)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {}).addTo(this.map);
     }
 
+    // Setup geolocation to center map on user location
     setupGeolocation() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -91,21 +203,21 @@ class MapService {
             console.error("Geolocation is not supported by this browser.");
         }
     }
-
+    // Handle successful geolocation
     handleGeolocationSuccess(position) {
         this.map.setView([position.coords.latitude, position.coords.longitude], 13);
         this.addUserLocationMarker(position.coords.latitude, position.coords.longitude);
     }
-
+    // Add a marker at user's location
     addUserLocationMarker(lat, lon) {
         L.marker([lat, lon], { icon: redIcon }).addTo(this.map).bindPopup("You're here").openPopup();
     }
-
+    // Handle geolocation error
     handleGeolocationError(err) {
         console.error(err);
     }
 
-//    method to center map to user's current location
+    // Re-center map to user's location
     centerToUserLocation() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -117,6 +229,7 @@ class MapService {
         }
     }
 
+    // Load amenity data from API
     loadAmenityData(apiUrl, amenityType) {
         this.loadingCount++;
         this.markerCounts[amenityType] = 0; // Initialize the count of markers for this amenity type
@@ -130,8 +243,7 @@ class MapService {
             .catch(error => console.error(`Error loading ${amenityType} data:`, error));
     }
 
-
-
+    // Add amenity markers to the map
     addAmenitiesToMap(amenityType, amenities) {
         const clusterGroup = this.getAmenityClusterGroup(amenityType);
         amenities.forEach(amenity => {
@@ -147,10 +259,9 @@ class MapService {
         this.checkIfAllMarkersAdded();
     }
 
+    // Check if all markers have been added    
     checkIfAllMarkersAdded() {
-        // Check if all amenity types have their markers fully added
         const allMarkersAdded = Object.values(this.markerCounts).every(count => count > 0);
-        
         if (allMarkersAdded) {
             // All data processed, hide the loader and show the map
             $('#loader').hide(); // Hide the loading animation
@@ -158,11 +269,11 @@ class MapService {
         }
     }
 
+    // Get or create a cluster group for the amenity
     getAmenityClusterGroup(amenityType) {
         if (!this.markerClusterGroup[amenityType]) {
             const clusterOptions = {
-                maxClusterRadius: this.getClusterRadiusBasedOnZoom(), // Changed this line
-               // maxClusterRadius: 50,
+                maxClusterRadius: this.getClusterRadiusBasedOnZoom(),
                 iconCreateFunction: cluster => {
                     const childCount = cluster.getChildCount();
     
@@ -185,7 +296,8 @@ class MapService {
         }
         return this.markerClusterGroup[amenityType];
     }
-    
+
+    // Update cluster radius based on zoom level
     updateClusterRadius() {
         const zoomLevel = this.map.getZoom();
         Object.keys(this.markerClusterGroup).forEach(amenityType => {
@@ -194,53 +306,54 @@ class MapService {
         });
     }
 
+    // Calculate cluster radius based on zoom level
     getClusterRadiusBasedOnZoom(zoomLevel) {
         // Adjust the cluster radius based on zoom level (Formula tbd)
         return 100
     }
     
-    
-
+    // TODO: Simplify / Split up into multiple smaller methods
     createAmenityMarker(amenity, amenityType) {
+        const marker = this.createMarker(amenity, amenityType);
+        const popupContent = this.generatePopupContent(amenity, amenityType);
+        marker.bindPopup(popupContent);
+        this.attachPopupListeners(marker, amenity);
+        return marker;
+    }
+    
+    // Create a Leaflet marker
+    createMarker(amenity, amenityType) {
+        const icon = this.createCustomIcon(amenityType);
+        return L.marker([parseFloat(amenity.lat), parseFloat(amenity.lon)], { icon });
+    }
+    
+    // Generate HTML content for the popup
+    generatePopupContent(amenity, amenityType) {
         const formatText = (text) => text.replace(/_/g, ' ');
         const formattedAmenityType = formatText(amenityType);
-        const icon = this.createCustomIcon(amenityType);
-        const marker = L.marker([parseFloat(amenity.lat), parseFloat(amenity.lon)], { icon });
-
-        // Left section: formatted keys and values
+    
         let leftContent = `
             <div>
                 <h3 style="margin: 0; font-size: 1.8em;">${formattedAmenityType}</h3>
         `;
-
         Object.entries(amenity).forEach(([key, value]) => {
-            if (!['lat', 'lon', 'amenity', 'id', 'reviews'].includes(key)) { // Skip unwanted keys
-                const formattedKey = formatText(key);
-                const formattedValue = formatText(value.toString());
-                leftContent += `<p style="margin: 0.2rem 0;">${formattedKey}: ${formattedValue}</p>`;
+            if (!['lat', 'lon', 'amenity', 'id', 'reviews'].includes(key)) {
+                leftContent += `<p style="margin: 0.2rem 0;">${formatText(key)}: ${formatText(value.toString())}</p>`;
             }
         });
         leftContent += `</div>`;
-
-        // Right section: review content
+    
         let rightContent = `<div class="reviews-section" style="flex: 1;">`;
-
-        const reviews = amenity.reviews || []; // Assuming reviews are stored under the 'reviews' key
+        const reviews = amenity.reviews || [];
         if (reviews.length > 0) {
-            // Calculate mean rating
             const meanRating = (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1);
             const roundedRating = Math.round(meanRating);
-
-            // Add mean rating and title on the same line, aligned properly
             rightContent += `
                 <div style="display: flex; align-items: center; justify-content: space-between;">
-                    <h3 style="margin: 0; font-size: 1.2em; align-self: center;">reviews</h3>
-                    <strong style="margin-left: auto; font-size: 1.8em; align-self: center; color: black;">${meanRating}</strong>
-                </div>`;
-
-            // Add stars with golden color, right-aligned
-            rightContent += `
-                <div style="color: gold; font-size: 1.2em; margin: 0.5rem 0; text-align: right;">
+                    <h3 style="margin: 0; font-size: 1.2em;">Reviews</h3>
+                    <strong style="margin-left: auto; font-size: 1.8em; color: black;">${meanRating}</strong>
+                </div>
+                <div style="color: gold; font-size: 1.2em; text-align: right;">
                     ${'★'.repeat(roundedRating)}${'☆'.repeat(5 - roundedRating)}
                 </div>`;
 
@@ -254,28 +367,42 @@ class MapService {
         } else {
             rightContent += `<p>No reviews yet</p>`;
         }
-
-        // Add write review button
+    
+        const reviewButtonId = `add-review-btn-${amenity.id}`;
         rightContent += `
-        <button onclick="redirectToReview(${amenity.id})" class="write-review-btn">
-            write a review!
-        </button>`;
-        rightContent += `</div>`;
-
-        // Combine left and right sections into a two-column layout, aligned at the top
-        const popupContent = `
-            <div style="display: flex; gap: 1rem; align-items: flex-start; justify-content: space-between;">
-                <div style="flex: 1;">${leftContent}</div>
-                <div style="flex: 1; padding-left: 1rem; border-left: 2px solid #ccc;">${rightContent}</div>
+            <button id="${reviewButtonId}" class="write-review-btn">
+                Add a Review
+            </button>
+        </div>`;
+    
+        return `
+            <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                <div>${leftContent}</div>
+                <div>${rightContent}</div>
             </div>
         `;
-
-        marker.bindPopup(popupContent);
-        return marker;
     }
-
-
-
+    
+    // Attach listeners to the marker popup
+    attachPopupListeners(marker, amenity) {
+        const reviewPopup = document.getElementById("review-popup");
+        marker.on("popupopen", () => {
+            const reviewBtn = document.getElementById(`add-review-btn-${amenity.id}`);
+            if (reviewBtn) {
+                reviewBtn.addEventListener("click", () => {
+                    reviewPopup.setAttribute('data-amenity-id', amenity.id); // Set the amenity ID on the popup
+                    reviewPopup.classList.remove("hidden");
+                    reviewPopup.style.display = "block";
+                });
+            }
+        });
+    }
+    
+    
+    
+    
+    
+    // Create custom icon for an amenity
     createCustomIcon(amenityType) {
         const iconUrl = iconMapping[amenityType] || 'static/img/locate.svg';
         return L.icon({
@@ -285,7 +412,8 @@ class MapService {
             popupAnchor: [1, -34],
         });
     }
-    // Method to toggle the visibility of amenities based on checkbox state
+
+    // Toggle the visibility of amenities based on checkbox state
     toggleAmenityVisibility(amenityType, isVisible) {
         const clusterGroup = this.markerClusterGroup[amenityType];
         if (clusterGroup) {
@@ -298,10 +426,6 @@ class MapService {
     }
 }
 
-// redirect to review page
-function redirectToReview(amenityId) {
-window.location.href = `/review/${amenityId}`;
-}
 
 const redIcon = L.icon({
     iconUrl: 'static/img/locate.svg',
@@ -325,3 +449,5 @@ const clusterColors = {
     shelter: '#C45C24',
     bins: '#3A3A3A',
 };
+
+
