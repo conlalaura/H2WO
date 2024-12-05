@@ -74,25 +74,37 @@ $(document).ready(function () {
     document.getElementById('submit-review').addEventListener('click', () => {
         const rating = document.getElementById('rating-value').value; // Get the rating value
         const comment = document.getElementById('comment').value; // Get the comment text
-        const amenityId = document.getElementById('review-popup').getAttribute('data-amenity-id'); // Get the amenity ID from the popup
+        let amenityId = document.getElementById('review-popup').getAttribute('data-amenity-id'); // Get the amenity ID from the popup
         const username = "Anonymous"; // Replace with logic to get the username if applicable
-    
+
         // Ensure data is valid before submission
         if (!rating || !comment || !amenityId) {
             alert('Please provide a rating, a comment, and ensure an amenity is selected.');
             return;
         }
-    
+        // Convert amenityId to an integer
+        amenityId = parseInt(amenityId, 10); // Convert to an integer (base 10)
+        if (isNaN(amenityId)) {
+            alert('Invalid amenity ID.');
+            return;
+    }
         // Create FormData object
         const formData = new FormData();
-        formData.append('Username', username);
+        formData.append('username', username);
         formData.append('rating', rating);
         formData.append('comment', comment);
-    
+
         // POST review data to the backend
         fetch(`/review/${amenityId}`, {
             method: 'POST',
-            body: formData, // Use FormData
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: username,
+                rating: rating,
+                comment: comment
+            })
         })
             .then(response => {
                 if (!response.ok) {
@@ -106,12 +118,23 @@ $(document).ready(function () {
                 loadReviews(amenityId);
             })
             .catch(error => {
-                console.error('Error submitting review:', error);
-                alert('An error occurred. Please try again.');
-            });
-    });
-    
-    
+            console.error('Error submitting review:', error);
+
+            // Provide more detailed error messages
+            if (error.name === 'TypeError') {
+                // This typically happens for network errors or if fetch failed to make a request
+                alert('Network error: Unable to connect to the server. Please check your internet connection and try again.');
+            } else if (error.message.includes('HTTP error')) {
+                // Detailed error when there is an HTTP status code error
+                alert(`Server error: ${error.message}. Please try again later.`);
+            } else {
+                // Catch all other unexpected errors
+                alert(`Unexpected error: ${error.message}. Please try again.`);
+            }
+        });
+});
+
+
 
 
 
@@ -119,7 +142,7 @@ $(document).ready(function () {
     document.addEventListener("click", (event) => {
         const reviewPopup = document.getElementById("review-popup");
         const amenityPopup = document.querySelector(".leaflet-popup");
-    
+
         // Handle review popup close
         if (!reviewPopup.classList.contains("hidden")) {
             if (!reviewPopup.contains(event.target) && !event.target.closest(".write-review-btn")) {
@@ -127,7 +150,7 @@ $(document).ready(function () {
                 reviewPopup.style.display = "none";
             }
         }
-    
+
         // Handle amenity popup close
         if (amenityPopup) {
             if (!amenityPopup.contains(event.target) && !event.target.closest(".leaflet-marker-icon")) {
@@ -140,7 +163,7 @@ $(document).ready(function () {
         star.addEventListener("click", function () {
             const value = this.getAttribute("data-value");
             document.getElementById("rating-value").value = value;
-    
+
             document.querySelectorAll(".rating-star").forEach((s) => {
                 if (s.getAttribute("data-value") <= value) {
                     s.src = "static/img/rating-star-selected.svg";
@@ -337,7 +360,8 @@ class MapService {
                 <h3 style="margin: 0; font-size: 1.8em;">${formattedAmenityType}</h3>
         `;
         Object.entries(amenity).forEach(([key, value]) => {
-            if (!['lat', 'lon', 'amenity', 'id', 'reviews'].includes(key)) {
+        // TODO add again "id"
+            if (!['lat', 'lon', 'amenity', 'reviews'].includes(key)) {
                 leftContent += `<p style="margin: 0.2rem 0;">${formatText(key)}: ${formatText(value.toString())}</p>`;
             }
         });
