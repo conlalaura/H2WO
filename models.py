@@ -108,82 +108,20 @@ def get_toilet_statistics_data(amenity_col: Collection) -> list[dict]:
             "$project": {
                 "fee_yes": {"$cond": [{"$eq": ["$fee", "yes"]}, 1, 0]},
                 "fee_no": {"$cond": [{"$eq": ["$fee", "no"]}, 1, 0]},
-                "fee_unknown": {
-                    "$cond": [
-                        {"$and": [{"$ne": ["$fee", "yes"]}, {"$ne": ["$fee", "no"]}]},
-                        1,
-                        0,
-                    ]
-                },
                 "wheelchair_yes": {"$cond": [{"$eq": ["$wheelchair", "yes"]}, 1, 0]},
                 "wheelchair_no": {"$cond": [{"$eq": ["$wheelchair", "no"]}, 1, 0]},
-                "wheelchair_unknown": {
-                    "$cond": [
-                        {
-                            "$and": [
-                                {"$ne": ["$wheelchair", "yes"]},
-                                {"$ne": ["$wheelchair", "no"]},
-                            ]
-                        },
-                        1,
-                        0,
-                    ]
-                },
                 "changing_table_yes": {
                     "$cond": [{"$eq": ["$changing_table", "yes"]}, 1, 0]
                 },
                 "changing_table_no": {
                     "$cond": [{"$eq": ["$changing_table", "no"]}, 1, 0]
                 },
-                "changing_table_unknown": {
-                    "$cond": [
-                        {
-                            "$and": [
-                                {"$ne": ["$changing_table", "yes"]},
-                                {"$ne": ["$changing_table", "no"]},
-                            ]
-                        },
-                        1,
-                        0,
-                    ]
-                },
                 "male_yes": {"$cond": [{"$eq": ["$male", "yes"]}, 1, 0]},
                 "male_no": {"$cond": [{"$eq": ["$male", "no"]}, 1, 0]},
-                "male_unknown": {
-                    "$cond": [
-                        {"$and": [{"$ne": ["$male", "yes"]}, {"$ne": ["$male", "no"]}]},
-                        1,
-                        0,
-                    ]
-                },
                 "female_yes": {"$cond": [{"$eq": ["$female", "yes"]}, 1, 0]},
                 "female_no": {"$cond": [{"$eq": ["$female", "no"]}, 1, 0]},
-                "female_unknown": {
-                    "$cond": [
-                        {
-                            "$and": [
-                                {"$ne": ["$female", "yes"]},
-                                {"$ne": ["$female", "no"]},
-                            ]
-                        },
-                        1,
-                        0,
-                    ]
-                },
                 "unisex_yes": {"$cond": [{"$eq": ["$unisex", "yes"]}, 1, 0]},
                 "unisex_no": {"$cond": [{"$eq": ["$unisex", "no"]}, 1, 0]},
-                "unisex_unknown": {
-                    "$cond": [
-                        {
-                            "$and": [
-                                {"$ne": ["$unisex", "yes"]},
-                                {"$ne": ["$unisex", "no"]},
-                            ]
-                        },
-                        1,
-                        0,
-                    ]
-                },
             }
         },
         {
@@ -192,22 +130,16 @@ def get_toilet_statistics_data(amenity_col: Collection) -> list[dict]:
                 "total": {"$sum": 1},
                 "fee_yes": {"$sum": "$fee_yes"},
                 "fee_no": {"$sum": "$fee_no"},
-                "fee_unknown": {"$sum": "$fee_unknown"},
                 "wheelchair_yes": {"$sum": "$wheelchair_yes"},
                 "wheelchair_no": {"$sum": "$wheelchair_no"},
-                "wheelchair_unknown": {"$sum": "$wheelchair_unknown"},
                 "changing_table_yes": {"$sum": "$changing_table_yes"},
                 "changing_table_no": {"$sum": "$changing_table_no"},
-                "changing_table_unknown": {"$sum": "$changing_table_unknown"},
                 "male_yes": {"$sum": "$male_yes"},
                 "male_no": {"$sum": "$male_no"},
-                "male_unknown": {"$sum": "$male_unknown"},
                 "female_yes": {"$sum": "$female_yes"},
                 "female_no": {"$sum": "$female_no"},
-                "female_unknown": {"$sum": "$female_unknown"},
                 "unisex_yes": {"$sum": "$unisex_yes"},
                 "unisex_no": {"$sum": "$unisex_no"},
-                "unisex_unknown": {"$sum": "$unisex_unknown"},
             }
         },
         {
@@ -219,9 +151,6 @@ def get_toilet_statistics_data(amenity_col: Collection) -> list[dict]:
                             "$multiply": [{"$divide": ["$fee_yes", "$total"]}, 100]
                         },
                         "no": {"$multiply": [{"$divide": ["$fee_no", "$total"]}, 100]},
-                        "unknown": {
-                            "$multiply": [{"$divide": ["$fee_unknown", "$total"]}, 100]
-                        },
                     },
                     {
                         "key": "wheelchair",
@@ -234,12 +163,6 @@ def get_toilet_statistics_data(amenity_col: Collection) -> list[dict]:
                         "no": {
                             "$multiply": [
                                 {"$divide": ["$wheelchair_no", "$total"]},
-                                100,
-                            ]
-                        },
-                        "unknown": {
-                            "$multiply": [
-                                {"$divide": ["$wheelchair_unknown", "$total"]},
                                 100,
                             ]
                         },
@@ -258,12 +181,6 @@ def get_toilet_statistics_data(amenity_col: Collection) -> list[dict]:
                                 100,
                             ]
                         },
-                        "unknown": {
-                            "$multiply": [
-                                {"$divide": ["$changing_table_unknown", "$total"]},
-                                100,
-                            ]
-                        },
                     },
                     {
                         "key": "male",
@@ -271,9 +188,6 @@ def get_toilet_statistics_data(amenity_col: Collection) -> list[dict]:
                             "$multiply": [{"$divide": ["$male_yes", "$total"]}, 100]
                         },
                         "no": {"$multiply": [{"$divide": ["$male_no", "$total"]}, 100]},
-                        "unknown": {
-                            "$multiply": [{"$divide": ["$male_unknown", "$total"]}, 100]
-                        },
                     },
                     {
                         "key": "female",
@@ -282,12 +196,6 @@ def get_toilet_statistics_data(amenity_col: Collection) -> list[dict]:
                         },
                         "no": {
                             "$multiply": [{"$divide": ["$female_no", "$total"]}, 100]
-                        },
-                        "unknown": {
-                            "$multiply": [
-                                {"$divide": ["$female_unknown", "$total"]},
-                                100,
-                            ]
                         },
                     },
                     {
@@ -298,12 +206,6 @@ def get_toilet_statistics_data(amenity_col: Collection) -> list[dict]:
                         "no": {
                             "$multiply": [{"$divide": ["$unisex_no", "$total"]}, 100]
                         },
-                        "unknown": {
-                            "$multiply": [
-                                {"$divide": ["$unisex_unknown", "$total"]},
-                                100,
-                            ]
-                        },
                     },
                 ]
             }
@@ -311,10 +213,7 @@ def get_toilet_statistics_data(amenity_col: Collection) -> list[dict]:
         {"$unwind": "$fields"},
         {"$sort": {"fields.yes": -1}},
     ]
-
-    result = amenity_col.aggregate(pipeline)
-
-    return list(result)
+    return list(amenity_col.aggregate(pipeline))
 
 
 def insert_review(amenity_col: Collection, amenity_id: str, review: Review) -> None:
