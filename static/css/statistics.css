@@ -1,35 +1,48 @@
 /* General body layout */
-body {
-    margin: 0;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
+ body {
+     width: 100%;
+     height: 100%;
+     margin-top: 50px;
+     margin-bottom: 50px;
+     font-family: Arial, sans-serif;
+     background-color: var(--background-color)
 }
-
-
 /* Flex container for paragraph and chart */
-.container {
-    margin: 0px 50px;
-    max-width: 2500px;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 20px; /* Add space between the paragraph and chart */
+ .container {
+     margin: 0px 50px;
+     max-width: 2500px;
+     display: flex;
+     justify-content: center;
+     align-items: flex-start;
+     gap: 100px; /* Add space between the paragraph and chart */
 }
-
 /* Left content (paragraph) styling */
-.content {
-    flex: 1; /* Allows the content to take up available space */
-    max-width: 400px; /* Limit paragraph width */
+ .content {
+     flex: 1;
+    /* Allows the content to take up available space */
+     max-width: 800px;
 }
-
+ .content p{
+     text-align: justify;
+     width: 100%;
+     margin-top: 50px;
+     margin-bottom: 50px;
+     font-family: 'Satoshi';
+     color: var(--text-color);
+     font-size: 40px;
+}
 /* Chart container styling */
-.chart-container {
-    flex: 2; /* Allows the chart container to be wider than the paragraph */
-    max-width: 800px; /* Limit chart width */
+ .chart-container {
+     flex: 2; /* Allows the chart container to be wider than the paragraph */
+     max-width: 100%;
+     margin-top: 100px;
 }
-
-canvas {
-    width: 100%; /* Make the chart responsive */
-    height: auto;
+ .chart-font {
+     font-family: 'Satoshi';
+     color: var(--text-color);
+}
+ canvas {
+     width: 100%;
+    /* Make the chart responsive */
+     height: auto;
 }

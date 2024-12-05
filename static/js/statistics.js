@@ -9,28 +9,21 @@ document.addEventListener("DOMContentLoaded", () => {
             const labels = data.map(item => item.fields.key);
             const yesData = data.map(item => item.fields.yes);
             const noData = data.map(item => item.fields.no);
-            const unknownData = data.map(item => item.fields.unknown);
 
             // Create the chart
             new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels,
-                    datasets: [
-                        {
+                    datasets: [{
                             label: 'Yes',
                             data: yesData,
-                            backgroundColor: 'rgba(0, 255, 0, 0.2)', // Green with alpha
+                            backgroundColor: 'rgba(79, 195, 247, 0.4)',
                         },
                         {
                             label: 'No',
                             data: noData,
-                            backgroundColor: 'rgba(0, 0, 255, 0.2)', // Blue with alpha
-                        },
-                        {
-                            label: 'Unknown',
-                            data: unknownData,
-                            backgroundColor: 'rgba(128, 128, 128, 0.2)', // Gray with alpha
+                            backgroundColor: 'rgba(124, 179, 66, 0.4)',
                         }
                     ]
                 },
@@ -39,6 +32,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     plugins: {
                         legend: {
                             position: 'top',
+                            labels: {
+                                font: {
+                                    family: 'inherit',
+                                    size: 25
+                                }
+                            }
                         },
                         tooltip: {
                             enabled: true,
@@ -47,10 +46,25 @@ document.addEventListener("DOMContentLoaded", () => {
                     scales: {
                         x: {
                             stacked: true,
+                            ticks: {
+                                font: {
+                                    size: 25
+                                }
+                            }
                         },
                         y: {
                             stacked: true,
-                        }
+                            ticks: {
+                                font: {
+                                    family: 'inherit', // Inherit font family for y-axis labels
+                                    size: 25,
+                                },
+                                padding: 50, // Add padding to avoid overlap
+                                callback: function(value) {
+                                    return value + '%'; // Add a percent sign if needed
+                                }
+                            },
+                        },
                     }
                 }
             });
