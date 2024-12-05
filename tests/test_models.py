@@ -50,7 +50,7 @@ def test_review():
 
 def test_get_amenities_wrong_amenity(test_collection_h2wo, capsys):
     amenities = models.get_amenities(
-        amenity_col=test_collection_h2wo,
+        osm_col=test_collection_h2wo,
         amenity_name="wrong_amenity_name",
         coordinates_only=False,
     )
@@ -61,7 +61,7 @@ def test_get_amenities_wrong_amenity(test_collection_h2wo, capsys):
 
 def test_get_amenities_water_all(test_collection_h2wo):
     amenities = models.get_amenities(
-        amenity_col=test_collection_h2wo, amenity_name="water", coordinates_only=False
+        osm_col=test_collection_h2wo, amenity_name="water", coordinates_only=False
     )
     for amenity in amenities:
         assert len(amenity) >= 3
@@ -69,7 +69,7 @@ def test_get_amenities_water_all(test_collection_h2wo):
 
 def test_get_amenities_water_coordinates_only(test_collection_h2wo):
     amenities = models.get_amenities(
-        amenity_col=test_collection_h2wo, amenity_name="water", coordinates_only=True
+        osm_col=test_collection_h2wo, amenity_name="water", coordinates_only=True
     )
     for amenity in amenities:
         assert len(amenity) == 3
@@ -77,7 +77,7 @@ def test_get_amenities_water_coordinates_only(test_collection_h2wo):
 
 def test_get_amenities_toilets_all(test_collection_h2wo):
     amenities = models.get_amenities(
-        amenity_col=test_collection_h2wo, amenity_name="toilets", coordinates_only=False
+        osm_col=test_collection_h2wo, amenity_name="toilets", coordinates_only=False
     )
     for amenity in amenities:
         assert len(amenity) >= 3
@@ -85,7 +85,7 @@ def test_get_amenities_toilets_all(test_collection_h2wo):
 
 def test_get_amenities_toilets_coordinates_only(test_collection_h2wo):
     amenities = models.get_amenities(
-        amenity_col=test_collection_h2wo, amenity_name="toilets", coordinates_only=True
+        osm_col=test_collection_h2wo, amenity_name="toilets", coordinates_only=True
     )
     for amenity in amenities:
         assert len(amenity) == 3
@@ -93,7 +93,7 @@ def test_get_amenities_toilets_coordinates_only(test_collection_h2wo):
 
 def test_get_amenities_bench_all(test_collection_h2wo):
     amenities = models.get_amenities(
-        amenity_col=test_collection_h2wo, amenity_name="bench", coordinates_only=False
+        osm_col=test_collection_h2wo, amenity_name="bench", coordinates_only=False
     )
     for amenity in amenities:
         assert len(amenity) >= 3
@@ -101,7 +101,7 @@ def test_get_amenities_bench_all(test_collection_h2wo):
 
 def test_get_amenities_bench_coordinates_only(test_collection_h2wo):
     amenities = models.get_amenities(
-        amenity_col=test_collection_h2wo, amenity_name="bench", coordinates_only=True
+        osm_col=test_collection_h2wo, amenity_name="bench", coordinates_only=True
     )
     for amenity in amenities:
         assert len(amenity) == 3
@@ -109,7 +109,7 @@ def test_get_amenities_bench_coordinates_only(test_collection_h2wo):
 
 def test_get_amenities_shelter_all(test_collection_h2wo):
     amenities = models.get_amenities(
-        amenity_col=test_collection_h2wo, amenity_name="shelter", coordinates_only=False
+        osm_col=test_collection_h2wo, amenity_name="shelter", coordinates_only=False
     )
     for amenity in amenities:
         assert len(amenity) >= 3
@@ -117,7 +117,7 @@ def test_get_amenities_shelter_all(test_collection_h2wo):
 
 def test_get_amenities_shelter_coordinates_only(test_collection_h2wo):
     amenities = models.get_amenities(
-        amenity_col=test_collection_h2wo, amenity_name="shelter", coordinates_only=True
+        osm_col=test_collection_h2wo, amenity_name="shelter", coordinates_only=True
     )
     for amenity in amenities:
         assert len(amenity) == 3
@@ -125,7 +125,7 @@ def test_get_amenities_shelter_coordinates_only(test_collection_h2wo):
 
 def test_get_amenities_waste_basket_all(test_collection_h2wo):
     amenities = models.get_amenities(
-        amenity_col=test_collection_h2wo,
+        osm_col=test_collection_h2wo,
         amenity_name="waste_basket",
         coordinates_only=False,
     )
@@ -135,7 +135,7 @@ def test_get_amenities_waste_basket_all(test_collection_h2wo):
 
 def test_get_amenities_waste_basket_coordinates_only(test_collection_h2wo):
     amenities = models.get_amenities(
-        amenity_col=test_collection_h2wo,
+        osm_col=test_collection_h2wo,
         amenity_name="waste_basket",
         coordinates_only=True,
     )
@@ -157,3 +157,11 @@ def test_insert_and_get_review(test_collection_generic, test_review):
         amenity_col=test_collection_generic, amenity_id=amenity_id
     )
     assert len(result) == n
+
+
+def test_get_homepage_data(test_collection_h2wo):
+    count_data = models.get_homepage_data(osm_col=test_collection_h2wo)
+    data_dict = {item["_id"]: item["count"] for item in count_data}
+    assert len(count_data) == 2
+    assert "watersources" in data_dict.keys()
+    assert "toilets" in data_dict.keys()

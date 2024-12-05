@@ -1,6 +1,5 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, jsonify
 from pymongo import MongoClient
-from werkzeug.security import generate_password_hash
 
 import models
 from lib.Review import Review
@@ -19,7 +18,11 @@ valid_amenities = ["all", "water", "toilets", "bench", "shelter", "waste_basket"
 @main.route("/")  # http://127.0.0.1:5000/
 def root():
     """Render main page."""
-    return render_template("home.html")
+    # collect basic statistics for homepage
+    count_data = models.get_homepage_data(osm_col=h2wo_collection)
+    data_dict = {item["_id"]: item["count"] for item in count_data}
+    # pass data_dict as data to access from home.html
+    return render_template("home.html", data=data_dict)
 
 
 @main.route("/api/amenities/<amenity_type>", methods=["GET"])
@@ -47,14 +50,20 @@ def get_amenities(amenity_type):  # example: 127.0.0.1:5000/api?type=water
         return {"amenities": res}  # return as dictionary
     else:
         amenities = models.get_amenities(
-            amenity_col=h2wo_collection, amenity_name=amenity_type
+            osm_col=h2wo_collection, amenity_name=amenity_type
         )
         return jsonify(amenities)
 
 
-@main.route("/chart")  # http://127.0.0.1:5000/statistics/
-def chart():
-    return render_template("chart.html")
+@main.route("/api/toilet_statistics_data")
+def toilet_statistics_data():
+    amenities = models.get_toilet_statistics_data(amenity_col=h2wo_collection)
+    return jsonify(amenities)
+
+
+@main.route("/toilet_statistics_chart")
+def toilet_statistics_chart():
+    return render_template("toilet_statistics.html")
 
 
 @main.route("/map")
