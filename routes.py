@@ -22,9 +22,8 @@ def root():
     return render_template("home.html")
 
 
-@main.route("/api", methods=["GET"])
-def get_amenities():  # example: 127.0.0.1:5000/api?type=water
-    amenity_type = request.args.get("type")  # access "type" parameter
+@main.route("/api/amenities/<amenity_type>", methods=["GET"])
+def get_amenities(amenity_type):  # example: 127.0.0.1:5000/api?type=water
     if amenity_type:
         if amenity_type not in valid_amenities:
             return (
@@ -64,12 +63,14 @@ def h2wo_map():
     return render_template("map.html")
 
 
-@main.route("/review/<int:amenity_id>", methods=["GET", "POST"])
+@main.route("/api/review/<amenity_id>", methods=["GET", "POST"])
 def review(amenity_id):
     if request.method == "POST":
-        review_username = request.form["Username"]
-        review_rating = int(request.form["rating"])
-        review_comment = request.form["comment"]
+        # Parse the JSON data from the request body
+        data = request.get_json()
+        review_username = data.get("username")
+        review_rating = int(data.get("rating"))
+        review_comment = data.get("comment")
         # create review
         input_review = Review(
             username=review_username, rating=review_rating, comment=review_comment
@@ -78,9 +79,12 @@ def review(amenity_id):
         models.insert_review(
             amenity_col=h2wo_collection, amenity_id=amenity_id, review=input_review
         )
-        # redirect to thank you page
-        return redirect(url_for("thank_you"))
-    return render_template("review.html")
+        return jsonify(data)
+    if request.method == "GET":
+        res = models.get_reviews(
+            amenity_col=h2wo_collection, amenity_id=str(amenity_id)
+        )
+        return jsonify(res)
 
 
 @main.route("/thank_you")
