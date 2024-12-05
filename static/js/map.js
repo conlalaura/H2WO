@@ -2,11 +2,11 @@ $(document).ready(function () {
     const mapService = new MapService();
     const reviewPopup = document.getElementById("review-popup");
     mapService.initMap();
-    mapService.loadAmenityData('/api?type=water', 'water');
-    mapService.loadAmenityData('/api?type=toilets', 'restroom');
-//  mapService.loadAmenityData('/api?type=waste_basket', 'bins');
-//  mapService.loadAmenityData('/api?type=shelter', 'shelter');  #TODO: @Alex tell my whyyyy nicht aktiv
-//  mapService.loadAmenityData('/api?type=bench', 'bench');
+    mapService.loadAmenityData('/api/amenities/water', 'water');
+    mapService.loadAmenityData('/api/amenities/toilets', 'restroom');
+//  mapService.loadAmenityData('/api/amenities/waste_basket', 'bins');
+//  mapService.loadAmenityData('/api/amenities/shelter', 'shelter');  #TODO: @Alex tell my whyyyy nicht aktiv
+//  mapService.loadAmenityData('/api/amenities/bench', 'bench');
 
     // Set the initial state of checkboxes (set some to false when needed for performance)
     $('#fountains').prop('checked', true);
@@ -74,7 +74,7 @@ $(document).ready(function () {
     document.getElementById('submit-review').addEventListener('click', () => {
         const rating = document.getElementById('rating-value').value; // Get the rating value
         const comment = document.getElementById('comment').value; // Get the comment text
-        let amenityId = document.getElementById('review-popup').getAttribute('data-amenity-id'); // Get the amenity ID from the popup
+        const amenityId = document.getElementById('review-popup').getAttribute('data-amenity-id'); // Get the amenity ID from the popup
         const username = "Anonymous"; // Replace with logic to get the username if applicable
 
         // Ensure data is valid before submission
@@ -82,20 +82,9 @@ $(document).ready(function () {
             alert('Please provide a rating, a comment, and ensure an amenity is selected.');
             return;
         }
-        // Convert amenityId to an integer
-        amenityId = parseInt(amenityId, 10); // Convert to an integer (base 10)
-        if (isNaN(amenityId)) {
-            alert('Invalid amenity ID.');
-            return;
-    }
-        // Create FormData object
-        const formData = new FormData();
-        formData.append('username', username);
-        formData.append('rating', rating);
-        formData.append('comment', comment);
 
         // POST review data to the backend
-        fetch(`/review/${amenityId}`, {
+        fetch(`/api/review/${amenityId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
