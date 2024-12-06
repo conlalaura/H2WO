@@ -154,7 +154,7 @@ TODO
 TODO
 
 ## Outlook
-
+The statistics revealed that restroom tags are often sparse. To address this, a valuable feature would allow users to request updates or additions to amenity tags (e.g., marking a restroom as "gender-neutral" or "wheelchair accessible"). This functionality would enrich the information available for amenities, making the service more useful, enhancing accuracy, and fostering inclusivity for all users.
 Enhancements to the frontend would introduce a **Tag Update Form** for users to propose changes and a **Request Status
 Viewer** to track submitted requests.
 
