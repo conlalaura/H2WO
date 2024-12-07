@@ -18,8 +18,7 @@
 }
 /* Left content (paragraph) styling */
  .content {
-     flex: 1;
-    /* Allows the content to take up available space */
+     width: 30vw;
      max-width: 800px;
 }
  .content p{
@@ -29,11 +28,11 @@
      margin-bottom: 50px;
      font-family: 'Satoshi';
      color: var(--text-color);
-     font-size: 40px;
+     font-size: 30px;
 }
 /* Chart container styling */
  .chart-container {
-     flex: 2; /* Allows the chart container to be wider than the paragraph */
+     width: 60vw;
      max-width: 100%;
      margin-top: 100px;
 }
@@ -42,7 +41,6 @@
      color: var(--text-color);
 }
  canvas {
-     width: 100%;
-    /* Make the chart responsive */
-     height: auto;
+     width: 75%;
+     height: 75%;
 }

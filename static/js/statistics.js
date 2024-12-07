@@ -29,13 +29,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
                             position: 'top',
                             labels: {
                                 font: {
                                     family: 'inherit',
-                                    size: 25
+                                    size: 20
                                 }
                             }
                         },
@@ -48,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             stacked: true,
                             ticks: {
                                 font: {
-                                    size: 25
+                                    size: 20
                                 }
                             }
                         },
@@ -56,8 +57,8 @@ document.addEventListener("DOMContentLoaded", () => {
                             stacked: true,
                             ticks: {
                                 font: {
-                                    family: 'inherit', // Inherit font family for y-axis labels
-                                    size: 25,
+                                    family: 'inherit', // Inherit font family for css labels
+                                    size: 20,
                                 },
                                 padding: 50, // Add padding to avoid overlap
                                 callback: function(value) {
