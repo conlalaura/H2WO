@@ -16,51 +16,58 @@ document.addEventListener("DOMContentLoaded", () => {
                 data: {
                     labels: labels,
                     datasets: [{
-                            label: 'Yes',
-                            data: yesData,
-                            backgroundColor: 'rgba(79, 195, 247, 0.4)',
+                        label: 'Yes',
+                        data: yesData,
+                        backgroundColor: '#049372', // Green
                         },
                         {
-                            label: 'No',
-                            data: noData,
-                            backgroundColor: 'rgba(124, 179, 66, 0.4)',
+                        label: 'No',
+                        data: noData,
+                        backgroundColor: '#D64541', // Red
                         }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
+                    plugins: { 
                         legend: {
                             position: 'top',
                             labels: {
-                                font: {
-                                    family: 'inherit',
-                                    size: 20
-                                }
+                                font: {family: 'DMSans', size: 18},
+                                boxWidth: 20,    // Width of coloured box.
+                                boxHeight: 20   
                             }
                         },
                         tooltip: {
                             enabled: true,
-                        },
+                            position: 'nearest',
+                            xAlign: 'center',
+                            yAlign: 'bottom',
+                            backgroundColor: '#24252a',                 // Background color of the tooltip
+                            caretSize: 5,                               // Size, in px, of the tooltip arrow.
+                            cornerRadius: 10,                           // Radius of tooltip corner curves.
+                            titleFont: {family: 'Satoshi', size: 14},
+                            titleColor: '#e8e8e8',                      // Color of title text.
+                            titleMarginBottom: 10,                      // Margin to add on bottom of title section.
+                            bodyFont: {family: 'DMSans', size: 12},
+                            boxPadding: 10,                             // Padding between the color box and the text.
+
+                        }
                     },
                     scales: {
                         x: {
                             stacked: true,
                             ticks: {
-                                font: {
-                                    size: 20
-                                }
+                                font: {family: 'DMSans', size: 14},
+                                padding: 10
                             }
                         },
                         y: {
                             stacked: true,
                             ticks: {
-                                font: {
-                                    family: 'inherit', // Inherit font family for css labels
-                                    size: 20,
-                                },
-                                padding: 50, // Add padding to avoid overlap
+                                font: {family: 'DMSans', size: 14},
+                                padding: 20, // Add padding to avoid overlap
                                 callback: function(value) {
                                     return value + '%'; // Add a percent sign if needed
                                 }

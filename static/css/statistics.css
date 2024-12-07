@@ -1,46 +1,86 @@
-/* General body layout */
- body {
-     width: 100%;
-     height: 100%;
-     margin-top: 50px;
-     margin-bottom: 50px;
-     font-family: Arial, sans-serif;
-     background-color: var(--background-color)
-}
+
 /* Flex container for paragraph and chart */
- .container {
-     margin: 0px 50px;
-     max-width: 2500px;
-     display: flex;
-     justify-content: center;
-     align-items: flex-start;
-     gap: 100px; /* Add space between the paragraph and chart */
+.chart-section {
+    background-color: var(--background-color-light);
+    display: flex;
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100%;
+    }
+
+
+.chart-content {
+    /*border: 1px solid #FF0000; */
+    display: flex;
+    flex-direction: row; 
+    justify-content: start; 
+    align-items: start;
+    height: 100%;
+    width: 90%;
+    margin-block: 150px 150px;
+    }
+
+
+.chart-content-left {
+/*    border: 1px solid #0000FF; */
+    flex-direction: column;
+    display: flex;
+    align-items: start;
+    justify-content: start;
+    width: 35%;
+    padding-left: 20px;
+    padding-right: 10px;
+    }
+
+/*h2 + text-color-dark + text-align-left */  
+.chart-content-left-header {
+    /*border: 1px solid #FF00FF; */
+    flex-direction: column;
+    display: flex;
+    align-items: start;
+    justify-content: center;
+    width: 100%;
+    /*h2 + text-color-dark + text-align-left */  
+    }
+
+.chart-content-left-text {
+    /*border: 1px solid #FF00FF; */
+    flex-direction: column;
+    display: flex;
+    align-items: start;
+    justify-content: center;
+    width: 100%;
+    /*p + text-color-dark + text-align-block */  
+    }
+
+.chart-content-right {
+    /*border: 1px solid #0000FF; */
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: center;
+    width: 65%;
+    height: 100%;
+    padding-left: 10px;
+    padding-right: 20px;
+    }
+
+.chart-content-right-chart {
+    /*border: 1px solid #FF00FF; */
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: center;
+    width: 100%;
+    min-height: 100%;
+    }
+
+canvas {
+    width: 100%;
+    height: 100%;
+    font-family: 'DMSans'
 }
-/* Left content (paragraph) styling */
- .content {
-     width: 30vw;
-     max-width: 800px;
-}
- .content p{
-     text-align: justify;
-     width: 100%;
-     margin-top: 50px;
-     margin-bottom: 50px;
-     font-family: 'Satoshi';
-     color: var(--text-color);
-     font-size: 30px;
-}
-/* Chart container styling */
- .chart-container {
-     width: 60vw;
-     max-width: 100%;
-     margin-top: 100px;
-}
- .chart-font {
-     font-family: 'Satoshi';
-     color: var(--text-color);
-}
- canvas {
-     width: 75%;
-     height: 75%;
-}
+
+
+

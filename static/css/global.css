@@ -111,6 +111,10 @@ p{
   text-align: center;
 }
 
+.text-align-block{
+  text-align: justify;
+}
+
 .text-align-left{
   text-align: start;
 }
