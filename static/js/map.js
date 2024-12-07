@@ -4,25 +4,33 @@ $(document).ready(function () {
     mapService.initMap();
     mapService.loadAmenityData('/api/amenities/water', 'water');
     mapService.loadAmenityData('/api/amenities/toilets', 'restroom');
-//  mapService.loadAmenityData('/api/amenities/waste_basket', 'bins');
-//  mapService.loadAmenityData('/api/amenities/shelter', 'shelter');  #TODO: @Alex tell my whyyyy nicht aktiv
-//  mapService.loadAmenityData('/api/amenities/bench', 'bench');
+    mapService.loadAmenityData('/api/amenities/waste_basket', 'bins');
+    //mapService.loadAmenityData('/api/amenities/shelter', 'shelter');  #TODO: @Alex tell my whyyyy nicht aktiv
+    mapService.loadAmenityData('/api/amenities/bench', 'bench');
 
     // Set the initial state of checkboxes (set some to false when needed for performance)
     $('#fountains').prop('checked', true);
     $('#restrooms').prop('checked', true);
-//  $('#benches').prop('checked', true);
-//  $('#shelter').prop('checked', true);
-//  $('#bins').prop('checked', true);
+    $('#benches').prop('checked', true);
+    // $('#shelter').prop('checked', true);
+    $('#bins').prop('checked', true);
 
     // Apply the initial visibility based on checkbox states
     $('#fountains').trigger('change');
     $('#restrooms').trigger('change');
-//  $('#benches').trigger('change');
-//  $('#shelter').trigger('change');
-//  $('#bins').trigger('change');
+    $('#benches').trigger('change');
+    // $('#shelter').trigger('change');
+    $('#bins').trigger('change');
 
 // Event Listeners
+    $('#zoom-in').on('click', function () {
+        mapService.map.zoomIn();
+    });
+
+    $('#zoom-out').on('click', function () {
+        mapService.map.zoomOut();
+    });
+
     // filter checkboxes
     $('#fountains').on('change', function() {
         mapService.toggleAmenityVisibility('water', this.checked);
@@ -46,22 +54,48 @@ $(document).ready(function () {
         button.toggleClass('active');
     });
 
+    $('#sidebar-toggle').on('click', function () {
+        console.log("Collapse clicked")
+        const sidebar = $('.sidebar');
+        sidebar.toggleClass('collapsed');
+        console.log("Collapsed state:", sidebar.hasClass('collapsed'));
+        // Adjust map size to fit the new layout
+        setTimeout(() => {
+            mapService.map.invalidateSize();
+        }, 300); // Match the transition duration in CSS
+    });
+
     // recenter buttom
     $('#recenter').on('click', function() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 function(position) {
-                    // Directly set the map's view to the user's current position
-                    mapService.map.setView([position.coords.latitude, position.coords.longitude], 17);
-                }, // error handling
+                    const { latitude, longitude } = position.coords;
+                    const currentZoom = mapService.map.getZoom();
+    
+                    mapService.map.flyTo([latitude, longitude], currentZoom);
+                    // Add or update the user's marker with the popup
+                    if (mapService.userMarker) {
+                        // Update the existing marker's position and reopen the popup
+                        mapService.userMarker.setLatLng([latitude, longitude]).openPopup();
+                    } else {
+                        // Create a new marker if it doesn't exist
+                        mapService.userMarker = L.marker([latitude, longitude], { icon: userLocationIcon })
+                            .addTo(mapService.map)
+                            .bindPopup("You're here")
+                            .openPopup();
+                    }
+                },
                 function(error) {
                     console.error('Geolocation error:', error);
+                    alert('Unable to retrieve your location. Please check your device settings.');
                 }
             );
         } else {
-            console.error('Geolocation is not supported by this browser.');
+            alert('Geolocation is not supported by this browser.');
         }
     });
+    
 
     // popup close functionality
     $('#popup-close').on('click', function () {
@@ -193,14 +227,16 @@ class MapService {
     initMap() {
         this.createMap();
         this.setupGeolocation();
-        this.map.on('zoom', () => this.updateClusterRadius());  // Added this line
+        this.map.on('zoom', () => this.updateClusterRadius()); 
         $('#map').hide();
         $('#loader').show();
     }
 
     // Create the map instance
     createMap() {
-        this.map = L.map('map').setView([47.497234386445896, 8.729370936243816], 13); //  initial location Winterthur (if user doesn't share location)
+        this.map = L.map('map', {
+            zoomControl: false, // Disable default zoom controls
+        }).setView([47.497234386445896, 8.729370936243816], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {}).addTo(this.map);
     }
 
@@ -222,7 +258,7 @@ class MapService {
     }
     // Add a marker at user's location
     addUserLocationMarker(lat, lon) {
-        L.marker([lat, lon], { icon: redIcon }).addTo(this.map).bindPopup("You're here").openPopup();
+        L.marker([lat, lon], { icon: userLocationIcon }).addTo(this.map).bindPopup("You're here").openPopup();
     }
     // Handle geolocation error
     handleGeolocationError(err) {
@@ -299,7 +335,7 @@ class MapService {
                             </div>
                         `,
                         className: "", // No additional Leaflet classes
-                        iconSize: [30, 30] // Adjust as needed
+                        iconSize: [20, 20] // Adjust as needed
                     });
                 }
             };
@@ -346,7 +382,9 @@ class MapService {
     
         let leftContent = `
             <div>
-                <h3 style="margin: 0; font-size: 1.8em;">${formattedAmenityType}</h3>
+                <h3 style="margin: 0; font-size: 1.8em;">
+                    ${formattedAmenityType}
+                </h3>
         `;
         Object.entries(amenity).forEach(([key, value]) => {
         // TODO add again "id"
@@ -411,10 +449,6 @@ class MapService {
         });
     }
     
-    
-    
-    
-    
     // Create custom icon for an amenity
     createCustomIcon(amenityType) {
         const iconUrl = iconMapping[amenityType] || 'static/img/locate.svg';
@@ -440,11 +474,11 @@ class MapService {
 }
 
 
-const redIcon = L.icon({
-    iconUrl: 'static/img/locate.svg',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [-47, -35],
+const userLocationIcon = L.icon({
+    iconUrl: 'static/img/pin_user.svg', // Path to your custom icon
+    iconSize: [25, 41], // Size of the icon [width, height]
+    iconAnchor: [12, 41], // Anchor point of the icon (center bottom)
+    popupAnchor: [0, -34] // Position of the popup relative to the icon
 });
 
 const iconMapping = {
@@ -452,7 +486,7 @@ const iconMapping = {
     restroom: 'static/img/pin_restroom.svg',
     bench: 'static/img/pin_bench.svg',
     shelter: 'static/img/pin_shelter.svg',
-    bins: 'static/img/pin_bin.svg',
+    bins: 'static/img/pin_bins.svg',
 };
 
 const clusterColors = {
