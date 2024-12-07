@@ -51,17 +51,32 @@ $(document).ready(function () {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 function(position) {
-                    // Directly set the map's view to the user's current position
-                    mapService.map.setView([position.coords.latitude, position.coords.longitude], 17);
-                }, // error handling
+                    const { latitude, longitude } = position.coords;
+                    const currentZoom = mapService.map.getZoom();
+    
+                    mapService.map.flyTo([latitude, longitude], currentZoom);
+                    // Add or update the user's marker with the popup
+                    if (mapService.userMarker) {
+                        // Update the existing marker's position and reopen the popup
+                        mapService.userMarker.setLatLng([latitude, longitude]).openPopup();
+                    } else {
+                        // Create a new marker if it doesn't exist
+                        mapService.userMarker = L.marker([latitude, longitude], { icon: userLocationIcon })
+                            .addTo(mapService.map)
+                            .bindPopup("You're here")
+                            .openPopup();
+                    }
+                },
                 function(error) {
                     console.error('Geolocation error:', error);
+                    alert('Unable to retrieve your location. Please check your device settings.');
                 }
             );
         } else {
-            console.error('Geolocation is not supported by this browser.');
+            alert('Geolocation is not supported by this browser.');
         }
     });
+    
 
     // popup close functionality
     $('#popup-close').on('click', function () {
@@ -222,7 +237,7 @@ class MapService {
     }
     // Add a marker at user's location
     addUserLocationMarker(lat, lon) {
-        L.marker([lat, lon], { icon: redIcon }).addTo(this.map).bindPopup("You're here").openPopup();
+        L.marker([lat, lon], { icon: userLocationIcon }).addTo(this.map).bindPopup("You're here").openPopup();
     }
     // Handle geolocation error
     handleGeolocationError(err) {
@@ -346,7 +361,9 @@ class MapService {
     
         let leftContent = `
             <div>
-                <h3 style="margin: 0; font-size: 1.8em;">${formattedAmenityType}</h3>
+                <h3 style="margin: 0; font-size: 1.8em;">
+                    ${formattedAmenityType}
+                </h3>
         `;
         Object.entries(amenity).forEach(([key, value]) => {
         // TODO add again "id"
@@ -411,10 +428,6 @@ class MapService {
         });
     }
     
-    
-    
-    
-    
     // Create custom icon for an amenity
     createCustomIcon(amenityType) {
         const iconUrl = iconMapping[amenityType] || 'static/img/locate.svg';
@@ -439,12 +452,11 @@ class MapService {
     }
 }
 
-
-const redIcon = L.icon({
-    iconUrl: 'static/img/locate.svg',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [-47, -35],
+const userLocationIcon = L.icon({
+    iconUrl: 'static/img/pin_user.svg', // Path to your custom icon
+    iconSize: [25, 41], // Size of the icon [width, height]
+    iconAnchor: [12, 41], // Anchor point of the icon (center bottom)
+    popupAnchor: [0, -34] // Position of the popup relative to the icon
 });
 
 const iconMapping = {
