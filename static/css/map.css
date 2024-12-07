@@ -26,11 +26,51 @@
 }
 
 /*******************************************************************************/
+/* Nav-Control
+/*******************************************************************************/
+.nav-controls {
+  background: var(--background-color-light);
+  position: absolute;
+  top: 0px; /* Adjust based on your layout */
+  right: 0px; /* Adjust based on your layout */
+  z-index: 1000; /* Ensure buttons appear above the map */
+  display: flex;
+  flex-direction: row;
+  gap: 5px; /* Space between buttons */
+}
+
+/* Individual Zoom Buttons */
+.nav-btn {
+  width: 50px;
+  height: 50px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+.nav-btn img {
+  width: 100%; /* Scale the image to button size */
+  height: auto;
+  object-fit: contain; /* Ensure proper scaling */
+}
+
+/* Zoom Button Hover Effect */
+.nav-btn:hover {
+  transform: scale(1.1); /* Slightly enlarge on hover */
+}
+
+
+
+/*******************************************************************************/
 /* Sidebar
 /*******************************************************************************/
 
 .sidebar {
-  background: var(--background-color);
+  background: var(--background-color-light);
   display: flex;
   flex-direction: column;
   width: 30%;
@@ -146,6 +186,52 @@
   background: #419074;
   color: white;
 }
+
+
+/* Sidebar toggle button - Default position when sidebar is open */
+.sidebar-toggle-btn {
+  position: sticky;
+  top: 20px; /* Aligns with the sidebar title */
+  left: 50%; /* Inside the sidebar, aligned to the right */
+  width: 40px;
+  height: 40px;
+  background-color: transparent; /* Remove default background */
+  border: none;
+  cursor: pointer;
+  z-index: 1000;
+  transition: transform 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.sidebar-toggle-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Ensure the icon scales correctly */
+}
+
+/* Sidebar toggle button - Position when sidebar is collapsed */
+.sidebar.collapsed .sidebar-toggle-btn {
+  position: absolute;
+  top: 20px; /* Align with the original title height */
+  left: 10px; /* Move the button to the left side of the screen */
+  right: auto; /* Override the right positioning */
+  transform: rotate(180deg); /* Rotate the button to indicate toggle state */
+  overflow: hidden; /* Prevent content overflow */
+  z-index: 1000;
+}
+
+.sidebar.collapsed {
+  width: 0; /* Collapse to zero width */
+  padding: 0; /* Remove padding for full collapse */
+  overflow: hidden; /* Prevent content overflow */
+}
+
+/* Smooth transition for the sidebar itself */
+.sidebar {
+  transition: width 0.3s ease, padding 0.3s ease;
+}
+
 
 
 /*******************************************************************************/
@@ -266,8 +352,8 @@
   justify-content: center;
   align-items: center;
   position: relative;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: auto;
   border-radius: 50%;
 }
 

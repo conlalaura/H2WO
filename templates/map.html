@@ -31,12 +31,26 @@
         <div class="cup"></div>
     </div>
 
-    <!-- Sidebar -->
     <div class="section-page">
-    <!-- Map container -->
-        <div class="section-map" id="map">
-
+        <div class="nav-controls">
+            <button id="sidebar-toggle" class="nav-btn">
+                <img src="static/img/nav-sidebar.svg" alt="☰">
+            </button>
+            <button id="recenter" class="nav-btn">
+                <img src="static/img/nav-recenter.svg" alt="?">
+            </button>
+            <button id="zoom-in" class="nav-btn">
+                <img src="static/img/nav-zoom-in.svg" alt="+">
+            </button>
+            <button id="zoom-out" class="nav-btn">
+                <img src="static/img/nav-zoom-out.svg" alt="-">
+            </button>
         </div>
+
+        <!-- Map -->
+        <div class="section-map" id="map">
+        </div>
+        <!-- Sidebar -->
         <div class="sidebar">
             <!-- Title-->
             <div class="sidebar-title">
@@ -131,10 +145,6 @@
                 </div>
             </div>
             <hr width="100%" size="1" color=#D1D1D1 noshade>
-
-            <!-- Re-center Button -->
-            <button id="recenter" class="recenter-btn">find me!</button>
-            </div>
         </div>
     </div>
 

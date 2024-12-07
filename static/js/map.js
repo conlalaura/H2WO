@@ -4,25 +4,33 @@ $(document).ready(function () {
     mapService.initMap();
     mapService.loadAmenityData('/api/amenities/water', 'water');
     mapService.loadAmenityData('/api/amenities/toilets', 'restroom');
-//  mapService.loadAmenityData('/api/amenities/waste_basket', 'bins');
-//  mapService.loadAmenityData('/api/amenities/shelter', 'shelter');  #TODO: @Alex tell my whyyyy nicht aktiv
-//  mapService.loadAmenityData('/api/amenities/bench', 'bench');
+    mapService.loadAmenityData('/api/amenities/waste_basket', 'bins');
+    //mapService.loadAmenityData('/api/amenities/shelter', 'shelter');  #TODO: @Alex tell my whyyyy nicht aktiv
+    mapService.loadAmenityData('/api/amenities/bench', 'bench');
 
     // Set the initial state of checkboxes (set some to false when needed for performance)
     $('#fountains').prop('checked', true);
     $('#restrooms').prop('checked', true);
-//  $('#benches').prop('checked', true);
-//  $('#shelter').prop('checked', true);
-//  $('#bins').prop('checked', true);
+    $('#benches').prop('checked', true);
+    // $('#shelter').prop('checked', true);
+    $('#bins').prop('checked', true);
 
     // Apply the initial visibility based on checkbox states
     $('#fountains').trigger('change');
     $('#restrooms').trigger('change');
-//  $('#benches').trigger('change');
-//  $('#shelter').trigger('change');
-//  $('#bins').trigger('change');
+    $('#benches').trigger('change');
+    // $('#shelter').trigger('change');
+    $('#bins').trigger('change');
 
 // Event Listeners
+    $('#zoom-in').on('click', function () {
+        mapService.map.zoomIn();
+    });
+
+    $('#zoom-out').on('click', function () {
+        mapService.map.zoomOut();
+    });
+
     // filter checkboxes
     $('#fountains').on('change', function() {
         mapService.toggleAmenityVisibility('water', this.checked);
@@ -44,6 +52,17 @@ $(document).ready(function () {
         const button = $(this);
         const option = button.data('option');
         button.toggleClass('active');
+    });
+
+    $('#sidebar-toggle').on('click', function () {
+        console.log("Collapse clicked")
+        const sidebar = $('.sidebar');
+        sidebar.toggleClass('collapsed');
+        console.log("Collapsed state:", sidebar.hasClass('collapsed'));
+        // Adjust map size to fit the new layout
+        setTimeout(() => {
+            mapService.map.invalidateSize();
+        }, 300); // Match the transition duration in CSS
     });
 
     // recenter buttom
@@ -208,14 +227,16 @@ class MapService {
     initMap() {
         this.createMap();
         this.setupGeolocation();
-        this.map.on('zoom', () => this.updateClusterRadius());  // Added this line
+        this.map.on('zoom', () => this.updateClusterRadius()); 
         $('#map').hide();
         $('#loader').show();
     }
 
     // Create the map instance
     createMap() {
-        this.map = L.map('map').setView([47.497234386445896, 8.729370936243816], 13); //  initial location Winterthur (if user doesn't share location)
+        this.map = L.map('map', {
+            zoomControl: false, // Disable default zoom controls
+        }).setView([47.497234386445896, 8.729370936243816], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {}).addTo(this.map);
     }
 
@@ -314,7 +335,7 @@ class MapService {
                             </div>
                         `,
                         className: "", // No additional Leaflet classes
-                        iconSize: [30, 30] // Adjust as needed
+                        iconSize: [20, 20] // Adjust as needed
                     });
                 }
             };
@@ -452,6 +473,7 @@ class MapService {
     }
 }
 
+
 const userLocationIcon = L.icon({
     iconUrl: 'static/img/pin_user.svg', // Path to your custom icon
     iconSize: [25, 41], // Size of the icon [width, height]
@@ -464,7 +486,7 @@ const iconMapping = {
     restroom: 'static/img/pin_restroom.svg',
     bench: 'static/img/pin_bench.svg',
     shelter: 'static/img/pin_shelter.svg',
-    bins: 'static/img/pin_bin.svg',
+    bins: 'static/img/pin_bins.svg',
 };
 
 const clusterColors = {
