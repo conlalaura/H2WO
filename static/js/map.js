@@ -5,21 +5,21 @@ $(document).ready(function() {
     mapService.loadAmenityData('/api/amenities/water', 'water');
     mapService.loadAmenityData('/api/amenities/toilets', 'restroom');
     mapService.loadAmenityData('/api/amenities/waste_basket', 'bins');
-    //mapService.loadAmenityData('/api/amenities/shelter', 'shelter');  #TODO: @Alex tell my whyyyy nicht aktiv
+//    mapService.loadAmenityData('/api/amenities/shelter', 'shelter');  #TODO: @Alex tell my whyyyy nicht aktiv
     mapService.loadAmenityData('/api/amenities/bench', 'bench');
 
     // Set the initial state of checkboxes (set some to false when needed for performance)
     $('#fountains').prop('checked', true);
     $('#restrooms').prop('checked', true);
     $('#benches').prop('checked', true);
-    // $('#shelter').prop('checked', true);
+//    $('#shelter').prop('checked', true);
     $('#bins').prop('checked', true);
 
     // Apply the initial visibility based on checkbox states
     $('#fountains').trigger('change');
     $('#restrooms').trigger('change');
     $('#benches').trigger('change');
-    // $('#shelter').trigger('change');
+//    $('#shelter').trigger('change');
     $('#bins').trigger('change');
 
     // Event Listeners
@@ -109,12 +109,13 @@ $(document).ready(function() {
         $('.sidebar').css('filter', 'none');
     });
 
+
     // Review submission
     document.getElementById('submit-review').addEventListener('click', () => {
         const rating = document.getElementById('rating-value').value; // Get the rating value
         const comment = document.getElementById('comment').value; // Get the comment text
         const amenityId = document.getElementById('review-popup').getAttribute('data-amenity-id'); // Get the amenity ID from the popup
-        const username = "Anonymous"; // Replace with logic to get the username if applicable
+        const username = "Anonymous";
 
         // Ensure data is valid before submission
         if (!rating || !comment || !amenityId) {
@@ -142,8 +143,17 @@ $(document).ready(function() {
             })
             .then(data => {
                 alert('Review submitted successfully!');
-                // Optionally reload reviews for the amenity
+                // Reload the reviews dynamically
                 loadReviews(amenityId);
+
+                // Close the review popup after submission
+                $('#review-popup').fadeOut();
+                $('#map').css('filter', 'none');
+                $('.sidebar').css('filter', 'none');
+            })
+            .catch(error => {
+                console.error('Error submitting review:', error);
+                alert('An error occurred. Please try again.');
             })
             .catch(error => {
                 console.error('Error submitting review:', error);
@@ -390,8 +400,7 @@ class MapService {
                 </h3>
         `;
         Object.entries(amenity).forEach(([key, value]) => {
-            // TODO add again "id"
-            if (!['lat', 'lon', 'amenity', 'reviews'].includes(key)) {
+            if (!['lat', 'lon', 'amenity', 'reviews', 'id'].includes(key)) {
                 leftContent += `<p style="margin: 0.2rem 0;">${formatText(key)}: ${formatText(value.toString())}</p>`;
             }
         });
@@ -399,28 +408,8 @@ class MapService {
 
         let rightContent = `<div class="reviews-section" style="flex: 1;">`;
         const reviews = amenity.reviews || [];
-        if (reviews.length > 0) {
-            const meanRating = (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1);
-            const roundedRating = Math.round(meanRating);
-            rightContent += `
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                    <h3 style="margin: 0; font-size: 1.2em;">Reviews</h3>
-                    <strong style="margin-left: auto; font-size: 1.8em; color: black;">${meanRating}</strong>
-                </div>
-                <div style="color: gold; font-size: 1.2em; text-align: right;">
-                    ${'★'.repeat(roundedRating)}${'☆'.repeat(5 - roundedRating)}
-                </div>`;
 
-            // Add individual reviews
-            reviews.forEach((review) => {
-                const username = review.username || 'Anonymous';
-                const rating = review.rating || 0;
-                const comment = review.comment || '';
-                rightContent += `<p style="margin: 0.2rem 0;"><strong>${username} (${rating}):</strong> ${comment}</p>`;
-            });
-        } else {
-            rightContent += `<p>No reviews yet</p>`;
-        }
+        rightContent += renderReviews(reviews);
 
         const reviewButtonId = `add-review-btn-${amenity.id}`;
         rightContent += `
@@ -436,6 +425,8 @@ class MapService {
             </div>
         `;
     }
+
+
 
     // Attach listeners to the marker popup
     attachPopupListeners(marker, amenity) {
@@ -499,3 +490,79 @@ const clusterColors = {
     shelter: '#C45C24',
     bins: '#3A3A3A',
 };
+
+function renderReviews(reviews) {
+    let content = '';
+
+    if (reviews.length > 0) {
+        const meanRating = (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1);
+        const roundedRating = Math.round(meanRating);
+
+        content += `
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <h3 style="margin: 0; font-size: 1.2em;">Reviews</h3>
+                <strong style="margin-left: auto; font-size: 1.8em; color: black;">${meanRating}</strong>
+            </div>
+            <div style="color: gold; font-size: 1.2em; text-align: right;">
+                ${'★'.repeat(roundedRating)}${'☆'.repeat(5 - roundedRating)}
+            </div>`;
+
+        reviews.forEach((review) => {
+            const username = review.username || 'Anonymous';
+            const rating = review.rating || 0;
+            const comment = review.comment || '';
+            content += `<p style="margin: 0.2rem 0;"><strong>${username} (${rating}):</strong> ${comment}</p>`;
+        });
+    } else {
+        content += `<p>No reviews yet</p>`;
+    }
+
+    return content;
+}
+
+// Load reviews for a specific amenity and update the popup content
+function loadReviews(amenityId) {
+    fetch(`/api/review/${amenityId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(reviews => {
+            // Find the corresponding marker and update the popup content
+            const marker = window.mapServiceInstance.markers[amenityId];
+            if (marker) {
+                const popupContent = marker.getPopup().getContent();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(popupContent, 'text/html');
+
+                // Update the reviews section
+                const reviewsSection = doc.querySelector('.reviews-section');
+                if (reviewsSection) {
+                    reviewsSection.innerHTML = `
+                        ${renderReviews(reviews)}
+                        <button id="add-review-btn-${amenityId}" class="write-review-btn">Add a Review</button>
+                    `;
+                }
+
+                // Update the popup content in the marker
+                marker.getPopup().setContent(doc.body.innerHTML);
+
+                // Reattach the "Add a Review" button listener
+                const reviewBtn = document.getElementById(`add-review-btn-${amenityId}`);
+                if (reviewBtn) {
+                    reviewBtn.addEventListener("click", () => {
+                        const reviewPopup = document.getElementById("review-popup");
+                        reviewPopup.setAttribute('data-amenity-id', amenityId);
+                        reviewPopup.classList.remove("hidden");
+                        reviewPopup.style.display = "block";
+                    });
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error loading reviews:', error);
+            alert('Failed to load reviews. Please try again later.');
+        });
+}
