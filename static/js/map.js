@@ -1,33 +1,33 @@
-$(document).ready(function () {
+$(document).ready(function() {
     const mapService = new MapService();
     const reviewPopup = document.getElementById("review-popup");
     mapService.initMap();
     mapService.loadAmenityData('/api/amenities/water', 'water');
     mapService.loadAmenityData('/api/amenities/toilets', 'restroom');
     mapService.loadAmenityData('/api/amenities/waste_basket', 'bins');
-    //mapService.loadAmenityData('/api/amenities/shelter', 'shelter');  #TODO: @Alex tell my whyyyy nicht aktiv
+//    mapService.loadAmenityData('/api/amenities/shelter', 'shelter');  #TODO: @Alex tell my whyyyy nicht aktiv
     mapService.loadAmenityData('/api/amenities/bench', 'bench');
 
     // Set the initial state of checkboxes (set some to false when needed for performance)
     $('#fountains').prop('checked', true);
     $('#restrooms').prop('checked', true);
     $('#benches').prop('checked', true);
-    // $('#shelter').prop('checked', true);
+//    $('#shelter').prop('checked', true);
     $('#bins').prop('checked', true);
 
     // Apply the initial visibility based on checkbox states
     $('#fountains').trigger('change');
     $('#restrooms').trigger('change');
     $('#benches').trigger('change');
-    // $('#shelter').trigger('change');
+//    $('#shelter').trigger('change');
     $('#bins').trigger('change');
 
-// Event Listeners
-    $('#zoom-in').on('click', function () {
+    // Event Listeners
+    $('#zoom-in').on('click', function() {
         mapService.map.zoomIn();
     });
 
-    $('#zoom-out').on('click', function () {
+    $('#zoom-out').on('click', function() {
         mapService.map.zoomOut();
     });
 
@@ -48,13 +48,13 @@ $(document).ready(function () {
         mapService.toggleAmenityVisibility('bins', this.checked);
     });
 
-    $('.sidebar-amenity-options .option').on('click', function () {
+    $('.sidebar-amenity-options .option').on('click', function() {
         const button = $(this);
         const option = button.data('option');
         button.toggleClass('active');
     });
 
-    $('#sidebar-toggle').on('click', function () {
+    $('#sidebar-toggle').on('click', function() {
         console.log("Collapse clicked")
         const sidebar = $('.sidebar');
         sidebar.toggleClass('collapsed');
@@ -70,9 +70,12 @@ $(document).ready(function () {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 function(position) {
-                    const { latitude, longitude } = position.coords;
+                    const {
+                        latitude,
+                        longitude
+                    } = position.coords;
                     const currentZoom = mapService.map.getZoom();
-    
+
                     mapService.map.flyTo([latitude, longitude], currentZoom);
                     // Add or update the user's marker with the popup
                     if (mapService.userMarker) {
@@ -80,7 +83,9 @@ $(document).ready(function () {
                         mapService.userMarker.setLatLng([latitude, longitude]).openPopup();
                     } else {
                         // Create a new marker if it doesn't exist
-                        mapService.userMarker = L.marker([latitude, longitude], { icon: userLocationIcon })
+                        mapService.userMarker = L.marker([latitude, longitude], {
+                                icon: userLocationIcon
+                            })
                             .addTo(mapService.map)
                             .bindPopup("You're here")
                             .openPopup();
@@ -95,21 +100,22 @@ $(document).ready(function () {
             alert('Geolocation is not supported by this browser.');
         }
     });
-    
+
 
     // popup close functionality
-    $('#popup-close').on('click', function () {
+    $('#popup-close').on('click', function() {
         $('#review-popup').fadeOut();
         $('#map').css('filter', 'none');
         $('.sidebar').css('filter', 'none');
     });
+
 
     // Review submission
     document.getElementById('submit-review').addEventListener('click', () => {
         const rating = document.getElementById('rating-value').value; // Get the rating value
         const comment = document.getElementById('comment').value; // Get the comment text
         const amenityId = document.getElementById('review-popup').getAttribute('data-amenity-id'); // Get the amenity ID from the popup
-        const username = "Anonymous"; // Replace with logic to get the username if applicable
+        const username = "Anonymous";
 
         // Ensure data is valid before submission
         if (!rating || !comment || !amenityId) {
@@ -119,16 +125,16 @@ $(document).ready(function () {
 
         // POST review data to the backend
         fetch(`/api/review/${amenityId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                username: username,
-                rating: rating,
-                comment: comment
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: username,
+                    rating: rating,
+                    comment: comment
+                })
             })
-        })
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -137,29 +143,34 @@ $(document).ready(function () {
             })
             .then(data => {
                 alert('Review submitted successfully!');
-                // Optionally reload reviews for the amenity
+                // Reload the reviews dynamically
                 loadReviews(amenityId);
+
+                // Close the review popup after submission
+                $('#review-popup').fadeOut();
+                $('#map').css('filter', 'none');
+                $('.sidebar').css('filter', 'none');
             })
             .catch(error => {
-            console.error('Error submitting review:', error);
+                console.error('Error submitting review:', error);
+                alert('An error occurred. Please try again.');
+            })
+            .catch(error => {
+                console.error('Error submitting review:', error);
 
-            // Provide more detailed error messages
-            if (error.name === 'TypeError') {
-                // This typically happens for network errors or if fetch failed to make a request
-                alert('Network error: Unable to connect to the server. Please check your internet connection and try again.');
-            } else if (error.message.includes('HTTP error')) {
-                // Detailed error when there is an HTTP status code error
-                alert(`Server error: ${error.message}. Please try again later.`);
-            } else {
-                // Catch all other unexpected errors
-                alert(`Unexpected error: ${error.message}. Please try again.`);
-            }
-        });
-});
-
-
-
-
+                // Provide more detailed error messages
+                if (error.name === 'TypeError') {
+                    // This typically happens for network errors or if fetch failed to make a request
+                    alert('Network error: Unable to connect to the server. Please check your internet connection and try again.');
+                } else if (error.message.includes('HTTP error')) {
+                    // Detailed error when there is an HTTP status code error
+                    alert(`Server error: ${error.message}. Please try again later.`);
+                } else {
+                    // Catch all other unexpected errors
+                    alert(`Unexpected error: ${error.message}. Please try again.`);
+                }
+            });
+    });
 
 
     document.addEventListener("click", (event) => {
@@ -183,7 +194,7 @@ $(document).ready(function () {
     });
 
     document.querySelectorAll(".rating-star").forEach((star) => {
-        star.addEventListener("click", function () {
+        star.addEventListener("click", function() {
             const value = this.getAttribute("data-value");
             document.getElementById("rating-value").value = value;
 
@@ -196,29 +207,27 @@ $(document).ready(function () {
             });
         });
     });
-    
-    
-    
-    
-    
-    
+
+
+
+
     // Prevent outside click listener from being triggered when clicking inside the review popup
     document.getElementById("review-popup").addEventListener("click", (event) => {
         event.stopPropagation(); // Prevent triggering the document click listener
     });
-    
-    
+
+
 
 
     window.mapServiceInstance = mapService;
-});    
+});
 
 // Class definition for map-related operations
 class MapService {
     constructor() {
         this.map = null;
-        this.markers = {}; 
-        this.amenitiesData = {}; 
+        this.markers = {};
+        this.amenitiesData = {};
         this.markerClusterGroup = {};
         this.loadingCount = 0;
         this.markerCounts = {};
@@ -227,7 +236,7 @@ class MapService {
     initMap() {
         this.createMap();
         this.setupGeolocation();
-        this.map.on('zoom', () => this.updateClusterRadius()); 
+        this.map.on('zoom', () => this.updateClusterRadius());
         $('#map').hide();
         $('#loader').show();
     }
@@ -258,7 +267,9 @@ class MapService {
     }
     // Add a marker at user's location
     addUserLocationMarker(lat, lon) {
-        L.marker([lat, lon], { icon: userLocationIcon }).addTo(this.map).bindPopup("You're here").openPopup();
+        L.marker([lat, lon], {
+            icon: userLocationIcon
+        }).addTo(this.map).bindPopup("You're here").openPopup();
     }
     // Handle geolocation error
     handleGeolocationError(err) {
@@ -281,7 +292,7 @@ class MapService {
     loadAmenityData(apiUrl, amenityType) {
         this.loadingCount++;
         this.markerCounts[amenityType] = 0; // Initialize the count of markers for this amenity type
-        
+
         fetch(apiUrl)
             .then(response => response.json())
             .then(data => {
@@ -307,13 +318,13 @@ class MapService {
         this.checkIfAllMarkersAdded();
     }
 
-    // Check if all markers have been added    
+    // Check if all markers have been added
     checkIfAllMarkersAdded() {
         const allMarkersAdded = Object.values(this.markerCounts).every(count => count > 0);
         if (allMarkersAdded) {
             // All data processed, hide the loader and show the map
             $('#loader').hide(); // Hide the loading animation
-            $('#map').show();  // Show the map
+            $('#map').show(); // Show the map
         }
     }
 
@@ -324,7 +335,7 @@ class MapService {
                 maxClusterRadius: this.getClusterRadiusBasedOnZoom(),
                 iconCreateFunction: cluster => {
                     const childCount = cluster.getChildCount();
-    
+
                     return L.divIcon({
                         html: `
                             <div class="custom-cluster cluster-${amenityType}">
@@ -339,7 +350,7 @@ class MapService {
                     });
                 }
             };
-    
+
             this.markerClusterGroup[amenityType] = L.markerClusterGroup(clusterOptions);
         }
         return this.markerClusterGroup[amenityType];
@@ -359,7 +370,7 @@ class MapService {
         // Adjust the cluster radius based on zoom level (Formula tbd)
         return 100
     }
-    
+
     // TODO: Simplify / Split up into multiple smaller methods
     createAmenityMarker(amenity, amenityType) {
         const marker = this.createMarker(amenity, amenityType);
@@ -368,18 +379,20 @@ class MapService {
         this.attachPopupListeners(marker, amenity);
         return marker;
     }
-    
+
     // Create a Leaflet marker
     createMarker(amenity, amenityType) {
         const icon = this.createCustomIcon(amenityType);
-        return L.marker([parseFloat(amenity.lat), parseFloat(amenity.lon)], { icon });
+        return L.marker([parseFloat(amenity.lat), parseFloat(amenity.lon)], {
+            icon
+        });
     }
-    
+
     // Generate HTML content for the popup
     generatePopupContent(amenity, amenityType) {
         const formatText = (text) => text.replace(/_/g, ' ');
         const formattedAmenityType = formatText(amenityType);
-    
+
         let leftContent = `
             <div>
                 <h3 style="margin: 0; font-size: 1.8em;">
@@ -387,45 +400,24 @@ class MapService {
                 </h3>
         `;
         Object.entries(amenity).forEach(([key, value]) => {
-        // TODO add again "id"
-            if (!['lat', 'lon', 'amenity', 'reviews'].includes(key)) {
+            if (!['lat', 'lon', 'amenity', 'reviews', 'id'].includes(key)) {
                 leftContent += `<p style="margin: 0.2rem 0;">${formatText(key)}: ${formatText(value.toString())}</p>`;
             }
         });
         leftContent += `</div>`;
-    
+
         let rightContent = `<div class="reviews-section" style="flex: 1;">`;
         const reviews = amenity.reviews || [];
-        if (reviews.length > 0) {
-            const meanRating = (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1);
-            const roundedRating = Math.round(meanRating);
-            rightContent += `
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                    <h3 style="margin: 0; font-size: 1.2em;">Reviews</h3>
-                    <strong style="margin-left: auto; font-size: 1.8em; color: black;">${meanRating}</strong>
-                </div>
-                <div style="color: gold; font-size: 1.2em; text-align: right;">
-                    ${'★'.repeat(roundedRating)}${'☆'.repeat(5 - roundedRating)}
-                </div>`;
 
-            // Add individual reviews
-            reviews.forEach((review) => {
-                const username = review.username || 'Anonymous';
-                const rating = review.rating || 0;
-                const comment = review.comment || '';
-                rightContent += `<p style="margin: 0.2rem 0;"><strong>${username} (${rating}):</strong> ${comment}</p>`;
-            });
-        } else {
-            rightContent += `<p>No reviews yet</p>`;
-        }
-    
+        rightContent += renderReviews(reviews);
+
         const reviewButtonId = `add-review-btn-${amenity.id}`;
         rightContent += `
             <button id="${reviewButtonId}" class="write-review-btn">
                 Add a Review
             </button>
         </div>`;
-    
+
         return `
             <div style="display: flex; gap: 1rem; align-items: flex-start;">
                 <div>${leftContent}</div>
@@ -433,7 +425,9 @@ class MapService {
             </div>
         `;
     }
-    
+
+
+
     // Attach listeners to the marker popup
     attachPopupListeners(marker, amenity) {
         const reviewPopup = document.getElementById("review-popup");
@@ -448,7 +442,7 @@ class MapService {
             }
         });
     }
-    
+
     // Create custom icon for an amenity
     createCustomIcon(amenityType) {
         const iconUrl = iconMapping[amenityType] || 'static/img/locate.svg';
@@ -497,4 +491,78 @@ const clusterColors = {
     bins: '#3A3A3A',
 };
 
+function renderReviews(reviews) {
+    let content = '';
 
+    if (reviews.length > 0) {
+        const meanRating = (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1);
+        const roundedRating = Math.round(meanRating);
+
+        content += `
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <h3 style="margin: 0; font-size: 1.2em;">Reviews</h3>
+                <strong style="margin-left: auto; font-size: 1.8em; color: black;">${meanRating}</strong>
+            </div>
+            <div style="color: gold; font-size: 1.2em; text-align: right;">
+                ${'★'.repeat(roundedRating)}${'☆'.repeat(5 - roundedRating)}
+            </div>`;
+
+        reviews.forEach((review) => {
+            const username = review.username || 'Anonymous';
+            const rating = review.rating || 0;
+            const comment = review.comment || '';
+            content += `<p style="margin: 0.2rem 0;"><strong>${username} (${rating}):</strong> ${comment}</p>`;
+        });
+    } else {
+        content += `<p>No reviews yet</p>`;
+    }
+
+    return content;
+}
+
+// Load reviews for a specific amenity and update the popup content
+function loadReviews(amenityId) {
+    fetch(`/api/review/${amenityId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(reviews => {
+            // Find the corresponding marker and update the popup content
+            const marker = window.mapServiceInstance.markers[amenityId];
+            if (marker) {
+                const popupContent = marker.getPopup().getContent();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(popupContent, 'text/html');
+
+                // Update the reviews section
+                const reviewsSection = doc.querySelector('.reviews-section');
+                if (reviewsSection) {
+                    reviewsSection.innerHTML = `
+                        ${renderReviews(reviews)}
+                        <button id="add-review-btn-${amenityId}" class="write-review-btn">Add a Review</button>
+                    `;
+                }
+
+                // Update the popup content in the marker
+                marker.getPopup().setContent(doc.body.innerHTML);
+
+                // Reattach the "Add a Review" button listener
+                const reviewBtn = document.getElementById(`add-review-btn-${amenityId}`);
+                if (reviewBtn) {
+                    reviewBtn.addEventListener("click", () => {
+                        const reviewPopup = document.getElementById("review-popup");
+                        reviewPopup.setAttribute('data-amenity-id', amenityId);
+                        reviewPopup.classList.remove("hidden");
+                        reviewPopup.style.display = "block";
+                    });
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error loading reviews:', error);
+            alert('Failed to load reviews. Please try again later.');
+        });
+}
