@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(document).ready(function() {
     const mapService = new MapService();
     const reviewPopup = document.getElementById("review-popup");
     mapService.initMap();
@@ -22,12 +22,12 @@ $(document).ready(function () {
     // $('#shelter').trigger('change');
     $('#bins').trigger('change');
 
-// Event Listeners
-    $('#zoom-in').on('click', function () {
+    // Event Listeners
+    $('#zoom-in').on('click', function() {
         mapService.map.zoomIn();
     });
 
-    $('#zoom-out').on('click', function () {
+    $('#zoom-out').on('click', function() {
         mapService.map.zoomOut();
     });
 
@@ -48,13 +48,13 @@ $(document).ready(function () {
         mapService.toggleAmenityVisibility('bins', this.checked);
     });
 
-    $('.sidebar-amenity-options .option').on('click', function () {
+    $('.sidebar-amenity-options .option').on('click', function() {
         const button = $(this);
         const option = button.data('option');
         button.toggleClass('active');
     });
 
-    $('#sidebar-toggle').on('click', function () {
+    $('#sidebar-toggle').on('click', function() {
         console.log("Collapse clicked")
         const sidebar = $('.sidebar');
         sidebar.toggleClass('collapsed');
@@ -70,9 +70,12 @@ $(document).ready(function () {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 function(position) {
-                    const { latitude, longitude } = position.coords;
+                    const {
+                        latitude,
+                        longitude
+                    } = position.coords;
                     const currentZoom = mapService.map.getZoom();
-    
+
                     mapService.map.flyTo([latitude, longitude], currentZoom);
                     // Add or update the user's marker with the popup
                     if (mapService.userMarker) {
@@ -80,7 +83,9 @@ $(document).ready(function () {
                         mapService.userMarker.setLatLng([latitude, longitude]).openPopup();
                     } else {
                         // Create a new marker if it doesn't exist
-                        mapService.userMarker = L.marker([latitude, longitude], { icon: userLocationIcon })
+                        mapService.userMarker = L.marker([latitude, longitude], {
+                                icon: userLocationIcon
+                            })
                             .addTo(mapService.map)
                             .bindPopup("You're here")
                             .openPopup();
@@ -95,10 +100,10 @@ $(document).ready(function () {
             alert('Geolocation is not supported by this browser.');
         }
     });
-    
+
 
     // popup close functionality
-    $('#popup-close').on('click', function () {
+    $('#popup-close').on('click', function() {
         $('#review-popup').fadeOut();
         $('#map').css('filter', 'none');
         $('.sidebar').css('filter', 'none');
@@ -119,16 +124,16 @@ $(document).ready(function () {
 
         // POST review data to the backend
         fetch(`/api/review/${amenityId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                username: username,
-                rating: rating,
-                comment: comment
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: username,
+                    rating: rating,
+                    comment: comment
+                })
             })
-        })
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -141,25 +146,21 @@ $(document).ready(function () {
                 loadReviews(amenityId);
             })
             .catch(error => {
-            console.error('Error submitting review:', error);
+                console.error('Error submitting review:', error);
 
-            // Provide more detailed error messages
-            if (error.name === 'TypeError') {
-                // This typically happens for network errors or if fetch failed to make a request
-                alert('Network error: Unable to connect to the server. Please check your internet connection and try again.');
-            } else if (error.message.includes('HTTP error')) {
-                // Detailed error when there is an HTTP status code error
-                alert(`Server error: ${error.message}. Please try again later.`);
-            } else {
-                // Catch all other unexpected errors
-                alert(`Unexpected error: ${error.message}. Please try again.`);
-            }
-        });
-});
-
-
-
-
+                // Provide more detailed error messages
+                if (error.name === 'TypeError') {
+                    // This typically happens for network errors or if fetch failed to make a request
+                    alert('Network error: Unable to connect to the server. Please check your internet connection and try again.');
+                } else if (error.message.includes('HTTP error')) {
+                    // Detailed error when there is an HTTP status code error
+                    alert(`Server error: ${error.message}. Please try again later.`);
+                } else {
+                    // Catch all other unexpected errors
+                    alert(`Unexpected error: ${error.message}. Please try again.`);
+                }
+            });
+    });
 
 
     document.addEventListener("click", (event) => {
@@ -183,7 +184,7 @@ $(document).ready(function () {
     });
 
     document.querySelectorAll(".rating-star").forEach((star) => {
-        star.addEventListener("click", function () {
+        star.addEventListener("click", function() {
             const value = this.getAttribute("data-value");
             document.getElementById("rating-value").value = value;
 
@@ -196,29 +197,27 @@ $(document).ready(function () {
             });
         });
     });
-    
-    
-    
-    
-    
-    
+
+
+
+
     // Prevent outside click listener from being triggered when clicking inside the review popup
     document.getElementById("review-popup").addEventListener("click", (event) => {
         event.stopPropagation(); // Prevent triggering the document click listener
     });
-    
-    
+
+
 
 
     window.mapServiceInstance = mapService;
-});    
+});
 
 // Class definition for map-related operations
 class MapService {
     constructor() {
         this.map = null;
-        this.markers = {}; 
-        this.amenitiesData = {}; 
+        this.markers = {};
+        this.amenitiesData = {};
         this.markerClusterGroup = {};
         this.loadingCount = 0;
         this.markerCounts = {};
@@ -227,7 +226,7 @@ class MapService {
     initMap() {
         this.createMap();
         this.setupGeolocation();
-        this.map.on('zoom', () => this.updateClusterRadius()); 
+        this.map.on('zoom', () => this.updateClusterRadius());
         $('#map').hide();
         $('#loader').show();
     }
@@ -258,7 +257,9 @@ class MapService {
     }
     // Add a marker at user's location
     addUserLocationMarker(lat, lon) {
-        L.marker([lat, lon], { icon: userLocationIcon }).addTo(this.map).bindPopup("You're here").openPopup();
+        L.marker([lat, lon], {
+            icon: userLocationIcon
+        }).addTo(this.map).bindPopup("You're here").openPopup();
     }
     // Handle geolocation error
     handleGeolocationError(err) {
@@ -281,7 +282,7 @@ class MapService {
     loadAmenityData(apiUrl, amenityType) {
         this.loadingCount++;
         this.markerCounts[amenityType] = 0; // Initialize the count of markers for this amenity type
-        
+
         fetch(apiUrl)
             .then(response => response.json())
             .then(data => {
@@ -307,13 +308,13 @@ class MapService {
         this.checkIfAllMarkersAdded();
     }
 
-    // Check if all markers have been added    
+    // Check if all markers have been added
     checkIfAllMarkersAdded() {
         const allMarkersAdded = Object.values(this.markerCounts).every(count => count > 0);
         if (allMarkersAdded) {
             // All data processed, hide the loader and show the map
             $('#loader').hide(); // Hide the loading animation
-            $('#map').show();  // Show the map
+            $('#map').show(); // Show the map
         }
     }
 
@@ -324,7 +325,7 @@ class MapService {
                 maxClusterRadius: this.getClusterRadiusBasedOnZoom(),
                 iconCreateFunction: cluster => {
                     const childCount = cluster.getChildCount();
-    
+
                     return L.divIcon({
                         html: `
                             <div class="custom-cluster cluster-${amenityType}">
@@ -339,7 +340,7 @@ class MapService {
                     });
                 }
             };
-    
+
             this.markerClusterGroup[amenityType] = L.markerClusterGroup(clusterOptions);
         }
         return this.markerClusterGroup[amenityType];
@@ -359,7 +360,7 @@ class MapService {
         // Adjust the cluster radius based on zoom level (Formula tbd)
         return 100
     }
-    
+
     // TODO: Simplify / Split up into multiple smaller methods
     createAmenityMarker(amenity, amenityType) {
         const marker = this.createMarker(amenity, amenityType);
@@ -368,18 +369,20 @@ class MapService {
         this.attachPopupListeners(marker, amenity);
         return marker;
     }
-    
+
     // Create a Leaflet marker
     createMarker(amenity, amenityType) {
         const icon = this.createCustomIcon(amenityType);
-        return L.marker([parseFloat(amenity.lat), parseFloat(amenity.lon)], { icon });
+        return L.marker([parseFloat(amenity.lat), parseFloat(amenity.lon)], {
+            icon
+        });
     }
-    
+
     // Generate HTML content for the popup
     generatePopupContent(amenity, amenityType) {
         const formatText = (text) => text.replace(/_/g, ' ');
         const formattedAmenityType = formatText(amenityType);
-    
+
         let leftContent = `
             <div>
                 <h3 style="margin: 0; font-size: 1.8em;">
@@ -387,13 +390,13 @@ class MapService {
                 </h3>
         `;
         Object.entries(amenity).forEach(([key, value]) => {
-        // TODO add again "id"
+            // TODO add again "id"
             if (!['lat', 'lon', 'amenity', 'reviews'].includes(key)) {
                 leftContent += `<p style="margin: 0.2rem 0;">${formatText(key)}: ${formatText(value.toString())}</p>`;
             }
         });
         leftContent += `</div>`;
-    
+
         let rightContent = `<div class="reviews-section" style="flex: 1;">`;
         const reviews = amenity.reviews || [];
         if (reviews.length > 0) {
@@ -418,14 +421,14 @@ class MapService {
         } else {
             rightContent += `<p>No reviews yet</p>`;
         }
-    
+
         const reviewButtonId = `add-review-btn-${amenity.id}`;
         rightContent += `
             <button id="${reviewButtonId}" class="write-review-btn">
                 Add a Review
             </button>
         </div>`;
-    
+
         return `
             <div style="display: flex; gap: 1rem; align-items: flex-start;">
                 <div>${leftContent}</div>
@@ -433,7 +436,7 @@ class MapService {
             </div>
         `;
     }
-    
+
     // Attach listeners to the marker popup
     attachPopupListeners(marker, amenity) {
         const reviewPopup = document.getElementById("review-popup");
@@ -448,7 +451,7 @@ class MapService {
             }
         });
     }
-    
+
     // Create custom icon for an amenity
     createCustomIcon(amenityType) {
         const iconUrl = iconMapping[amenityType] || 'static/img/locate.svg';
@@ -496,5 +499,3 @@ const clusterColors = {
     shelter: '#C45C24',
     bins: '#3A3A3A',
 };
-
-
