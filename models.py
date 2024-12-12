@@ -1,6 +1,7 @@
 from pymongo.collection import Collection
 from dataclasses import asdict
 from lib.Review import Review
+from data.mongodb_loader import get_common_keys, get_all_amenity_keys
 
 
 def get_amenities(
@@ -48,7 +49,7 @@ def get_homepage_data(osm_col: Collection) -> list[dict]:
     """
     Collects data for the amenity statistics
     :param osm_col: mongodb collection of project relevant amenities
-    :return: list of dicts with counts for every amenity
+    :return: list of dicts with counts for toilets and watersources
     """
     pipeline = [
         # match docs that have an amenity key
@@ -100,7 +101,7 @@ def get_toilet_statistics_data(amenity_col: Collection) -> list[dict]:
     """
     Returns statistics about toilet facilities
     :param amenity_col: mongodb collection of project relevant amenities
-    :return:
+    :return: percentage yes/no of toilet accommodations
     """
     pipeline = [
         {"$match": {"amenity": "toilets"}},
@@ -108,8 +109,8 @@ def get_toilet_statistics_data(amenity_col: Collection) -> list[dict]:
         {"$addFields": {"free": "$fee"}},
         {
             "$project": {
-                "free_yes": {"$cond": [{"$eq": ["$free", "no"]}, 1, 0]},  # Switched logic
-                "free_no": {"$cond": [{"$eq": ["$free", "yes"]}, 1, 0]},  # Switched logic
+                "free_yes": {"$cond": [{"$eq": ["$free", "no"]}, 1, 0]},
+                "free_no": {"$cond": [{"$eq": ["$free", "yes"]}, 1, 0]},
                 "wheelchair_yes": {"$cond": [{"$eq": ["$wheelchair", "yes"]}, 1, 0]},
                 "wheelchair_no": {"$cond": [{"$eq": ["$wheelchair", "no"]}, 1, 0]},
                 "changing_table_yes": {
@@ -150,65 +151,151 @@ def get_toilet_statistics_data(amenity_col: Collection) -> list[dict]:
                     {
                         "key": "free",
                         "yes": {
-                            "$multiply": [{"$divide": ["$free_yes", "$total"]}, 100]
+                            "$round": [
+                                {
+                                    "$multiply": [
+                                        {"$divide": ["$free_yes", "$total"]},
+                                        100,
+                                    ]
+                                },
+                                1,
+                            ]
                         },
                         "no": {
-                            "$multiply": [{"$divide": ["$free_no", "$total"]}, 100]
+                            "$round": [
+                                {
+                                    "$multiply": [
+                                        {"$divide": ["$free_no", "$total"]},
+                                        100,
+                                    ]
+                                },
+                                1,
+                            ]
                         },
                     },
                     {
                         "key": "wheelchair",
                         "yes": {
-                            "$multiply": [
-                                {"$divide": ["$wheelchair_yes", "$total"]},
-                                100,
+                            "$round": [
+                                {
+                                    "$multiply": [
+                                        {"$divide": ["$wheelchair_yes", "$total"]},
+                                        100,
+                                    ]
+                                },
+                                1,
                             ]
                         },
                         "no": {
-                            "$multiply": [
-                                {"$divide": ["$wheelchair_no", "$total"]},
-                                100,
+                            "$round": [
+                                {
+                                    "$multiply": [
+                                        {"$divide": ["$wheelchair_no", "$total"]},
+                                        100,
+                                    ]
+                                },
+                                1,
                             ]
                         },
                     },
                     {
                         "key": "changing_table",
                         "yes": {
-                            "$multiply": [
-                                {"$divide": ["$changing_table_yes", "$total"]},
-                                100,
+                            "$round": [
+                                {
+                                    "$multiply": [
+                                        {"$divide": ["$changing_table_yes", "$total"]},
+                                        100,
+                                    ]
+                                },
+                                1,
                             ]
                         },
                         "no": {
-                            "$multiply": [
-                                {"$divide": ["$changing_table_no", "$total"]},
-                                100,
+                            "$round": [
+                                {
+                                    "$multiply": [
+                                        {"$divide": ["$changing_table_no", "$total"]},
+                                        100,
+                                    ]
+                                },
+                                1,
                             ]
                         },
                     },
                     {
                         "key": "male",
                         "yes": {
-                            "$multiply": [{"$divide": ["$male_yes", "$total"]}, 100]
+                            "$round": [
+                                {
+                                    "$multiply": [
+                                        {"$divide": ["$male_yes", "$total"]},
+                                        100,
+                                    ]
+                                },
+                                1,
+                            ]
                         },
-                        "no": {"$multiply": [{"$divide": ["$male_no", "$total"]}, 100]},
+                        "no": {
+                            "$round": [
+                                {
+                                    "$multiply": [
+                                        {"$divide": ["$male_no", "$total"]},
+                                        100,
+                                    ]
+                                },
+                                1,
+                            ]
+                        },
                     },
                     {
                         "key": "female",
                         "yes": {
-                            "$multiply": [{"$divide": ["$female_yes", "$total"]}, 100]
+                            "$round": [
+                                {
+                                    "$multiply": [
+                                        {"$divide": ["$female_yes", "$total"]},
+                                        100,
+                                    ]
+                                },
+                                1,
+                            ]
                         },
                         "no": {
-                            "$multiply": [{"$divide": ["$female_no", "$total"]}, 100]
+                            "$round": [
+                                {
+                                    "$multiply": [
+                                        {"$divide": ["$female_no", "$total"]},
+                                        100,
+                                    ]
+                                },
+                                1,
+                            ]
                         },
                     },
                     {
                         "key": "unisex",
                         "yes": {
-                            "$multiply": [{"$divide": ["$unisex_yes", "$total"]}, 100]
+                            "$round": [
+                                {
+                                    "$multiply": [
+                                        {"$divide": ["$unisex_yes", "$total"]},
+                                        100,
+                                    ]
+                                },
+                                1,
+                            ]
                         },
                         "no": {
-                            "$multiply": [{"$divide": ["$unisex_no", "$total"]}, 100]
+                            "$round": [
+                                {
+                                    "$multiply": [
+                                        {"$divide": ["$unisex_no", "$total"]},
+                                        100,
+                                    ]
+                                },
+                                1,
+                            ]
                         },
                     },
                 ]
@@ -218,6 +305,42 @@ def get_toilet_statistics_data(amenity_col: Collection) -> list[dict]:
         {"$sort": {"fields.yes": -1}},
     ]
     return list(amenity_col.aggregate(pipeline))
+
+
+def get_sparsity_statistics_data(amenity_col: Collection) -> list[dict]:
+    """
+    Returns statistics about the sparsity of oms data
+    :param amenity_col: mongodb collection of project relevant amenities
+    :return: average percentage of available keys per amenity type
+    """
+    common_keys = get_common_keys()
+    all_amenity_keys = get_all_amenity_keys(common_keys)
+
+    expected_key_number = {
+        key: len(value) - len(common_keys)
+        for (key, value) in all_amenity_keys.items()
+        if len(value) - len(common_keys) != 0
+    }
+
+    result = []
+
+    # Iterate over each amenity type and calculate the metric
+    for amenity_name, expected_number in expected_key_number.items():
+        query = {"amenity": amenity_name}
+        keys = {
+            "_id": 0,
+            "name": 0,
+            "amenity": 0,
+            "lat": 0,
+            "lon": 0,
+            "id": 0,
+        }  # don't keep mongodb id and common keys
+        res = amenity_col.find(query, keys)
+        fractions_of_keys = [len(doc) / expected_number * 100 for doc in res]
+        fraction = sum(fractions_of_keys) / len(fractions_of_keys)
+        result.append({amenity_name: round(fraction, 1)})
+
+    return result
 
 
 def insert_review(amenity_col: Collection, amenity_id: str, review: Review) -> None:
