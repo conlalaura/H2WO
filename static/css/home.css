@@ -257,7 +257,7 @@
 .services-content-right {
   /*border: 1px solid #0000FF;*/
   display: flex;
-  flex-direction: row; 
+  flex-direction: row;
   align-content: start;
   justify-content: center; /* Center elements vertically */
   width: 60%;
@@ -266,7 +266,7 @@
   padding-right: 20px;
 }
 
-.services-content-right-service {
+.services-content-card {
 /*border: solid 1px #FF0000;*/
   display: flex;
   flex-direction: column;
@@ -282,7 +282,7 @@
   color: #000; /* Optional: Change text color */
 }
 
-.services-content-right-service-image {
+.services-content-image {
 /*border: solid 1px #AA00AA;*/
   display: flex;
   flex-direction: column;
@@ -292,7 +292,7 @@
   width: 100%;
 }
 
-.services-content-right-service-image img {
+.services-content-image img {
   max-height: 100%;
   width: auto;
 }
