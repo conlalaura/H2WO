@@ -336,10 +336,13 @@ def get_sparsity_statistics_data(amenity_col: Collection) -> list[dict]:
             "id": 0,
         }  # don't keep mongodb id and common keys
         res = amenity_col.find(query, keys)
-        fractions_of_keys = [len(doc) / expected_number * 100 for doc in res]
-        fraction = sum(fractions_of_keys) / len(fractions_of_keys)
-        result.append({amenity_name: round(fraction, 1)})
+        percentage_of_sparsity = [
+            100 - (len(doc) / expected_number * 100) for doc in res
+        ]
+        mean_sparsity = sum(percentage_of_sparsity) / len(percentage_of_sparsity)
+        result.append({amenity_name: round(mean_sparsity, 1)})
 
+    result = sorted(result, key=lambda x: list(x.values())[0], reverse=True)
     return result
 
 
