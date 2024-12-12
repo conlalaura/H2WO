@@ -18,12 +18,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     datasets: [{
                         label: 'Yes',
                         data: yesData,
-                        backgroundColor: '#049372', // Green
+                        backgroundColor: 'rgba(4, 147, 114, 0.6)', // Green
                         },
                         {
                         label: 'No',
                         data: noData,
-                        backgroundColor: '#D64541', // Red
+                        backgroundColor: 'rgba(214, 69, 65, 0.6)', // Red
                         }
                     ]
                 },
@@ -70,6 +70,80 @@ document.addEventListener("DOMContentLoaded", () => {
                                 padding: 20, // Add padding to avoid overlap
                                 callback: function(value) {
                                     return value + '%'; // Add a percent sign if needed
+                                }
+                            },
+                        },
+                    }
+                }
+            });
+        })
+        .catch(error => {
+            console.error("Error fetching data:", error);
+        });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    const ctx = document.getElementById('sparsityChart').getContext('2d');
+
+    // Fetch the data from the backend
+    fetch('/api/sparsity_statistics_data')
+        .then(response => response.json())
+        .then(data => {
+            // Process data into labels and datasets
+            const labels = data.map(item => Object.keys(item)[0]); // Extract keys as labels
+            const sparsityData = data.map(item => Object.values(item)[0]); // Extract values as data
+
+            // Create the chart
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Key Sparsity (%)',
+                        data: sparsityData,
+                        backgroundColor: 'rgba(4, 147, 114, 0.6)',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: {family: 'DMSans', size: 18},
+                                boxWidth: 20,
+                                boxHeight: 20
+                            }
+                        },
+                        tooltip: {
+                            enabled: true,
+                            position: 'nearest',
+                            xAlign: 'center',
+                            yAlign: 'bottom',
+                            backgroundColor: '#24252a',
+                            caretSize: 5,
+                            cornerRadius: 10,
+                            titleFont: {family: 'Satoshi', size: 14},
+                            titleColor: '#e8e8e8',
+                            titleMarginBottom: 10,
+                            bodyFont: {family: 'DMSans', size: 12},
+                            boxPadding: 10,
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                font: {family: 'DMSans', size: 14},
+                                padding: 10
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                font: {family: 'DMSans', size: 14},
+                                padding: 20,
+                                callback: function(value) {
+                                    return value + '%'; // Add a percent sign
                                 }
                             },
                         },

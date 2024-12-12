@@ -145,16 +145,38 @@ information for toilet properties such as gender accessibility etc. in percentag
 ]
 ```
 
-## Testing
+### API Endpoint: /api/sparsity_statistics_data
 
-TODO
+This endpoint provides statistical insights into the key sparsity of amenities. For each amenity type with specific
+keys, it returns a single percentage value indicating the average presence of the expected keys.
+
+#### HTTP Methods
+
+`GET`: Retrieves statistical values needed for plotting.
+
+#### Example Response
+
+```
+[
+    {
+        "fountain": 50
+    },
+    {
+        "drinking_water": 13
+    }
+]
+```
 
 ## Retrospective
 
 TODO
 
 ## Outlook
-The statistics revealed that restroom tags are often sparse. To address this, a valuable feature would allow users to request updates or additions to amenity tags (e.g., marking a restroom as "gender-neutral" or "wheelchair accessible"). This functionality would enrich the information available for amenities, making the service more useful, enhancing accuracy, and fostering inclusivity for all users.
+
+The statistics revealed that restroom tags are often sparse. To address this, a valuable feature would allow users to
+request updates or additions to amenity tags (e.g., marking a restroom as "gender-neutral" or "wheelchair accessible").
+This functionality would enrich the information available for amenities, making the service more useful, enhancing
+accuracy, and fostering inclusivity for all users.
 Enhancements to the frontend would introduce a **Tag Update Form** for users to propose changes and a **Request Status
 Viewer** to track submitted requests.
 
