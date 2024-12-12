@@ -104,10 +104,12 @@ def get_toilet_statistics_data(amenity_col: Collection) -> list[dict]:
     """
     pipeline = [
         {"$match": {"amenity": "toilets"}},
+        # Dynamically rename fee to free
+        {"$addFields": {"free": "$fee"}},
         {
             "$project": {
-                "fee_yes": {"$cond": [{"$eq": ["$fee", "yes"]}, 1, 0]},
-                "fee_no": {"$cond": [{"$eq": ["$fee", "no"]}, 1, 0]},
+                "free_yes": {"$cond": [{"$eq": ["$free", "no"]}, 1, 0]},  # Switched logic
+                "free_no": {"$cond": [{"$eq": ["$free", "yes"]}, 1, 0]},  # Switched logic
                 "wheelchair_yes": {"$cond": [{"$eq": ["$wheelchair", "yes"]}, 1, 0]},
                 "wheelchair_no": {"$cond": [{"$eq": ["$wheelchair", "no"]}, 1, 0]},
                 "changing_table_yes": {
@@ -128,8 +130,8 @@ def get_toilet_statistics_data(amenity_col: Collection) -> list[dict]:
             "$group": {
                 "_id": None,
                 "total": {"$sum": 1},
-                "fee_yes": {"$sum": "$fee_yes"},
-                "fee_no": {"$sum": "$fee_no"},
+                "free_yes": {"$sum": "$free_yes"},
+                "free_no": {"$sum": "$free_no"},
                 "wheelchair_yes": {"$sum": "$wheelchair_yes"},
                 "wheelchair_no": {"$sum": "$wheelchair_no"},
                 "changing_table_yes": {"$sum": "$changing_table_yes"},
@@ -146,11 +148,13 @@ def get_toilet_statistics_data(amenity_col: Collection) -> list[dict]:
             "$project": {
                 "fields": [
                     {
-                        "key": "fee",
+                        "key": "free",
                         "yes": {
-                            "$multiply": [{"$divide": ["$fee_yes", "$total"]}, 100]
+                            "$multiply": [{"$divide": ["$free_yes", "$total"]}, 100]
                         },
-                        "no": {"$multiply": [{"$divide": ["$fee_no", "$total"]}, 100]},
+                        "no": {
+                            "$multiply": [{"$divide": ["$free_no", "$total"]}, 100]
+                        },
                     },
                     {
                         "key": "wheelchair",
