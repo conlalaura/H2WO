@@ -153,6 +153,64 @@ def insert_dummy_reviews(
         print("Randomly added 500 dummy-reviews to amenities in the Winterthur-Area!")
 
 
+def get_common_keys() -> dict:
+    return {
+        "name": 1,
+        "amenity": 1,
+        "lat": 1,
+        "lon": 1,
+        "id": 1,
+    }
+
+
+def get_all_amenity_keys(common_keys_input: dict) -> dict:
+    # amenity-specific keys
+    return {
+        "fountain": {
+            **common_keys_input,
+            "drinking_water": 1,
+        },
+        "water_point": {
+            **common_keys_input,
+        },
+        "drinking_water": {
+            **common_keys_input,
+            "wheelchair": 1,
+            "bottle": 1,
+            "seasonal": 1,
+        },
+        "toilets": {
+            **common_keys_input,
+            "fee": 1,
+            "wheelchair": 1,
+            "changing_table": 1,
+            "male": 1,
+            "female": 1,
+            "unisex": 1,
+        },
+        "bench": {
+            **common_keys_input,
+            "seats": 1,
+            "covered": 1,
+        },
+        "water_tap": {
+            **common_keys_input,
+        },
+        "waste_basket": {
+            **common_keys_input,
+            "waste": 1,
+        },
+        "shelter": {
+            **common_keys_input,
+            "bench": 1,
+            "bin": 1,
+            "picnic_table": 1,
+            "table": 1,
+            "drinking_water": 1,
+        },
+    }
+
+
 if __name__ == "__main__":
     client = pymongo.MongoClient(host="localhost", port=27017)
     db = client["osm"]  # select db
@@ -176,58 +234,10 @@ if __name__ == "__main__":
     Select only project-relevant data from the OpenSteetMap 
     """
     # keys used for all amenities
-    common_keys = {
-        "name": 1,
-        "amenity": 1,
-        "lat": 1,
-        "lon": 1,
-        "id": 1,
-    }
+    common_keys = get_common_keys()
+
     # amenity-specific keys
-    all_amenity_keys = {
-        "fountain": {
-            **common_keys,
-            "drinking_water": 1,
-        },
-        "water_point": {
-            **common_keys,
-        },
-        "drinking_water": {
-            **common_keys,
-            "wheelchair": 1,
-            "bottle": 1,
-            "seasonal": 1,
-        },
-        "toilets": {
-            **common_keys,
-            "fee": 1,
-            "wheelchair": 1,
-            "changing_table": 1,
-            "male": 1,
-            "female": 1,
-            "unisex": 1,
-        },
-        "bench": {
-            **common_keys,
-            "seats": 1,
-            "covered": 1,
-        },
-        "water_tap": {
-            **common_keys,
-        },
-        "waste_basket": {
-            **common_keys,
-            "waste": 1,
-        },
-        "shelter": {
-            **common_keys,
-            "bench": 1,
-            "bin": 1,
-            "picnic_table": 1,
-            "table": 1,
-            "drinking_water": 1,
-        },
-    }
+    all_amenity_keys = get_all_amenity_keys(common_keys)
 
     filtered_amenities = []
 
