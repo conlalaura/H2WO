@@ -51,7 +51,7 @@ def insert_if_empty(col: Collection, documents: list[dict]) -> None:
 
 
 def get_project_amenities(
-    col: Collection, amenity_name: str, amenity_keys: dict, special_keys=None
+        col: Collection, amenity_name: str, amenity_keys: dict, special_keys=None
 ) -> list[dict]:
     """
     Searches the osm collection for a given amenity and keys
@@ -63,16 +63,27 @@ def get_project_amenities(
     """
     if special_keys is None:
         special_keys = {}
+
     query = {"amenity": amenity_name}
     results = col.find(query, amenity_keys)
-    results = list(results)  # convert curser
+    results = list(results)  # convert cursor to list
+
     if special_keys:
         for key, value in special_keys.items():
             for i in range(len(results)):
                 results[i][key] = value
+
     for i in range(len(results)):
         results[i]["lat"] = convert_to_float(results[i]["lat"])
         results[i]["lon"] = convert_to_float(results[i]["lon"])
+
+        # Update 'free' key based on 'fee' if amenity_name is "toilets"
+        if amenity_name == "toilets" and "fee" in results[i]:
+            if results[i]["fee"] == "yes":
+                results[i]["free"] = "no"
+            elif results[i]["fee"] == "no":
+                results[i]["free"] = "yes"
+
     return list(results)
 
 
@@ -91,10 +102,10 @@ def convert_to_float(input_string: str) -> float:
 
 
 def insert_dummy_reviews(
-    col: Collection,
-    n=1000,
-    bounding_box_lower_left=(47.449, 8.655),
-    bounding_box_upper_right=(47.549, 8.811),
+        col: Collection,
+        n=1000,
+        bounding_box_lower_left=(47.449, 8.655),
+        bounding_box_upper_right=(47.549, 8.811),
 ) -> None:
     """
     Inserts Dummy reviews into the project collection. Useful for demonstration purposes. By default, Witherthur Area.
