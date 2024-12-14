@@ -353,14 +353,13 @@
   align-items: center;
   position: relative;
   width: 40px;
-  height: auto;
-  border-radius: 50%;
+  height: 40px;
 }
 
 /* Icon element (background for amenity-specific icon) */
 .custom-cluster .icon {
-  width: 40px; /* Size of the icon container */
-  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
