@@ -1,9 +1,10 @@
 /*******************************************************************************/
 /* Landing Section
 /*******************************************************************************/
+
 .landing-section {
   /* border: 1px solid #FF0000; */
-  background-color: var(--background-color);
+  background-color: var(--background-color-light);
   display: flex;
   flex-direction: column; 
   justify-content: center; 
@@ -13,7 +14,7 @@
 .landing-content {
   /* border: 1px solid #FF00FF; */
   display: flex;
-  justify-self: center; /* H-Align Center */
+  justify-content: center; /* H-Align Center */
   align-items: center; /* V-Align Center */
   flex-direction: column; 
   width: 70%;
@@ -23,18 +24,21 @@
 }
 
 .landing-text {
-/*  border: 1px solid #0000FF; */
+  border: 1px solid #0000FF; 
   width: 100%;
-  margin-top: 150px;
-  margin-bottom: 50px;
+  margin-top: 25px;
+  margin-bottom: 25px;
   /* h1 + text-align-center + text-color-dark */
 }
 
 .landing-image {
-/*  border: 1px solid #0000FF; */
+  border: 1px solid #0000FF; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
-  margin-top: 50px;
-  margin-bottom: 50px;
+  margin-top: 25px;
+  margin-bottom: 25px;
 }
 
 .landing-image img {
@@ -229,17 +233,17 @@
 }
 
 .services-content {
-/*border: 1px solid #FF00FF;*/
+  border: 1px solid #FF00FF;
   display: flex;
   justify-content: center;
   align-items: start;
   flex-direction: row;
   width: 90%;
-  margin-block: 150px 150px;
+  margin-block: 100px 100px;
 }
 
 .services-content-left {
-/*border: 1px solid #0000FF;*/
+  border: 1px solid #0000FF;
   display: flex;
   justify-content: start; 
   align-items: start; 
@@ -249,19 +253,18 @@
 }
 
 .services-content-left-text{
-/*border: solid 1px #FF0000;*/
+  border: solid 1px #FF0000;
   width: 100%;
 /* h2 + text-color-light + text-align-left */
 }
 
 .services-content-right {
-  /*border: 1px solid #0000FF;*/
+  border: 1px solid #0000FF;
   display: flex;
   flex-direction: row;
   align-content: start;
   justify-content: center; /* Center elements vertically */
   width: 60%;
-  height: 100%;
   padding-left: 20px;
   padding-right: 20px;
 }
