@@ -61,25 +61,23 @@
 
             <hr width="100%" size="1" color=#D1D1D1 noshade>
             <!-- Filter Section: Fountains -->
-            <div class="sidebar-amenity">
+            <div class="sidebar-amenity" data-amenity-type="water">
                 <div class="sidebar-amenity-header">
                     <label class="sidebar-amenity-enable">
-                        <h5>Fountains</h5>
+                        <h5>Water</h5>
                         <input type="checkbox" id="fountains">
                         <span class="checkmark"></span>
                     </label>
                 </div>
                 <div class="sidebar-amenity-options">
-                    <button class="option" data-option="drinkable">drinkable</button>
-                    <button class="option" data-option="in-operation">in operation</button>
-                    <button class="option" data-option="illuminated">illuminated</button>
-                    <button class="option" data-option="historic">historic</button>
-                    <button class="option" data-option="fits-waterbottle">fits waterbottle</button>
+                    <button class="option" data-option="drinking_water">drinkable</button>
+                    <button class="option" data-option="bottle">fits waterbottle</button>
+                    <button class="option" data-option="seasonal">seasonal operation</button>
                 </div>
             </div>
             <hr width="100%" size="1" color=#D1D1D1 noshade>
             <!-- Filter Section: Restrooms -->
-            <div class="sidebar-amenity">
+            <div class="sidebar-amenity" data-amenity-type="restroom">
                 <div class="sidebar-amenity-header">
                     <label class="sidebar-amenity-enable">
                         <h5>Restrooms</h5>
@@ -89,13 +87,16 @@
                 </div>
                 <div class="sidebar-amenity-options">
                     <button class="option" data-option="wheelchair">wheelchair</button>
-                    <button class="option" data-option="changing-table">changing-table</button>
-                    <button class="option" data-option="free">free</button>
+                    <button class="option" data-option="changing_table">changing table</button>
+                    <button class="option" data-option="male">male</button>
+                    <button class="option" data-option="female">female</button>
+                    <button class="option" data-option="unisex">unisex</button>
+                    <button class="option" data-option="fee">free</button> <!--TODO auf free ändern??-->
                 </div>
             </div>
             <hr width="100%" size="1" color=#D1D1D1 noshade>
             <!-- Filter Section: Benches -->
-            <div class="sidebar-amenity">
+            <div class="sidebar-amenity" data-amenity-type="bench">
                 <div class="sidebar-amenity-header">
                     <label class="sidebar-amenity-enable">
                         <h5>Benches</h5>
@@ -106,7 +107,7 @@
             </div>
             <hr width="100%" size="1" color=#D1D1D1 noshade>
             <!-- Filter Section: Shelter -->
-            <div class="sidebar-amenity">
+            <div class="sidebar-amenity" data-amenity-type="shelter">
                 <div class="sidebar-amenity-header">
                     <label class="sidebar-amenity-enable">
                         <h5>Shelters</h5>
@@ -117,7 +118,7 @@
             </div>
             <hr width="100%" size="1" color=#D1D1D1 noshade>
             <!-- Filter Section: Bins -->
-            <div class="sidebar-amenity">
+            <div class="sidebar-amenity" data-amenity-type="bins">
                 <div class="sidebar-amenity-header">
                     <label class="sidebar-amenity-enable">
                         <h5>Bins</h5>
