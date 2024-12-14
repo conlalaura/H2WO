@@ -2,11 +2,6 @@
 /* Fonts
 /*******************************************************************************/
 @font-face {
-  font-family: 'Watermelon'; /* Custom font for the title */
-  src: url('../fonts/Watermelon-Regular.otf');
-}
-
-@font-face {
   font-family: 'Satoshi'; /* Custom font for the title */
   src: url('../fonts/Satoshi-Variable.ttf');
 }
@@ -39,6 +34,7 @@
 }
 
 html, body {
+  height: 100%;
   margin: 0;
   padding: 0;
   overflow-x: hidden;  /* Prevent horizontal scroll */
@@ -47,7 +43,6 @@ html, body {
 
 /* Enable snap scrolling on the body */
 body {
-  height: 100vh; /* Ensure the body fills the entire screen */
   display: flex;
   flex-direction: column;
   overflow-y: scroll; /* Allow vertical scrolling */
