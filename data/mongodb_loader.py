@@ -83,6 +83,8 @@ def get_project_amenities(
                 results[i]["free"] = "no"
             elif results[i]["fee"] == "no":
                 results[i]["free"] = "yes"
+            # Delete 'fee' key
+            del results[i]["fee"]
 
     return list(results)
 
