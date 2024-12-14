@@ -376,7 +376,7 @@ class MapService {
                         html: `
                             <div class="custom-cluster cluster-${amenityType}">
                                 <div class="icon">
-                                    <img src="static/img/cluster_${amenityType}.svg" alt="${amenityType}">
+                                    <img src="static/img/cluster-${amenityType}.svg" alt="${amenityType}">
                                 </div>
                                 <div class="count">${childCount}</div>
                             </div>
@@ -481,7 +481,7 @@ class MapService {
 
     // Create custom icon for an amenity
     createCustomIcon(amenityType) {
-        const iconUrl = iconMapping[amenityType] || 'static/img/locate.svg';
+        const iconUrl = iconMapping[amenityType];
         return L.icon({
             iconUrl,
             iconSize: [25, 41],
@@ -527,18 +527,18 @@ class MapService {
 
 
 const userLocationIcon = L.icon({
-    iconUrl: 'static/img/pin_user.svg', // Path to your custom icon
+    iconUrl: 'static/img/marker-user.svg', // Path to your custom icon
     iconSize: [25, 41], // Size of the icon [width, height]
     iconAnchor: [12, 41], // Anchor point of the icon (center bottom)
     popupAnchor: [0, -34] // Position of the popup relative to the icon
 });
 
 const iconMapping = {
-    water: 'static/img/pin_fountain.svg',
-    restroom: 'static/img/pin_restroom.svg',
-    bench: 'static/img/pin_bench.svg',
-    shelter: 'static/img/pin_shelter.svg',
-    bins: 'static/img/pin_bins.svg',
+    water: 'static/img/marker-fountain.svg',
+    restroom: 'static/img/marker-restroom.svg',
+    bench: 'static/img/marker-bench.svg',
+    shelter: 'static/img/marker-shelter.svg',
+    bins: 'static/img/marker-bins.svg',
 };
 
 const clusterColors = {
