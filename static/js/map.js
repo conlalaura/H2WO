@@ -1,3 +1,12 @@
+const activeFilters = {
+    water: [],
+    restroom: [],
+    bench: [],
+    shelter: [],
+    bins: []
+}
+
+
 $(document).ready(function() {
     const mapService = new MapService();
     const reviewPopup = document.getElementById("review-popup");
@@ -5,32 +14,27 @@ $(document).ready(function() {
     mapService.loadAmenityData('/api/amenities/water', 'water');
     mapService.loadAmenityData('/api/amenities/toilets', 'restroom');
     mapService.loadAmenityData('/api/amenities/waste_basket', 'bins');
-//    mapService.loadAmenityData('/api/amenities/shelter', 'shelter');  #TODO: @Alex tell my whyyyy nicht aktiv
-    mapService.loadAmenityData('/api/amenities/bench', 'bench');
+//  mapService.loadAmenityData('/api/amenities/bench', 'bench');
+//  mapService.loadAmenityData('/api/amenities/shelter', 'shelter');  #TODO: @Alex tell my whyyyy nicht aktiv
+
 
     // Set the initial state of checkboxes (set some to false when needed for performance)
     $('#fountains').prop('checked', true);
     $('#restrooms').prop('checked', true);
-    $('#benches').prop('checked', true);
-//    $('#shelter').prop('checked', true);
     $('#bins').prop('checked', true);
+//  $('#benches').prop('checked', true);
+//  $('#shelter').prop('checked', true);
+
 
     // Apply the initial visibility based on checkbox states
     $('#fountains').trigger('change');
     $('#restrooms').trigger('change');
-    $('#benches').trigger('change');
-//    $('#shelter').trigger('change');
     $('#bins').trigger('change');
+//  $('#benches').trigger('change');
+//  $('#shelter').trigger('change');
+
 
     // Event Listeners
-    $('#zoom-in').on('click', function() {
-        mapService.map.zoomIn();
-    });
-
-    $('#zoom-out').on('click', function() {
-        mapService.map.zoomOut();
-    });
-
     // filter checkboxes
     $('#fountains').on('change', function() {
         mapService.toggleAmenityVisibility('water', this.checked);
@@ -38,22 +42,19 @@ $(document).ready(function() {
     $('#restrooms').on('change', function() {
         mapService.toggleAmenityVisibility('restroom', this.checked);
     });
+    $('#bins').on('change', function() {
+        mapService.toggleAmenityVisibility('bins', this.checked);
+    });
     $('#benches').on('change', function() {
         mapService.toggleAmenityVisibility('bench', this.checked);
     });
     $('#shelter').on('change', function() {
         mapService.toggleAmenityVisibility('shelter', this.checked);
     });
-    $('#bins').on('change', function() {
-        mapService.toggleAmenityVisibility('bins', this.checked);
-    });
-
-    $('.sidebar-amenity-options .option').on('click', function() {
-        const button = $(this);
-        const option = button.data('option');
-        button.toggleClass('active');
-    });
-
+//////////////////////////////////////////////////////////////////////////////
+// Control Buttons
+//////////////////////////////////////////////////////////////////////////////
+    // Sidebar Visibility 
     $('#sidebar-toggle').on('click', function() {
         console.log("Collapse clicked")
         const sidebar = $('.sidebar');
@@ -101,6 +102,15 @@ $(document).ready(function() {
         }
     });
 
+    // Zoom in Button
+    $('#zoom-in').on('click', function() {
+        mapService.map.zoomIn();
+    });
+
+    // Zoom out Button
+    $('#zoom-out').on('click', function() {
+        mapService.map.zoomOut();
+    });
 
     // popup close functionality
     $('#popup-close').on('click', function() {
@@ -108,7 +118,6 @@ $(document).ready(function() {
         $('#map').css('filter', 'none');
         $('.sidebar').css('filter', 'none');
     });
-
 
     // Review submission
     document.getElementById('submit-review').addEventListener('click', () => {
@@ -172,7 +181,6 @@ $(document).ready(function() {
             });
     });
 
-
     document.addEventListener("click", (event) => {
         const reviewPopup = document.getElementById("review-popup");
         const amenityPopup = document.querySelector(".leaflet-popup");
@@ -188,7 +196,7 @@ $(document).ready(function() {
         // Handle amenity popup close
         if (amenityPopup) {
             if (!amenityPopup.contains(event.target) && !event.target.closest(".leaflet-marker-icon")) {
-                document.querySelector(".leaflet-popup-close-button")?.click();
+                document.querySelector(".leaflet-popup-close-button").click();
             }
         }
     });
@@ -208,19 +216,43 @@ $(document).ready(function() {
         });
     });
 
-
-
-
     // Prevent outside click listener from being triggered when clicking inside the review popup
     document.getElementById("review-popup").addEventListener("click", (event) => {
         event.stopPropagation(); // Prevent triggering the document click listener
     });
 
-
-
+    $('.sidebar-amenity-options .option').on('click', function() {
+        const button = $(this);
+        const option = button.data('option');
+    
+        // Toggle the "active" class visually
+        button.toggleClass('active');
+    
+        // Determine the amenity type from the parent element
+        const amenityType = button.closest('.sidebar-amenity').data('amenity-type');
+    
+        // Update the activeFilters list
+        const currentFilters = activeFilters[amenityType];
+        if (button.hasClass('active')) {
+            // Add this filter if it's not already present
+            if (!currentFilters.includes(option)) {
+                currentFilters.push(option);
+            }
+        } else {
+            // Remove this filter
+            const index = currentFilters.indexOf(option);
+            if (index !== -1) {
+                currentFilters.splice(index, 1);
+            }
+        }
+    
+        // Now re-apply the filters for this amenity type
+        mapServiceInstance.applyFilters(amenityType);
+    });
+    
 
     window.mapServiceInstance = mapService;
-});
+    });
 
 // Class definition for map-related operations
 class MapService {
@@ -305,18 +337,22 @@ class MapService {
     // Add amenity markers to the map
     addAmenitiesToMap(amenityType, amenities) {
         const clusterGroup = this.getAmenityClusterGroup(amenityType);
+    
         amenities.forEach(amenity => {
             const marker = this.createAmenityMarker(amenity, amenityType);
             clusterGroup.addLayer(marker);
             this.markers[amenity.id] = marker;
-            this.markerCounts[amenityType]++; // Increment the marker count for this amenity type
+            // Increment marker count to signal that this amenity type is loaded
+            this.markerCounts[amenityType]++;
         });
-
+    
         this.map.addLayer(clusterGroup);
-
-        // Check if all points for this amenity type have been added
+    
+        // Call checkIfAllMarkersAdded after the initial load
+        // This ensures that once all types are loaded, we hide the loader
         this.checkIfAllMarkersAdded();
     }
+    
 
     // Check if all markers have been added
     checkIfAllMarkersAdded() {
@@ -465,7 +501,29 @@ class MapService {
             }
         }
     }
+
+    applyFilters(amenityType) {
+        const filters = activeFilters[amenityType];
+        const allAmenities = this.amenitiesData[amenityType] || [];
+    
+        // If cluster group exists, remove it from the map
+        if (this.markerClusterGroup[amenityType]) {
+            this.map.removeLayer(this.markerClusterGroup[amenityType]);
+            // Clear all layers from the cluster group before re-adding
+            this.markerClusterGroup[amenityType].clearLayers();
+        }
+    
+        // Filter the amenities
+        const filteredAmenities = allAmenities.filter(amenity => {
+            return filters.every(filter => amenity[filter] === "yes");
+        });
+    
+        // Re-add the filtered amenities
+        this.addAmenitiesToMap(amenityType, filteredAmenities);
+    }
+    
 }
+
 
 
 const userLocationIcon = L.icon({
@@ -519,6 +577,7 @@ function renderReviews(reviews) {
 
     return content;
 }
+
 
 // Load reviews for a specific amenity and update the popup content
 function loadReviews(amenityId) {
