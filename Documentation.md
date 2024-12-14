@@ -31,8 +31,10 @@ TODO: add more granularity to alex's tasks
 | mongoDB Setup        | Laura Conti    | 
 | mongoDB Queries      | Laura Conti    |
 | Webserver Routes     | Laura Conti    | 
-| GUI                  | Alex Leccadito | 
+| UI/UX Design         | Alex Leccadito | 
+| UI/UX Implementation | Alex Leccadito | 
 | Map Service          | Alex Leccadito | 
+| Amenity Clustering   | Alex Leccadito |
 | Chart/Statistic      | Laura Conti    | 
 | Clean Code           | Everyone       | 
 | Code Testing         | Laura Conti    | 
