@@ -1,16 +1,18 @@
 from dataclasses import asdict
-
-from pymongo.collection import Collection
-from pymongo.database import Database
-from lib.Review import Review
-from pathlib import Path
-import pymongo
 import random
 import json
 import sys
 import os
-
+from pathlib import Path
+import pymongo
+from pymongo.collection import Collection
+from pymongo.database import Database
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from lib.Review import Review
+
+
+
+
 
 
 def create_and_load_collection(collection_name: str, database: Database) -> Collection:
