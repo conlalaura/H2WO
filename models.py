@@ -4,9 +4,7 @@ from lib.Review import Review
 from data.mongodb_loader import get_common_keys, get_all_amenity_keys
 
 
-def get_amenities(
-    osm_col: Collection, amenity_name: str, coordinates_only=False
-) -> list[dict]:
+def get_amenities(osm_col: Collection, amenity_name: str) -> list[dict]:
     """
     :param osm_col: mongodb collection of project relevant amenities
     :param amenity_name: can be
@@ -15,7 +13,6 @@ def get_amenities(
         - bench
         - shelter
         - waste_basket
-    :param coordinates_only: choose if only id and coordinates should be returned
     :return: list of amenities
     """
     # Validate the amenity_name
@@ -34,11 +31,7 @@ def get_amenities(
         }
     else:
         query = {"amenity": amenity_name}
-    # coordinate check
-    if coordinates_only:
-        keys = {"lat": 1, "lon": 1, "id": 1, "_id": 0}
-    else:
-        keys = {"_id": 0}  # keeps all keys except _id
+    keys = {"_id": 0}  # keeps all keys except _id
     # filter database
     result = osm_col.find(query, keys)
     # return as list
