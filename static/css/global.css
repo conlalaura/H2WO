@@ -58,20 +58,20 @@ body {
 /*******************************************************************************/
 
 h1{
-  font-family: 'Satoshi';
+  font-family: 'Satoshi', sans-serif;
   font-size: 78px;
   font-weight: 700;
 }
 
 h2{
-  font-family: 'Satoshi' ;
+  font-family: 'Satoshi', sans-serif ;
   font-size: 37px;
   font-weight: 700;
 }
 
 /* Header Amenities Section, Amenity Title, */
 h3{
-  font-family: 'Satoshi';
+  font-family: 'Satoshi', sans-serif;
   font-size: 30px;
   font-weight: 700;
 }
@@ -79,20 +79,20 @@ h3{
 
 /* Services Heading */
 h4{
-  font-family: 'DMSans';
+  font-family: 'DMSans', sans-serif;
   font-size: 24px;
   font-weight: 500;
 }
 
 
 h5{
-  font-family: 'DMSans';
+  font-family: 'DMSans', sans-serif;
   font-size: 20px;
   font-weight: 400;
 }
 
 p{
-  font-family: 'DMSans';
+  font-family: 'DMSans', sans-serif;
   font-size: 16px;
   font-weight: 400
 }
