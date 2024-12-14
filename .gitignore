@@ -1,3 +1,7 @@
 data/osm-output.json
 *.xml
 *.iml
+.DS_Store
+models.cpython-39.pyc
+routes.cpython-39.pyc
+Review.cpython-39.pyc
