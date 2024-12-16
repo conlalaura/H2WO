@@ -162,7 +162,7 @@ def insert_dummy_reviews(
         # insert flag document to verify that dummy reviews have been inserted
         col.insert_one({"dummy_reviews_flag": None})
 
-        print("Randomly added 500 dummy-reviews to amenities in the Winterthur-Area!")
+        print(f"Randomly added {n} dummy-reviews to amenities in the Winterthur-Area!")
 
 
 def get_common_keys() -> dict:
@@ -285,6 +285,6 @@ if __name__ == "__main__":
     insert_if_empty(col=h2wo_collection, documents=filtered_amenities)
 
     """
-    Insert dummy reviews for 500 random amenities in Winterthur for (used for demo)
+    Insert dummy reviews for 1000 random amenities in Winterthur for (used for demo)
     """
     insert_dummy_reviews(col=h2wo_collection)
