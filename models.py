@@ -298,7 +298,6 @@ def get_toilet_statistics_data(amenity_col: Collection) -> list[dict]:
     return list(amenity_col.aggregate(pipeline))
 
 
-
 def get_sparsity_statistics_data(amenity_col: Collection) -> list[dict]:
     """
     Returns statistics about the sparsity of oms data
