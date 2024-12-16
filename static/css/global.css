@@ -1,132 +1,108 @@
 /*******************************************************************************/
 /* Fonts
 /*******************************************************************************/
-@font-face {
-  font-family: 'Satoshi'; /* Custom font for the title */
-  src: url('../fonts/Satoshi-Variable.ttf');
+ @font-face {
+     font-family: 'Satoshi';
+    /* Custom font for the title */
+     src: url('../fonts/Satoshi-Variable.ttf');
 }
-
-@font-face {
-  font-family: 'DMSans'; /* Custom font for the title */
-  src: url('../fonts/DMSans.ttf');
+ @font-face {
+     font-family: 'DMSans';
+    /* Custom font for the title */
+     src: url('../fonts/DMSans.ttf');
 }
-
-
-
-
 /*******************************************************************************/
 /* Color Variables
 /*******************************************************************************/
-:root {
-/*  Background Colors */
-  --background-color-light: #e8e8e8; 
-  --background-color-dark: #24252a; 
-/*  Text Colors */
-  --text-color-dark: #2c3e50; 
-  --text-color-light: #e8e8e8;
-  --text-color-accent: #0b7fab;
-/*  Map Marker Colors */  
-  --cluster-water: #6995BB;
-  --cluster-restroom: #419074;
-  --cluster-bench: #7D5F5D;
-  --cluster-shelter: #C45C24;
-  --cluster-bin: #3A3A3A;
+ :root {
+    /* Background Colors */
+     --background-color-light: #e8e8e8;
+     --background-color-dark: #24252a;
+    /* Text Colors */
+     --text-color-dark: #2c3e50;
+     --text-color-light: #e8e8e8;
+     --text-color-accent: #0b7fab;
+    /* Map Marker Colors */
+     --cluster-water: #6995BB;
+     --cluster-restroom: #419074;
+     --cluster-bench: #7D5F5D;
+     --cluster-shelter: #C45C24;
+     --cluster-bin: #3A3A3A;
 }
-
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;  /* Prevent horizontal scroll */
-  scroll-behavior: smooth; /* Smooth scroll */
+ html, body {
+     height: 100%;
+     margin: 0;
+     padding: 0;
+     overflow-x: hidden;  /* Prevent horizontal scroll */
+     scroll-behavior: smooth;  /* Smooth scroll */
 }
-
 /* Enable snap scrolling on the body */
-body {
-  display: flex;
-  flex-direction: column;
-  overflow-y: scroll; /* Allow vertical scrolling */
+ body {
+     display: flex;
+     flex-direction: column;
+     overflow-y: scroll;  /* Allow vertical scrolling */
 }
-
 /*******************************************************************************/
 /* Text selectors and classes
 /*******************************************************************************/
-
-h1{
-  font-family: 'Satoshi', sans-serif;
-  font-size: 78px;
-  font-weight: 700;
+ h1{
+     font-family: 'Satoshi', sans-serif;
+     font-size: 78px;
+     font-weight: 700;
 }
-
-h2{
-  font-family: 'Satoshi', sans-serif ;
-  font-size: 37px;
-  font-weight: 700;
+ h2{
+     font-family: 'Satoshi', sans-serif ;
+     font-size: 37px;
+     font-weight: 700;
 }
-
 /* Header Amenities Section, Amenity Title, */
-h3{
-  font-family: 'Satoshi', sans-serif;
-  font-size: 30px;
-  font-weight: 700;
+ h3{
+     font-family: 'Satoshi', sans-serif;
+     font-size: 30px;
+     font-weight: 700;
 }
-
-
 /* Services Heading */
-h4{
-  font-family: 'DMSans', sans-serif;
-  font-size: 24px;
-  font-weight: 500;
+ h4{
+     font-family: 'DMSans', sans-serif;
+     font-size: 24px;
+     font-weight: 500;
 }
-
-
-h5{
-  font-family: 'DMSans', sans-serif;
-  font-size: 20px;
-  font-weight: 400;
+ h5{
+     font-family: 'DMSans', sans-serif;
+     font-size: 20px;
+     font-weight: 400;
 }
-
-p{
-  font-family: 'DMSans', sans-serif;
-  font-size: 16px;
-  font-weight: 400
+ p{
+     font-family: 'DMSans', sans-serif;
+     font-size: 16px;
+     font-weight: 400
 }
-
-.p-numbers{
-  font-size: 50px;
-  font-weight: 300
+ .p-numbers{
+     font-size: 50px;
+     font-weight: 300
 }
-
-.p-small{
-  font-size: 14px;
-  font-weight: 400
+ .p-small{
+     font-size: 14px;
+     font-weight: 400
 }
-
-.text-align-center{
-  text-align: center;
+ .text-align-center{
+     text-align: center;
 }
-
-.text-align-block{
-  text-align: justify;
+ .text-align-block{
+     text-align: justify;
 }
-
-.text-align-left{
-  text-align: start;
+ .text-align-left{
+     text-align: start;
 }
-
-.text-align-right{
-  text-align: end;
+ .text-align-right{
+     text-align: end;
 }
-
-.text-color-light{
-  color: var(--text-color-light);
+ .text-color-light{
+     color: var(--text-color-light);
 }
-
-.text-color-dark{
-  color: var(--text-color);
+ .text-color-dark{
+     color: var(--text-color);
 }
-
-.text-color-accent{
-  color: var(--text-color-accent);
+ .text-color-accent{
+     color: var(--text-color-accent);
 }
-
