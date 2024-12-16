@@ -16,27 +16,30 @@ document.addEventListener("DOMContentLoaded", () => {
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Yes',
-                        data: yesData,
-                        backgroundColor: 'rgba(4, 147, 114, 0.6)', // Green
+                            label: 'Yes',
+                            data: yesData,
+                            backgroundColor: 'rgba(4, 147, 114, 0.6)', // Green
                         },
                         {
-                        label: 'No',
-                        data: noData,
-                        backgroundColor: 'rgba(214, 69, 65, 0.6)', // Red
+                            label: 'No',
+                            data: noData,
+                            backgroundColor: 'rgba(214, 69, 65, 0.6)', // Red
                         }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { 
+                    plugins: {
                         legend: {
                             position: 'top',
                             labels: {
-                                font: {family: 'DMSans', size: 18},
-                                boxWidth: 20,    // Width of coloured box.
-                                boxHeight: 20   
+                                font: {
+                                    family: 'DMSans',
+                                    size: 18
+                                },
+                                boxWidth: 20, // Width of coloured box.
+                                boxHeight: 20
                             }
                         },
                         tooltip: {
@@ -44,14 +47,20 @@ document.addEventListener("DOMContentLoaded", () => {
                             position: 'nearest',
                             xAlign: 'center',
                             yAlign: 'bottom',
-                            backgroundColor: '#24252a',                 // Background color of the tooltip
-                            caretSize: 5,                               // Size, in px, of the tooltip arrow.
-                            cornerRadius: 10,                           // Radius of tooltip corner curves.
-                            titleFont: {family: 'Satoshi', size: 14},
-                            titleColor: '#e8e8e8',                      // Color of title text.
-                            titleMarginBottom: 10,                      // Margin to add on bottom of title section.
-                            bodyFont: {family: 'DMSans', size: 12},
-                            boxPadding: 10,                             // Padding between the color box and the text.
+                            backgroundColor: '#24252a', // Background color of the tooltip
+                            caretSize: 5, // Size, in px, of the tooltip arrow.
+                            cornerRadius: 10, // Radius of tooltip corner curves.
+                            titleFont: {
+                                family: 'Satoshi',
+                                size: 14
+                            },
+                            titleColor: '#e8e8e8', // Color of title text.
+                            titleMarginBottom: 10, // Margin to add on bottom of title section.
+                            bodyFont: {
+                                family: 'DMSans',
+                                size: 12
+                            },
+                            boxPadding: 10, // Padding between the color box and the text.
 
                         }
                     },
@@ -59,17 +68,23 @@ document.addEventListener("DOMContentLoaded", () => {
                         x: {
                             stacked: true,
                             ticks: {
-                                font: {family: 'DMSans', size: 14},
+                                font: {
+                                    family: 'DMSans',
+                                    size: 14
+                                },
                                 padding: 10
                             }
                         },
                         y: {
                             stacked: true,
                             ticks: {
-                                font: {family: 'DMSans', size: 14},
+                                font: {
+                                    family: 'DMSans',
+                                    size: 14
+                                },
                                 padding: 20, // Add padding to avoid overlap
                                 callback: function(value) {
-                                    return value + '%'; // Add a percent sign if needed
+                                    return value + '%'; // Add a percent sign
                                 }
                             },
                         },
@@ -101,7 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     datasets: [{
                         label: 'Key Sparsity (%)',
                         data: sparsityData,
-                        backgroundColor: 'rgba(4, 147, 114, 0.6)',
+                        backgroundColor: 'rgba(214, 69, 65, 0.6)',
                     }]
                 },
                 options: {
@@ -111,7 +126,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         legend: {
                             position: 'top',
                             labels: {
-                                font: {family: 'DMSans', size: 18},
+                                font: {
+                                    family: 'DMSans',
+                                    size: 18
+                                },
                                 boxWidth: 20,
                                 boxHeight: 20
                             }
@@ -124,23 +142,35 @@ document.addEventListener("DOMContentLoaded", () => {
                             backgroundColor: '#24252a',
                             caretSize: 5,
                             cornerRadius: 10,
-                            titleFont: {family: 'Satoshi', size: 14},
+                            titleFont: {
+                                family: 'Satoshi',
+                                size: 14
+                            },
                             titleColor: '#e8e8e8',
                             titleMarginBottom: 10,
-                            bodyFont: {family: 'DMSans', size: 12},
+                            bodyFont: {
+                                family: 'DMSans',
+                                size: 12
+                            },
                             boxPadding: 10,
                         }
                     },
                     scales: {
                         x: {
                             ticks: {
-                                font: {family: 'DMSans', size: 14},
+                                font: {
+                                    family: 'DMSans',
+                                    size: 14
+                                },
                                 padding: 10
                             }
                         },
                         y: {
                             ticks: {
-                                font: {family: 'DMSans', size: 14},
+                                font: {
+                                    family: 'DMSans',
+                                    size: 14
+                                },
                                 padding: 20,
                                 callback: function(value) {
                                     return value + '%'; // Add a percent sign

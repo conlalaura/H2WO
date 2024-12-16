@@ -14,24 +14,24 @@ $(document).ready(function() {
     mapService.loadAmenityData('/api/amenities/water', 'water');
     mapService.loadAmenityData('/api/amenities/toilets', 'restroom');
     mapService.loadAmenityData('/api/amenities/waste_basket', 'bins');
-//  mapService.loadAmenityData('/api/amenities/bench', 'bench');
-//  mapService.loadAmenityData('/api/amenities/shelter', 'shelter');  #TODO: @Alex tell my whyyyy nicht aktiv
+//    mapService.loadAmenityData('/api/amenities/bench', 'bench');
+//    mapService.loadAmenityData('/api/amenities/shelter', 'shelter');
 
 
     // Set the initial state of checkboxes (set some to false when needed for performance)
     $('#fountains').prop('checked', true);
     $('#restrooms').prop('checked', true);
     $('#bins').prop('checked', true);
-//  $('#benches').prop('checked', true);
-//  $('#shelter').prop('checked', true);
+//    $('#benches').prop('checked', true);
+//    $('#shelter').prop('checked', true);
 
 
     // Apply the initial visibility based on checkbox states
     $('#fountains').trigger('change');
     $('#restrooms').trigger('change');
     $('#bins').trigger('change');
-//  $('#benches').trigger('change');
-//  $('#shelter').trigger('change');
+//    $('#benches').trigger('change');
+//    $('#shelter').trigger('change');
 
 
     // Event Listeners
@@ -51,16 +51,16 @@ $(document).ready(function() {
     $('#shelter').on('change', function() {
         mapService.toggleAmenityVisibility('shelter', this.checked);
     });
-//////////////////////////////////////////////////////////////////////////////
-// Control Buttons
-//////////////////////////////////////////////////////////////////////////////
-    // Sidebar Visibility 
+    //////////////////////////////////////////////////////////////////////////////
+    // Control Buttons
+    //////////////////////////////////////////////////////////////////////////////
+    // Sidebar Visibility
     $('#sidebar-toggle').on('click', function() {
         console.log("Collapse clicked")
         const sidebar = $('.sidebar');
         sidebar.toggleClass('collapsed');
         console.log("Collapsed state:", sidebar.hasClass('collapsed'));
-        // Adjust map size to fit the new layout
+        // Adjust map size to fit layout
         setTimeout(() => {
             mapService.map.invalidateSize();
         }, 300); // Match the transition duration in CSS
@@ -224,35 +224,35 @@ $(document).ready(function() {
     $('.sidebar-amenity-options .option').on('click', function() {
         const button = $(this);
         const option = button.data('option');
-    
+
         // Toggle the "active" class visually
         button.toggleClass('active');
-    
+
         // Determine the amenity type from the parent element
         const amenityType = button.closest('.sidebar-amenity').data('amenity-type');
-    
+
         // Update the activeFilters list
         const currentFilters = activeFilters[amenityType];
         if (button.hasClass('active')) {
-            // Add this filter if it's not already present
+            // Add filter if it's not already present
             if (!currentFilters.includes(option)) {
                 currentFilters.push(option);
             }
         } else {
-            // Remove this filter
+            // Remove filter
             const index = currentFilters.indexOf(option);
             if (index !== -1) {
                 currentFilters.splice(index, 1);
             }
         }
-    
-        // Now re-apply the filters for this amenity type
+
+        // re-apply filters for this amenity type
         mapServiceInstance.applyFilters(amenityType);
     });
-    
+
 
     window.mapServiceInstance = mapService;
-    });
+});
 
 // Class definition for map-related operations
 class MapService {
@@ -297,7 +297,7 @@ class MapService {
         this.map.setView([position.coords.latitude, position.coords.longitude], 13);
         this.addUserLocationMarker(position.coords.latitude, position.coords.longitude);
     }
-    // Add a marker at user's location
+    // Add marker at user's location
     addUserLocationMarker(lat, lon) {
         L.marker([lat, lon], {
             icon: userLocationIcon
@@ -337,7 +337,7 @@ class MapService {
     // Add amenity markers to the map
     addAmenitiesToMap(amenityType, amenities) {
         const clusterGroup = this.getAmenityClusterGroup(amenityType);
-    
+
         amenities.forEach(amenity => {
             const marker = this.createAmenityMarker(amenity, amenityType);
             clusterGroup.addLayer(marker);
@@ -345,14 +345,14 @@ class MapService {
             // Increment marker count to signal that this amenity type is loaded
             this.markerCounts[amenityType]++;
         });
-    
+
         this.map.addLayer(clusterGroup);
-    
+
         // Call checkIfAllMarkersAdded after the initial load
         // This ensures that once all types are loaded, we hide the loader
         this.checkIfAllMarkersAdded();
     }
-    
+
 
     // Check if all markers have been added
     checkIfAllMarkersAdded() {
@@ -382,7 +382,7 @@ class MapService {
                             </div>
                         `,
                         className: "", // No additional Leaflet classes
-                        iconSize: [20, 20] // Adjust as needed
+                        iconSize: [20, 20]
                     });
                 }
             };
@@ -505,23 +505,23 @@ class MapService {
     applyFilters(amenityType) {
         const filters = activeFilters[amenityType];
         const allAmenities = this.amenitiesData[amenityType] || [];
-    
+
         // If cluster group exists, remove it from the map
         if (this.markerClusterGroup[amenityType]) {
             this.map.removeLayer(this.markerClusterGroup[amenityType]);
             // Clear all layers from the cluster group before re-adding
             this.markerClusterGroup[amenityType].clearLayers();
         }
-    
+
         // Filter the amenities
         const filteredAmenities = allAmenities.filter(amenity => {
             return filters.every(filter => amenity[filter] === "yes");
         });
-    
+
         // Re-add the filtered amenities
         this.addAmenitiesToMap(amenityType, filteredAmenities);
     }
-    
+
 }
 
 
