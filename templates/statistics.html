@@ -1,83 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>/statistics</title>
-
-    <link rel="stylesheet" href="static/css/global.css">
-    <link rel="stylesheet" href="static/css/statistics.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="{{ url_for('static', filename='js/statistics.js') }}"></script>
-
-
-</head>
-<body>
-<! -- Toilet Statistics -->
-<div class="chart-section">
-    <div class="chart-content">
-        <div class="chart-content-left">
-            <div class="chart-content-left-header">
-                <h2 class="text-color-dark text-align-left">
-                    what do public restrooms have to offer?
-                </h2>
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>/statistics</title>
+      <link rel="stylesheet" href="static/css/global.css">
+      <link rel="stylesheet" href="static/css/statistics.css">
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <script src="{{ url_for('static', filename='js/statistics.js') }}"></script>
+   </head>
+   <body>
+      <! -- Toilet Statistics -->
+      <div class="chart-section">
+         <div class="chart-content">
+            <div class="chart-content-left">
+               <div class="chart-content-left-header">
+                  <h2 class="text-color-dark text-align-left">
+                     what do public restrooms have to offer?
+                  </h2>
+               </div>
+               <div class="chart-content-left-text">
+                  <p class="text-color-dark text-align-block">
+                     Public restrooms play a critical role in creating inclusive spaces, especially when tailored to
+                     diverse needs. <br>
+                     From wheelchair accessibility to the presence of gender-neutral facilities, restroom attributes can
+                     significantly impact the comfort and ease of use for different individuals. <br>
+                     Many facilities offer free access, which reduces barriers for users, while the availability of
+                     changing tables seems to be limited. However, it's important to note that the available data is
+                     limited.
+                  </p>
+               </div>
             </div>
-            <div class="chart-content-left-text">
-                <p class="text-color-dark text-align-block">
-                    Public restrooms play a critical role in creating inclusive spaces, especially when tailored to
-                    diverse needs. <br>
-                    From wheelchair accessibility to the presence of gender-neutral facilities, restroom attributes can
-                    significantly impact the comfort and ease of use for different individuals. <br>
-                    Many facilities offer free access, which reduces barriers for users, while the availability of
-                    changing tables seems to be limited. However, it's important to note that the available data is
-                    limited.
-                </p>
+            <div class="chart-content-right">
+               <div class="chart-content-right-chart">
+                  <canvas id="toiletChart">
+                  </canvas>
+               </div>
             </div>
-        </div>
-
-        <div class="chart-content-right">
-            <div class="chart-content-right-chart">
-                <canvas id="toiletChart">
-
-                </canvas>
+         </div>
+      </div>
+      <! -- Sparsity Statistics -->
+      <div class="chart-section">
+         <div class="chart-content">
+            <div class="chart-content-left">
+               <div class="chart-content-left-header">
+                  <h2 class="text-color-dark text-align-left">
+                     how spare is the data from OpenStreetMap?
+                  </h2>
+               </div>
+               <div class="chart-content-left-text">
+                  <p class="text-color-dark text-align-block">
+                     Sparsity is a known issue in toilet data, but what about other amenities?
+                     Excluding keys like geographical data or names, how sparse is the data provided by OpenStreetMap?
+                     <br>
+                     Our analysis reveals that, on average, over 50% of the keys for all amenities are missing, with
+                     shelters exceeding 90% sparsity. To address this, H2W0 is excited to announce the upcoming launch of
+                     an update requester. This feature will allow users to submit missing keys, helping us enrich the
+                     data for everyone's benefit!
+                  </p>
+               </div>
             </div>
-
-        </div>
-    </div>
-
-</div>
-<! -- Sparsity Statistics -->
-<div class="chart-section">
-    <div class="chart-content">
-        <div class="chart-content-left">
-            <div class="chart-content-left-header">
-                <h2 class="text-color-dark text-align-left">
-                    how spare is the data from OpenStreetMap?
-                </h2>
+            <div class="chart-content-right">
+               <div class="chart-content-right-chart">
+                  <canvas id="sparsityChart">
+                  </canvas>
+               </div>
             </div>
-            <div class="chart-content-left-text">
-                <p class="text-color-dark text-align-block">
-                    Sparsity is a known issue in toilet data, but what about other amenities?
-                    Excluding keys like geographical data or names, how sparse is the data provided by OpenStreetMap?
-                    <br>
-                    Our analysis reveals that, on average, over 50% of the keys for all amenities are missing, with
-                    shelters exceeding 90% sparsity. To address this, H2W0 is excited to announce the upcoming launch of
-                    an update requester. This feature will allow users to submit missing keys, helping us enrich the
-                    data for everyone's benefit!
-                </p>
-            </div>
-        </div>
-
-        <div class="chart-content-right">
-            <div class="chart-content-right-chart">
-                <canvas id="sparsityChart">
-
-                </canvas>
-            </div>
-
-        </div>
-    </div>
-
-</div>
-</body>
+         </div>
+      </div>
+   </body>
 </html>
