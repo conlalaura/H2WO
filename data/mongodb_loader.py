@@ -7,19 +7,16 @@ from pathlib import Path
 import pymongo
 from pymongo.collection import Collection
 from pymongo.database import Database
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from lib.Review import Review
 
 
-
-
-
-
 def create_and_load_collection(collection_name: str, database: Database) -> Collection:
     """
-    Function crates a collection in the database if it's not present yet or returns the already existing collection.
-    :param collection_name: to be created and loaded from the database    .
-    :param database:  to search and load the collection from.
+    Function creates a collection in the database if it's not present yet or returns the already existing collection.
+    :param collection_name: to be created and loaded from the database.
+    :param database: to search and load the collection from.
     :return: collection with name "collection_name" from database
     """
     # check if the collection already exists
@@ -53,7 +50,7 @@ def insert_if_empty(col: Collection, documents: list[dict]) -> None:
 
 
 def get_project_amenities(
-        col: Collection, amenity_name: str, amenity_keys: dict, special_keys=None
+    col: Collection, amenity_name: str, amenity_keys: dict, special_keys=None
 ) -> list[dict]:
     """
     Searches the osm collection for a given amenity and keys
@@ -106,10 +103,10 @@ def convert_to_float(input_string: str) -> float:
 
 
 def insert_dummy_reviews(
-        col: Collection,
-        n=1000,
-        bounding_box_lower_left=(47.449, 8.655),
-        bounding_box_upper_right=(47.549, 8.811),
+    col: Collection,
+    n=1000,
+    bounding_box_lower_left=(47.449, 8.655),
+    bounding_box_upper_right=(47.549, 8.811),
 ) -> None:
     """
     Inserts Dummy reviews into the project collection. Useful for demonstration purposes. By default, Witherthur Area.
@@ -169,6 +166,9 @@ def insert_dummy_reviews(
 
 
 def get_common_keys() -> dict:
+    """
+    :return: dict of common keys used for all amenities
+    """
     return {
         "name": 1,
         "amenity": 1,
@@ -179,6 +179,10 @@ def get_common_keys() -> dict:
 
 
 def get_all_amenity_keys(common_keys_input: dict) -> dict:
+    """
+    :param common_keys_input: dict of common keys used for all amenities
+    :return: combined dict of common + specific keys per amenity
+    """
     # amenity-specific keys
     return {
         "fountain": {
