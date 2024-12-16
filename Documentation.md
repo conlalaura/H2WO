@@ -9,7 +9,9 @@ The task was to implement a webserver.
 
 ## Goal
 
-TODO
+The goal of this project is to enable people to discover enjoyable, free places around them with essential amenities
+like water fountains, benches, and public restrooms. Leveraging OpenStreetMaps, it highlights locations ideal for
+relaxing, socializing, or spending a day outdoors—all without any cost.
 
 ## Project Organisation
 
@@ -23,8 +25,6 @@ TODO
 | Team Member   | Laura Conti    |
 
 ### Project Tasks
-
-TODO: add more granularity to alex's tasks
 
 | Task                 | Responsible    |
 |----------------------|----------------|
@@ -43,6 +43,46 @@ TODO: add more granularity to alex's tasks
 | Project Presentation | Everyone       | 
 
 ## System Overview
+
+```
+├── data/
+│   ├── __init__.py
+│   ├── dummy_document.json   # For pytest
+│   ├── mongodb_loader.py     # Loads data from OSM DB, creates smaller project DB, and inserts dummy reviews
+│   └── osm-output.json       # OSM data provided by lecturer
+├── lib/
+│   └── Review.py             # Dataclass for reviews
+├── static/
+│   ├── css/                  # Styling sheets for pages
+│   │   ├── global.css
+│   │   ├── home.css
+│   │   ├── map.css
+│   │   └── statistics.css
+│   ├── fonts/
+│   │   └── *.tff
+│   ├── img/
+│   │   ├── *.png
+│   │   ├── *.svg
+│   │   └── *.jpg
+│   └── js/
+│       ├── map.js
+│       └── statistics.js
+├── templates/
+│   ├── home.html
+│   ├── map.html
+│   └── statistics.html
+├── tests/
+│   ├── test_models.py
+│   ├── test_pymongo_loader.py
+│   └── test_Review.py
+├── Documentation.md
+├── main.py
+├── README.py
+├── requirements.txt
+└── routes.py
+```
+
+
 
 | Code Block             | Functionality                                                                                                                                                                                                                                                                                      |
 |------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -171,11 +211,31 @@ keys, it returns a single percentage value indicating the average presence of th
 
 ## Retrospective
 
-TODO
+### Task Allocation
+
+One of the highlights of this project was the ease with which tasks were divided among team members. The division of
+responsibilities felt natural and synergistic, allowing everyone to focus on tasks they genuinely enjoyed. This approach
+not only boosted individual motivation but also contributed to a highly collaborative and productive team dynamic.
+
+### Meetings and Communication
+
+While the team was consistently active and engaged in the project, we only began holding designated meetings later in
+the process. At the start, the independent nature of the work allowed us to operate without regular check-ins, and we
+managed to navigate this phase successfully. However, this ad-hoc approach could have led to issues if circumstances had
+been less favorable. Moving forward, scheduling regular meetings from the beginning will be a priority to ensure
+structured communication and coordination.
+
+### Kanban Board
+
+A Kanban board was introduced in the later stages of the project, and it proved to be a valuable tool for tracking tasks
+and assigning responsibilities. In hindsight, implementing the board earlier would have provided greater clarity and
+organization throughout the project’s lifecycle. This is a key learning for future projects, as an early introduction of
+a task management system can help streamline workflow and improve accountability.
 
 ## Outlook
 
-The statistics revealed that restroom tags are often sparse. To address this, a valuable feature would allow users to
+The statistics revealed that restroom as well as other amenities' tags are often sparse. To address this, a valuable
+feature would allow users to
 request updates or additions to amenity tags (e.g., marking a restroom as "gender-neutral" or "wheelchair accessible").
 This functionality would enrich the information available for amenities, making the service more useful, enhancing
 accuracy, and fostering inclusivity for all users.
@@ -192,6 +252,3 @@ The database would also need to support logging user requests and their statuses
 as an additional parameter within the `Review` dataclass, ensuring a streamlined workflow for tracking and managing
 requests.
 
-## Attachment
-
-TODO
