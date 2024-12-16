@@ -1,6 +1,6 @@
 # H2WO Webservice
 
-This project helps people find nice, free places to hang out in their city that have useful amenities like water fountains, benches, and public restrooms. By using open data and maps, it shows spots that are great for relaxing, meeting friends, or enjoying a day outside without spending money.
+This project helps people find nice, free places to hang out in their city that have useful amenities like water fountains, benches, and public restrooms. By using OpenStreetMaps, it shows spots that are great for relaxing, meeting friends, or enjoying a day outside without spending money.
 
 ## Setup
 
@@ -28,7 +28,7 @@ python data/mongodb_loader.py
 
 This script loads the osm-output.json file into MongoDB, filters the relevant amenities and keys, and stores the results in a new, more compact collection for efficient caching.
 
-Further, it creates 500 dummy reviews of random amenities in the Winterthur area for presentation purposes. 
+Further, it creates 1000 dummy reviews of random amenities in the Winterthur area for presentation purposes. 
 ## Development
 
 ### Run Code Formatter
