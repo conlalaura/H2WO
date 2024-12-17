@@ -10,28 +10,27 @@ const activeFilters = {
 $(document).ready(function() {
     const mapService = new MapService();
     const reviewPopup = document.getElementById("review-popup");
-    mapService.initMap();
-    mapService.loadAmenityData('/api/amenities/water', 'water');
-    mapService.loadAmenityData('/api/amenities/toilets', 'restroom');
-    mapService.loadAmenityData('/api/amenities/waste_basket', 'bins');
-//    mapService.loadAmenityData('/api/amenities/bench', 'bench');
-//    mapService.loadAmenityData('/api/amenities/shelter', 'shelter');
-
-
     // Set the initial state of checkboxes (set some to false when needed for performance)
-    $('#fountains').prop('checked', true);
-    $('#restrooms').prop('checked', true);
-    $('#bins').prop('checked', true);
-//    $('#benches').prop('checked', true);
-//    $('#shelter').prop('checked', true);
+    const amenityDisplayDefault = {
+    'water': true,
+    'restroom': true,
+    'bins': true,
+    'bench': false,
+    'shelter': false,
+    }
+    mapService.initMap();
+    mapService.loadAmenityData('/api/amenities/water', 'water', amenityDisplayDefault.water);
+    mapService.loadAmenityData('/api/amenities/toilets', 'restroom', amenityDisplayDefault.restroom);
+    mapService.loadAmenityData('/api/amenities/waste_basket', 'bins', amenityDisplayDefault.bins);
+    mapService.loadAmenityData('/api/amenities/bench', 'bench', amenityDisplayDefault.bench);
+    mapService.loadAmenityData('/api/amenities/shelter', 'shelter', amenityDisplayDefault.shelter);
 
 
-    // Apply the initial visibility based on checkbox states
-    $('#fountains').trigger('change');
-    $('#restrooms').trigger('change');
-    $('#bins').trigger('change');
-//    $('#benches').trigger('change');
-//    $('#shelter').trigger('change');
+    $('#fountains').prop('checked', amenityDisplayDefault.water);
+    $('#restrooms').prop('checked', amenityDisplayDefault.restroom);
+    $('#bins').prop('checked', amenityDisplayDefault.bins);
+    $('#benches').prop('checked', amenityDisplayDefault.bench);
+    $('#shelter').prop('checked', amenityDisplayDefault.shelter);
 
 
     // Event Listeners
@@ -51,6 +50,7 @@ $(document).ready(function() {
     $('#shelter').on('change', function() {
         mapService.toggleAmenityVisibility('shelter', this.checked);
     });
+
     //////////////////////////////////////////////////////////////////////////////
     // Control Buttons
     //////////////////////////////////////////////////////////////////////////////
@@ -321,7 +321,7 @@ class MapService {
     }
 
     // Load amenity data from API
-    loadAmenityData(apiUrl, amenityType) {
+    loadAmenityData(apiUrl, amenityType, isVisible) {
         this.loadingCount++;
         this.markerCounts[amenityType] = 0; // Initialize the count of markers for this amenity type
 
@@ -330,6 +330,7 @@ class MapService {
             .then(data => {
                 this.amenitiesData[amenityType] = data;
                 this.addAmenitiesToMap(amenityType, data);
+                this.toggleAmenityVisibility(amenityType, isVisible)
             })
             .catch(error => console.error(`Error loading ${amenityType} data:`, error));
     }
@@ -337,7 +338,7 @@ class MapService {
     // Add amenity markers to the map
     addAmenitiesToMap(amenityType, amenities) {
         const clusterGroup = this.getAmenityClusterGroup(amenityType);
-
+        console.log(amenityType, amenities, clusterGroup)
         amenities.forEach(amenity => {
             const marker = this.createAmenityMarker(amenity, amenityType);
             clusterGroup.addLayer(marker);
@@ -492,7 +493,9 @@ class MapService {
 
     // Toggle the visibility of amenities based on checkbox state
     toggleAmenityVisibility(amenityType, isVisible) {
+    console.log(amenityType, isVisible)
         const clusterGroup = this.markerClusterGroup[amenityType];
+        console.log(clusterGroup)
         if (clusterGroup) {
             if (isVisible) {
                 this.map.addLayer(clusterGroup);
