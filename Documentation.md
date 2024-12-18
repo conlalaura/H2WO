@@ -252,3 +252,6 @@ The database would also need to support logging user requests and their statuses
 as an additional parameter within the `Review` dataclass, ensuring a streamlined workflow for tracking and managing
 requests.
 
+# References
+Inspiration for the Homepage design was taken from [here](https://handee.webflow.io).
+
