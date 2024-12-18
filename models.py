@@ -98,12 +98,10 @@ def get_toilet_statistics_data(amenity_col: Collection) -> list[dict]:
     """
     pipeline = [
         {"$match": {"amenity": "toilets"}},
-        # Dynamically rename fee to free
-        {"$addFields": {"free": "$fee"}},
         {
             "$project": {
-                "free_yes": {"$cond": [{"$eq": ["$free", "no"]}, 1, 0]},
-                "free_no": {"$cond": [{"$eq": ["$free", "yes"]}, 1, 0]},
+                "free_yes": {"$cond": [{"$eq": ["$free", "yes"]}, 1, 0]},
+                "free_no": {"$cond": [{"$eq": ["$free", "no"]}, 1, 0]},
                 "wheelchair_yes": {"$cond": [{"$eq": ["$wheelchair", "yes"]}, 1, 0]},
                 "wheelchair_no": {"$cond": [{"$eq": ["$wheelchair", "no"]}, 1, 0]},
                 "changing_table_yes": {

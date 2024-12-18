@@ -1,188 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>/map</title>
-
-        <link rel="stylesheet" href="static/css/global.css">
-        <link rel="stylesheet" href="static/css/map.css">
-
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-        <!--link rel="stylesheet" href="static/css/local-leaflet.css"-->
-
-        <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css">
-        <!--link rel="stylesheet" href="static/css/local-MarkerCluster.css"-->
-
-        <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css">
-        <!--link rel="stylesheet" href="static/css/local-MarkerCluster.Default.css"-->
-
-        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-        <!--script src="{{ url_for('static', filename='js/local-leaflet.js') }}"></script-->
-
-        <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
-        <!--script src="{{ url_for('static', filename='js/local-leaflet.markercluster.js') }}"></script-->
-
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <!--script src="{{ url_for('static', filename='js/local-jquery-3.6.0.min.js') }}"></script-->
-    </head>
-<body>
-    <div id="loader" class="loader">
-        <div class="cup"></div>
-    </div>
-
-    <div class="section-page">
-        <div class="nav-controls">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>/map</title>
+      <link rel="stylesheet" href="static/css/global.css">
+      <link rel="stylesheet" href="static/css/map.css">
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+      <!--link rel="stylesheet" href="static/css/local-leaflet.css"-->
+      <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css">
+      <!--link rel="stylesheet" href="static/css/local-MarkerCluster.css"-->
+      <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css">
+      <!--link rel="stylesheet" href="static/css/local-MarkerCluster.Default.css"-->
+      <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+      <!--script src="{{ url_for('static', filename='js/local-leaflet.js') }}"></script-->
+      <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+      <!--script src="{{ url_for('static', filename='js/local-leaflet.markercluster.js') }}"></script-->
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <!--script src="{{ url_for('static', filename='js/local-jquery-3.6.0.min.js') }}"></script-->
+   </head>
+   <body>
+      <div id="loader" class="loader">
+         <div class="cup"></div>
+      </div>
+      <div class="section-page">
+         <div class="nav-controls">
             <button id="sidebar-toggle" class="nav-btn">
-                <img src="static/img/nav-sidebar.svg" alt="☰">
+            <img src="static/img/nav-sidebar.svg" alt="☰">
             </button>
             <button id="recenter" class="nav-btn">
-                <img src="static/img/nav-recenter.svg" alt="?">
+            <img src="static/img/nav-recenter.svg" alt="?">
             </button>
             <button id="zoom-in" class="nav-btn">
-                <img src="static/img/nav-zoom-in.svg" alt="+">
+            <img src="static/img/nav-zoom-in.svg" alt="+">
             </button>
             <button id="zoom-out" class="nav-btn">
-                <img src="static/img/nav-zoom-out.svg" alt="-">
+            <img src="static/img/nav-zoom-out.svg" alt="-">
             </button>
-        </div>
-
-        <!-- Map -->
-        <div class="section-map" id="map">
-        </div>
-        <!-- Sidebar -->
-        <div class="sidebar">
+         </div>
+         <!-- Map -->
+         <div class="section-map" id="map">
+         </div>
+         <!-- Sidebar -->
+         <div class="sidebar">
             <!-- Title-->
             <div class="sidebar-title">
-                <h3 class="text-align-left text-color-dark">
-                    Filter
-                </h3>
+               <h3 class="text-align-left text-color-dark">
+                  Filter
+               </h3>
             </div>
-
             <hr width="100%" size="1" color=#D1D1D1 noshade>
             <!-- Filter Section: Fountains -->
             <div class="sidebar-amenity" data-amenity-type="water">
-                <div class="sidebar-amenity-header">
-                    <label class="sidebar-amenity-enable">
-                        <h5>Water</h5>
-                        <input type="checkbox" id="fountains">
-                        <span class="checkmark"></span>
-                    </label>
-                </div>
-                <div class="sidebar-amenity-options">
-                    <button class="option" data-option="drinking_water">drinkable</button>
-                    <button class="option" data-option="bottle">fits waterbottle</button>
-                    <button class="option" data-option="seasonal">seasonal operation</button>
-                </div>
+               <div class="sidebar-amenity-header">
+                  <label class="sidebar-amenity-enable">
+                     <h5>Water</h5>
+                     <input type="checkbox" id="fountains">
+                     <span class="checkmark"></span>
+                  </label>
+               </div>
+               <div class="sidebar-amenity-options">
+                  <button class="option" data-option="drinking_water">drinkable</button>
+                  <button class="option" data-option="bottle">fits waterbottle</button>
+                  <button class="option" data-option="seasonal">seasonal operation</button>
+               </div>
             </div>
             <hr width="100%" size="1" color=#D1D1D1 noshade>
             <!-- Filter Section: Restrooms -->
             <div class="sidebar-amenity" data-amenity-type="restroom">
-                <div class="sidebar-amenity-header">
-                    <label class="sidebar-amenity-enable">
-                        <h5>Restrooms</h5>
-                        <input type="checkbox" id="restrooms">
-                        <span class="checkmark"></span>
-                    </label>
-                </div>
-                <div class="sidebar-amenity-options">
-                    <button class="option" data-option="wheelchair">wheelchair</button>
-                    <button class="option" data-option="changing_table">changing table</button>
-                    <button class="option" data-option="male">male</button>
-                    <button class="option" data-option="female">female</button>
-                    <button class="option" data-option="unisex">unisex</button>
-                    <button class="option" data-option="free">free</button>
-                </div>
+               <div class="sidebar-amenity-header">
+                  <label class="sidebar-amenity-enable">
+                     <h5>Restrooms</h5>
+                     <input type="checkbox" id="restrooms">
+                     <span class="checkmark"></span>
+                  </label>
+               </div>
+               <div class="sidebar-amenity-options">
+                  <button class="option" data-option="wheelchair">wheelchair</button>
+                  <button class="option" data-option="changing_table">changing table</button>
+                  <button class="option" data-option="male">male</button>
+                  <button class="option" data-option="female">female</button>
+                  <button class="option" data-option="unisex">unisex</button>
+                  <button class="option" data-option="free">free</button>
+               </div>
             </div>
             <hr width="100%" size="1" color=#D1D1D1 noshade>
             <!-- Filter Section: Benches -->
             <div class="sidebar-amenity" data-amenity-type="bench">
-                <div class="sidebar-amenity-header">
-                    <label class="sidebar-amenity-enable">
-                        <h5>Benches</h5>
-                        <input type="checkbox" id="benches">
-                        <span class="checkmark"></span>
-                    </label>
-                </div>
+               <div class="sidebar-amenity-header">
+                  <label class="sidebar-amenity-enable">
+                     <h5>Benches</h5>
+                     <input type="checkbox" id="benches">
+                     <span class="checkmark"></span>
+                  </label>
+               </div>
             </div>
             <hr width="100%" size="1" color=#D1D1D1 noshade>
             <!-- Filter Section: Shelter -->
             <div class="sidebar-amenity" data-amenity-type="shelter">
-                <div class="sidebar-amenity-header">
-                    <label class="sidebar-amenity-enable">
-                        <h5>Shelters</h5>
-                        <input type="checkbox" id="shelter">
-                        <span class="checkmark"></span>
-                    </label>
-                </div>
+               <div class="sidebar-amenity-header">
+                  <label class="sidebar-amenity-enable">
+                     <h5>Shelters</h5>
+                     <input type="checkbox" id="shelter">
+                     <span class="checkmark"></span>
+                  </label>
+               </div>
             </div>
             <hr width="100%" size="1" color=#D1D1D1 noshade>
             <!-- Filter Section: Bins -->
             <div class="sidebar-amenity" data-amenity-type="bins">
-                <div class="sidebar-amenity-header">
-                    <label class="sidebar-amenity-enable">
-                        <h5>Bins</h5>
-                        <input type="checkbox" id="bins">
-                        <span class="checkmark"></span>
-                    </label>
-                </div>
+               <div class="sidebar-amenity-header">
+                  <label class="sidebar-amenity-enable">
+                     <h5>Bins</h5>
+                     <input type="checkbox" id="bins">
+                     <span class="checkmark"></span>
+                  </label>
+               </div>
             </div>
             <hr width="100%" size="1" color=#D1D1D1 noshade>
-        </div>
-    </div>
-
-    <div id="review-popup" class="hidden">
-        <div class="review-popup-header">
+         </div>
+      </div>
+      <div id="review-popup" class="hidden">
+         <div class="review-popup-header">
             <div class="review-popup-header-title">
-                <h2 class="text-left-align text-color-light">
-                    Leave a Review
-                </h2>
+               <h2 class="text-left-align text-color-light">
+                  Leave a Review
+               </h2>
             </div>
             <div class="review-popup-header-exit">
-                <button id="popup-close">
-                    <img src="static/img/review-close.svg">
-                </button>
+               <button id="popup-close">
+               <img src="static/img/review-close.svg">
+               </button>
             </div>
-        </div>
-        <div class="review-popup-body">
+         </div>
+         <div class="review-popup-body">
             <div class="review-popup-body-rating">
-                <div class="review-popup-body-rating-title">
-                    Rating:
-                </div>
-                <div class="review-popup-body-rating-form" id="rating-form">
-                    <img src="static/img/rating-star-unselected.svg" class="rating-star" data-value="1">
-                    <img src="static/img/rating-star-unselected.svg" class="rating-star" data-value="2">
-                    <img src="static/img/rating-star-unselected.svg" class="rating-star" data-value="3">
-                    <img src="static/img/rating-star-unselected.svg" class="rating-star" data-value="4">
-                    <img src="static/img/rating-star-unselected.svg" class="rating-star" data-value="5">
-                    <input type="hidden" id="rating-value" name="rating" value="0">
-                </div>
+               <div class="review-popup-body-rating-title">
+                  Rating:
+               </div>
+               <div class="review-popup-body-rating-form" id="rating-form">
+                  <img src="static/img/rating-star-unselected.svg" class="rating-star" data-value="1">
+                  <img src="static/img/rating-star-unselected.svg" class="rating-star" data-value="2">
+                  <img src="static/img/rating-star-unselected.svg" class="rating-star" data-value="3">
+                  <img src="static/img/rating-star-unselected.svg" class="rating-star" data-value="4">
+                  <img src="static/img/rating-star-unselected.svg" class="rating-star" data-value="5">
+                  <input type="hidden" id="rating-value" name="rating" value="0">
+               </div>
             </div>
             <div class="review-popup-body-comment">
-                <div class="review-popup-body-comment-title">
-                    Comment:
-                </div>
-                <div class="review-popup-body-comment-form">
-                    <div class="review-popup-body-comment-form">
-                        <textarea id="comment" name="comment" placeholder="I loved this..." rows="4"></textarea>
-                    </div>
-                </div>
+               <div class="review-popup-body-comment-title">
+                  Comment:
+               </div>
+               <div class="review-popup-body-comment-form">
+                  <div class="review-popup-body-comment-form">
+                     <textarea id="comment" name="comment" placeholder="I loved this..." rows="4"></textarea>
+                  </div>
+               </div>
             </div>
-        </div>
-        <div class="review-popup-footer">
+         </div>
+         <div class="review-popup-footer">
             <div class="review-popup-footer-spacing">
             </div>
             <div class="review-popup-footer-submit">
-                <button id="submit-review">Submit</button>
+               <button id="submit-review">Submit</button>
             </div>
-        </div>
-    </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!--script src="{{ url_for('static', filename='js/local-jquery-3.6.0.min.js') }}"></script-->
-
+         </div>
+      </div>
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <!--script src="{{ url_for('static', filename='js/local-jquery-3.6.0.min.js') }}"></script-->
       <script src="{{ url_for('static', filename='js/map.js') }}"></script>
-
-
-</body>
+   </body>
 </html>

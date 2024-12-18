@@ -10,28 +10,27 @@ const activeFilters = {
 $(document).ready(function() {
     const mapService = new MapService();
     const reviewPopup = document.getElementById("review-popup");
-    mapService.initMap();
-    mapService.loadAmenityData('/api/amenities/water', 'water');
-    mapService.loadAmenityData('/api/amenities/toilets', 'restroom');
-    mapService.loadAmenityData('/api/amenities/waste_basket', 'bins');
-//  mapService.loadAmenityData('/api/amenities/bench', 'bench');
-//  mapService.loadAmenityData('/api/amenities/shelter', 'shelter');  #TODO: @Alex tell my whyyyy nicht aktiv
-
-
     // Set the initial state of checkboxes (set some to false when needed for performance)
-    $('#fountains').prop('checked', true);
-    $('#restrooms').prop('checked', true);
-    $('#bins').prop('checked', true);
-//  $('#benches').prop('checked', true);
-//  $('#shelter').prop('checked', true);
+    const amenityDisplayDefault = {
+    'water': true,
+    'restroom': true,
+    'bins': true,
+    'bench': false,
+    'shelter': false,
+    }
+    mapService.initMap();
+    mapService.loadAmenityData('/api/amenities/water', 'water', amenityDisplayDefault.water);
+    mapService.loadAmenityData('/api/amenities/toilets', 'restroom', amenityDisplayDefault.restroom);
+    mapService.loadAmenityData('/api/amenities/waste_basket', 'bins', amenityDisplayDefault.bins);
+    mapService.loadAmenityData('/api/amenities/bench', 'bench', amenityDisplayDefault.bench);
+    mapService.loadAmenityData('/api/amenities/shelter', 'shelter', amenityDisplayDefault.shelter);
 
 
-    // Apply the initial visibility based on checkbox states
-    $('#fountains').trigger('change');
-    $('#restrooms').trigger('change');
-    $('#bins').trigger('change');
-//  $('#benches').trigger('change');
-//  $('#shelter').trigger('change');
+    $('#fountains').prop('checked', amenityDisplayDefault.water);
+    $('#restrooms').prop('checked', amenityDisplayDefault.restroom);
+    $('#bins').prop('checked', amenityDisplayDefault.bins);
+    $('#benches').prop('checked', amenityDisplayDefault.bench);
+    $('#shelter').prop('checked', amenityDisplayDefault.shelter);
 
 
     // Event Listeners
@@ -51,16 +50,17 @@ $(document).ready(function() {
     $('#shelter').on('change', function() {
         mapService.toggleAmenityVisibility('shelter', this.checked);
     });
-//////////////////////////////////////////////////////////////////////////////
-// Control Buttons
-//////////////////////////////////////////////////////////////////////////////
-    // Sidebar Visibility 
+
+    //////////////////////////////////////////////////////////////////////////////
+    // Control Buttons
+    //////////////////////////////////////////////////////////////////////////////
+    // Sidebar Visibility
     $('#sidebar-toggle').on('click', function() {
         console.log("Collapse clicked")
         const sidebar = $('.sidebar');
         sidebar.toggleClass('collapsed');
         console.log("Collapsed state:", sidebar.hasClass('collapsed'));
-        // Adjust map size to fit the new layout
+        // Adjust map size to fit layout
         setTimeout(() => {
             mapService.map.invalidateSize();
         }, 300); // Match the transition duration in CSS
@@ -78,19 +78,7 @@ $(document).ready(function() {
                     const currentZoom = mapService.map.getZoom();
 
                     mapService.map.flyTo([latitude, longitude], currentZoom);
-                    // Add or update the user's marker with the popup
-                    if (mapService.userMarker) {
-                        // Update the existing marker's position and reopen the popup
-                        mapService.userMarker.setLatLng([latitude, longitude]).openPopup();
-                    } else {
-                        // Create a new marker if it doesn't exist
-                        mapService.userMarker = L.marker([latitude, longitude], {
-                                icon: userLocationIcon
-                            })
-                            .addTo(mapService.map)
-                            .bindPopup("You're here")
-                            .openPopup();
-                    }
+                    mapService.userMarker = this.addUserLocationMarker(position.coords.latitude, position.coords.longitude)
                 },
                 function(error) {
                     console.error('Geolocation error:', error);
@@ -224,35 +212,35 @@ $(document).ready(function() {
     $('.sidebar-amenity-options .option').on('click', function() {
         const button = $(this);
         const option = button.data('option');
-    
+
         // Toggle the "active" class visually
         button.toggleClass('active');
-    
+
         // Determine the amenity type from the parent element
         const amenityType = button.closest('.sidebar-amenity').data('amenity-type');
-    
+
         // Update the activeFilters list
         const currentFilters = activeFilters[amenityType];
         if (button.hasClass('active')) {
-            // Add this filter if it's not already present
+            // Add filter if it's not already present
             if (!currentFilters.includes(option)) {
                 currentFilters.push(option);
             }
         } else {
-            // Remove this filter
+            // Remove filter
             const index = currentFilters.indexOf(option);
             if (index !== -1) {
                 currentFilters.splice(index, 1);
             }
         }
-    
-        // Now re-apply the filters for this amenity type
+
+        // re-apply filters for this amenity type
         mapServiceInstance.applyFilters(amenityType);
     });
-    
+
 
     window.mapServiceInstance = mapService;
-    });
+});
 
 // Class definition for map-related operations
 class MapService {
@@ -297,7 +285,7 @@ class MapService {
         this.map.setView([position.coords.latitude, position.coords.longitude], 13);
         this.addUserLocationMarker(position.coords.latitude, position.coords.longitude);
     }
-    // Add a marker at user's location
+    // Add marker at user's location
     addUserLocationMarker(lat, lon) {
         L.marker([lat, lon], {
             icon: userLocationIcon
@@ -321,7 +309,7 @@ class MapService {
     }
 
     // Load amenity data from API
-    loadAmenityData(apiUrl, amenityType) {
+    loadAmenityData(apiUrl, amenityType, isVisible) {
         this.loadingCount++;
         this.markerCounts[amenityType] = 0; // Initialize the count of markers for this amenity type
 
@@ -330,6 +318,7 @@ class MapService {
             .then(data => {
                 this.amenitiesData[amenityType] = data;
                 this.addAmenitiesToMap(amenityType, data);
+                this.toggleAmenityVisibility(amenityType, isVisible)
             })
             .catch(error => console.error(`Error loading ${amenityType} data:`, error));
     }
@@ -337,7 +326,7 @@ class MapService {
     // Add amenity markers to the map
     addAmenitiesToMap(amenityType, amenities) {
         const clusterGroup = this.getAmenityClusterGroup(amenityType);
-    
+        console.log(amenityType, amenities, clusterGroup)
         amenities.forEach(amenity => {
             const marker = this.createAmenityMarker(amenity, amenityType);
             clusterGroup.addLayer(marker);
@@ -345,14 +334,14 @@ class MapService {
             // Increment marker count to signal that this amenity type is loaded
             this.markerCounts[amenityType]++;
         });
-    
+
         this.map.addLayer(clusterGroup);
-    
+
         // Call checkIfAllMarkersAdded after the initial load
         // This ensures that once all types are loaded, we hide the loader
         this.checkIfAllMarkersAdded();
     }
-    
+
 
     // Check if all markers have been added
     checkIfAllMarkersAdded() {
@@ -376,13 +365,13 @@ class MapService {
                         html: `
                             <div class="custom-cluster cluster-${amenityType}">
                                 <div class="icon">
-                                    <img src="static/img/cluster_${amenityType}.svg" alt="${amenityType}">
+                                    <img src="static/img/cluster-${amenityType}.svg" alt="${amenityType}">
                                 </div>
                                 <div class="count">${childCount}</div>
                             </div>
                         `,
                         className: "", // No additional Leaflet classes
-                        iconSize: [20, 20] // Adjust as needed
+                        iconSize: [20, 20]
                     });
                 }
             };
@@ -481,7 +470,7 @@ class MapService {
 
     // Create custom icon for an amenity
     createCustomIcon(amenityType) {
-        const iconUrl = iconMapping[amenityType] || 'static/img/locate.svg';
+        const iconUrl = iconMapping[amenityType];
         return L.icon({
             iconUrl,
             iconSize: [25, 41],
@@ -492,7 +481,9 @@ class MapService {
 
     // Toggle the visibility of amenities based on checkbox state
     toggleAmenityVisibility(amenityType, isVisible) {
+    console.log(amenityType, isVisible)
         const clusterGroup = this.markerClusterGroup[amenityType];
+        console.log(clusterGroup)
         if (clusterGroup) {
             if (isVisible) {
                 this.map.addLayer(clusterGroup);
@@ -505,40 +496,40 @@ class MapService {
     applyFilters(amenityType) {
         const filters = activeFilters[amenityType];
         const allAmenities = this.amenitiesData[amenityType] || [];
-    
+
         // If cluster group exists, remove it from the map
         if (this.markerClusterGroup[amenityType]) {
             this.map.removeLayer(this.markerClusterGroup[amenityType]);
             // Clear all layers from the cluster group before re-adding
             this.markerClusterGroup[amenityType].clearLayers();
         }
-    
+
         // Filter the amenities
         const filteredAmenities = allAmenities.filter(amenity => {
             return filters.every(filter => amenity[filter] === "yes");
         });
-    
+
         // Re-add the filtered amenities
         this.addAmenitiesToMap(amenityType, filteredAmenities);
     }
-    
+
 }
 
 
 
 const userLocationIcon = L.icon({
-    iconUrl: 'static/img/pin_user.svg', // Path to your custom icon
+    iconUrl: 'static/img/marker-user.svg', // Path to your custom icon
     iconSize: [25, 41], // Size of the icon [width, height]
     iconAnchor: [12, 41], // Anchor point of the icon (center bottom)
     popupAnchor: [0, -34] // Position of the popup relative to the icon
 });
 
 const iconMapping = {
-    water: 'static/img/pin_fountain.svg',
-    restroom: 'static/img/pin_restroom.svg',
-    bench: 'static/img/pin_bench.svg',
-    shelter: 'static/img/pin_shelter.svg',
-    bins: 'static/img/pin_bins.svg',
+    water: 'static/img/marker-fountain.svg',
+    restroom: 'static/img/marker-restroom.svg',
+    bench: 'static/img/marker-bench.svg',
+    shelter: 'static/img/marker-shelter.svg',
+    bins: 'static/img/marker-bins.svg',
 };
 
 const clusterColors = {
