@@ -78,19 +78,7 @@ $(document).ready(function() {
                     const currentZoom = mapService.map.getZoom();
 
                     mapService.map.flyTo([latitude, longitude], currentZoom);
-                    // Add or update the user's marker with the popup
-                    if (mapService.userMarker) {
-                        // Update the existing marker's position and reopen the popup
-                        mapService.userMarker.setLatLng([latitude, longitude]).openPopup();
-                    } else {
-                        // Create a new marker if it doesn't exist
-                        mapService.userMarker = L.marker([latitude, longitude], {
-                                icon: userLocationIcon
-                            })
-                            .addTo(mapService.map)
-                            .bindPopup("You're here")
-                            .openPopup();
-                    }
+                    mapService.userMarker = this.addUserLocationMarker(position.coords.latitude, position.coords.longitude)
                 },
                 function(error) {
                     console.error('Geolocation error:', error);
