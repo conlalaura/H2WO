@@ -17,6 +17,7 @@ This project requires the osm-output.json file to be imported into MongoDB under
 
 1. Install MongoDB:
    - Follow the [installation instructions](https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-windows/).
+   - MongoDB uses by default port 27017.
 2. Ensure the JSON file is in the correct location:
     - Copy the osm-output.json file into the data folder. Note that this file is ignored by .gitignore due to its size.
 3. Run the import script:
